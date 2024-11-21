@@ -1,5 +1,5 @@
 ---
-name: "\bbug issue template"
+name: "bug issue template"
 about: 이슈를 작성해주세요. (버그 및 오류)
 title: 'fix: 작업 제목'
 labels: fix

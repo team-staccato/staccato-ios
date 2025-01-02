@@ -13,12 +13,6 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-
-            Image(systemName: "minus.circle")
-                .symbolRenderingMode(.palette)
-                .foregroundStyle(.red, .white)
-                .background(.black)
-            Text("Hello, world!")
         }
         .padding()
     }

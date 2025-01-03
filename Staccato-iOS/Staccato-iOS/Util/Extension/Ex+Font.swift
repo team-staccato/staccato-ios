@@ -74,17 +74,3 @@ enum StaccatoFont {
         }
     }
 }
-
-extension Font {
-    // MARK: - Title
-    static let title1: Font = .custom(StaccatoFontFamily.bold.rawValue, size: 20)
-    static let title2: Font = .custom(StaccatoFontFamily.bold.rawValue, size: 16)
-    static let title3: Font = .custom(StaccatoFontFamily.semibold.rawValue, size: 14)
-
-    // MARK: - Body
-    static let body1: Font = .custom(StaccatoFontFamily.regular.rawValue, size: 17)
-    static let body2: Font = .custom(StaccatoFontFamily.medium.rawValue, size: 15)
-    static let body3: Font = .custom(StaccatoFontFamily.regular.rawValue, size: 14)
-    static let body4: Font = .custom(StaccatoFontFamily.regular.rawValue, size: 13)
-    static let body5: Font = .custom(StaccatoFontFamily.regular.rawValue, size: 10)
-}

@@ -22,24 +22,13 @@ import SwiftUI
 /// ```
 struct StaccatoToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
-        ZStack {
+        ZStack(alignment: configuration.isOn ? .trailing : .leading) {
             Capsule()
                 .foregroundStyle(configuration.isOn ? .accent : .gray4)
 
-            HStack {
-                if configuration.isOn {
-                    Spacer()
-                }
-
-                Circle()
-                    .foregroundStyle(.white)
-                    .padding(2)
-
-                if !configuration.isOn {
-                    Spacer()
-                }
-            }
-
+            Circle()
+                .foregroundStyle(.white)
+                .padding(2)
         }
         .frame(width: 48, height: 20)
         .animation(.easeInOut(duration: 0.2), value: configuration.isOn)

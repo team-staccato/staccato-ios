@@ -13,6 +13,7 @@ import SwiftUI
 ///
 /// - Parameters:
 ///     - text: 입력 받을 text를 바인딩합니다.
+///     - placeholder: 텍스트필드의 설명을 작성합니다.
 ///     - maximumTextLength: 제한 할 글자수를 지정합니다.
 ///
 /// - Usage:
@@ -26,11 +27,12 @@ import SwiftUI
 struct StaccatoTextField: View {
     @Binding var text: String
 
+    let placeholder: String
     let maximumTextLength: Int
 
     var body: some View {
         VStack {
-            TextField("카테고리 제목을 입력해주세요(최대 30자)", text: $text)
+            TextField(placeholder, text: $text)
                 .textFieldStyle(StaccatoTextFieldStyle())
                 .onChange(of: text) { _, newValue in
                     if newValue.count > maximumTextLength {

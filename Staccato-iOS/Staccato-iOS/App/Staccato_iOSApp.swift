@@ -26,8 +26,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        // Google Maps API 키 제공
-        GMSServices.provideAPIKey("YOUR_API_KEY")
+        let apiKey = Bundle.main.infoDictionary?["API_KEY"] as! String
+        GMSServices.provideAPIKey(apiKey)
+        
         return true
     }
 }

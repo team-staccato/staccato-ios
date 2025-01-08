@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		79327E112D2EACFF001080BC /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 79327E102D2EACFF001080BC /* Alamofire */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		137153882D26CDCA00EABE10 /* Staccato-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Staccato-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79327E112D2EACFF001080BC /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,8 @@
 			);
 			name = "Staccato-iOS";
 			packageProductDependencies = (
+				79327E102D2EACFF001080BC /* Alamofire */,
+				79327E122D2EACFF001080BC /* AlamofireDynamic */,
 			);
 			productName = "Staccato-iOS";
 			productReference = 137153882D26CDCA00EABE10 /* Staccato-iOS.app */;
@@ -107,6 +114,9 @@
 			);
 			mainGroup = 1371537F2D26CDCA00EABE10;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				79327E0F2D2EACFF001080BC /* XCRemoteSwiftPackageReference "Alamofire" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 137153892D26CDCA00EABE10 /* Products */;
 			projectDirPath = "";
@@ -265,7 +275,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = G7X65ZSJ3J;
+				DEVELOPMENT_TEAM = CHW94B5XTB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
@@ -295,7 +305,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = G7X65ZSJ3J;
+				DEVELOPMENT_TEAM = CHW94B5XTB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
@@ -339,6 +349,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		79327E0F2D2EACFF001080BC /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		79327E102D2EACFF001080BC /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79327E0F2D2EACFF001080BC /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		79327E122D2EACFF001080BC /* AlamofireDynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 79327E0F2D2EACFF001080BC /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = AlamofireDynamic;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 137153802D26CDCA00EABE10 /* Project object */;
 }

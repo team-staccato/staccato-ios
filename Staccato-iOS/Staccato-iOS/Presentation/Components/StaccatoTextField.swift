@@ -70,11 +70,13 @@ struct StaccatoTextFieldStyle: TextFieldStyle {
             configuration
                 .typography(.body1)
                 .foregroundStyle(.staccatoBlack)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
+                .padding(12)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.never)
 
             Spacer()
         }
+        .frame(height: 45)
         .background(
             RoundedRectangle(cornerRadius: 5)
                 .foregroundStyle(.gray1)

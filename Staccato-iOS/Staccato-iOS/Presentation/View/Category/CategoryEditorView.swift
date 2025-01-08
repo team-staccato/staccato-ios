@@ -8,34 +8,54 @@
 import SwiftUI
 
 struct CategoryEditorView: View {
-    @State var isPeriodSettingActive = false
-    @State var categoryTitle = ""
-    @State var categoryDescription = ""
+    @State private var categoryTitle = ""
+    @FocusState private var isTitleFocused: Bool
 
-    @State var isAble = false
+    @State private var categoryDescription = ""
+    @FocusState private var isDescriptionFocused: Bool
+
+    @State private var isPeriodSettingActive = false
+    @State var categoryPeriod: String?
+    @State private var isPeriodSheetPresented = false
+
+    private var isSubmitButtonDisabled: Bool {
+        return categoryTitle.isEmpty || (isPeriodSettingActive && categoryPeriod == nil)
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            photoPlaceholder
-                .padding(.bottom, 36)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                photoPlaceholder
+                    .padding(.bottom, 36)
+                Group {
+                    titleInputSection
+                        .padding(.bottom, 24)
 
-            titleInputSection
-                .padding(.bottom, 18)
+                    descriptionInputSection
+                        .padding(.bottom, 24)
 
-            descriptionInputSection
-                .padding(.bottom, 18)
+                    periodSettingSection
+                        .padding(.bottom, 24)
+                }
+                .padding(.horizontal, 4)
 
-            periodSettingSection
-                .padding(.bottom, 18)
+                Spacer()
 
-            Spacer()
+                Button("저장") {
 
-            Button("저장") {
-                isAble.toggle()
+                }
+                .buttonStyle(StaccatoFullWidthButtonStyle())
+                .disabled(isSubmitButtonDisabled)
             }
-            .buttonStyle(StaccatoFullWidthButtonStyle())
+            .animation(.easeIn(duration: 0.15), value: isPeriodSettingActive)
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20)
+
+        .sheet(isPresented: $isPeriodSheetPresented) {
+
+        } content: {
+            
+        }
     }
 }
 
@@ -76,7 +96,13 @@ extension CategoryEditorView {
             .typography(.title2)
             .padding(.bottom, 8)
 
-            StaccatoTextField(text: $categoryTitle, placeholder: "카테고리 제목을 입력해주세요(최대 30자)", maximumTextLength: 30)
+            StaccatoTextField(
+                text: $categoryTitle,
+                isFocused: $isTitleFocused,
+                placeholder: "카테고리 제목을 입력해주세요(최대 30자)",
+                maximumTextLength: 30
+            )
+            .focused($isTitleFocused)
         }
     }
 
@@ -86,7 +112,14 @@ extension CategoryEditorView {
                 .foregroundStyle(.staccatoBlack)
                 .typography(.title2)
 
-            StaccatoTextField(text: $categoryDescription, placeholder: "카테고리 소개를 입력해주세요(최대 500자)", maximumTextLength: 500)
+            TextEditor(text: $categoryDescription)
+                .staccatoTextEditorStyle(
+                    placeholder: "카테고리 소개를 입력해주세요(최대 500자)",
+                    text: $categoryDescription,
+                    maximumTextLength: 500,
+                    isFocused: $isDescriptionFocused
+                )
+                .focused($isDescriptionFocused)
         }
     }
 
@@ -101,6 +134,27 @@ extension CategoryEditorView {
 
                 Toggle("", isOn: $isPeriodSettingActive)
                     .toggleStyle(StaccatoToggleStyle())
+            }
+
+            Text("'여행'과 같은 카테고리라면 기간을 선택할 수 있어요.")
+                .typography(.body4)
+                .foregroundStyle(.gray3)
+                .padding(.bottom, 12)
+
+            if isPeriodSettingActive {
+                Button {
+                    isPeriodSheetPresented = true
+                } label: {
+                    Text(categoryPeriod ?? "카테고리 기간을 선택해주세요")
+                        .foregroundStyle(categoryPeriod == nil ? .gray3 : .staccatoBlack)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background {
+                            RoundedRectangle(cornerRadius: 5)
+                                .foregroundStyle(.gray1)
+                        }
+                }
             }
         }
     }

@@ -26,7 +26,8 @@ struct StaccatoTextEditorStyle: ViewModifier {
             content
                 .typography(.body1)
                 .foregroundStyle(.staccatoBlack)
-                .padding(12)
+                .padding(.leading, 12)
+                .padding(.top, 3)
                 .frame(height: 100)
                 .scrollContentBackground(.hidden)
                 .background(
@@ -35,8 +36,9 @@ struct StaccatoTextEditorStyle: ViewModifier {
                 )
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
+                .scrollIndicators(.hidden)
                 .overlay(alignment: .topLeading) {
-                    if !isFocused {
+                    if !isFocused && text.isEmpty {
                         Text(placeholder)
                             .padding(12)
                             .typography(.body1)

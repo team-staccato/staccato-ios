@@ -50,6 +50,8 @@ struct CategoryEditorView: View {
             .animation(.easeIn(duration: 0.15), value: isPeriodSettingActive)
         }
         .padding(.horizontal, 20)
+        .staccatoNavigationBar(title: "카테고리 만들기", subtitle: "스타카토를 담을 카테고리를 만들어 보세요!")
+        .ignoresSafeArea(.all, edges: .bottom)
 
         .sheet(isPresented: $isPeriodSheetPresented) {
 
@@ -60,7 +62,9 @@ struct CategoryEditorView: View {
 }
 
 #Preview {
-    CategoryEditorView()
+    NavigationStack {
+        CategoryEditorView()
+    }
 }
 
 extension CategoryEditorView {

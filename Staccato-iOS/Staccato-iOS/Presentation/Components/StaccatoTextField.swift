@@ -26,14 +26,23 @@ import SwiftUI
 /// ```
 struct StaccatoTextField: View {
     @Binding var text: String
+    @FocusState<Bool>.Binding var isFocused: Bool
 
     let placeholder: String
     let maximumTextLength: Int
 
     var body: some View {
         VStack {
-            TextField(placeholder, text: $text)
+            TextField("", text: $text)
                 .textFieldStyle(StaccatoTextFieldStyle())
+                .overlay(alignment: .topLeading) {
+                    if !isFocused && text.isEmpty {
+                        Text(placeholder)
+                            .padding(12)
+                            .typography(.body1)
+                            .foregroundStyle(.gray3)
+                    }
+                }
                 .onChange(of: text) { _, newValue in
                     if newValue.count > maximumTextLength {
                         text = String(newValue.prefix(maximumTextLength))

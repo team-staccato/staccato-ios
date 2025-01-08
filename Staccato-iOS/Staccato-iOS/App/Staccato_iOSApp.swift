@@ -5,13 +5,29 @@
 //  Created by Gyunni on 1/2/25.
 //
 
+import GoogleMaps
+
 import SwiftUI
 
 @main
 struct Staccato_iOSApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
+    }
+}
+
+// Maps SDK 초기화를 위해 AppDelegate 구현
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
+        // Google Maps API 키 제공
+        GMSServices.provideAPIKey("YOUR_API_KEY")
+        return true
     }
 }

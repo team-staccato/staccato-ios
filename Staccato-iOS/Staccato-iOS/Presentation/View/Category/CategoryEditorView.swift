@@ -6,8 +6,15 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct CategoryEditorView: View {
+    @State private var isPhotoInputPresented = false
+    @State private var isPhotoPickerPresented = false
+
+    @State private var photoItem: PhotosPickerItem?
+    @State private var selectedPhoto: Image?
+
     @State private var categoryTitle = ""
     @FocusState private var isTitleFocused: Bool
 
@@ -25,8 +32,9 @@ struct CategoryEditorView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-                photoPlaceholder
+                photoSection
                     .padding(.bottom, 36)
+
                 Group {
                     titleInputSection
                         .padding(.bottom, 24)
@@ -56,7 +64,7 @@ struct CategoryEditorView: View {
         .sheet(isPresented: $isPeriodSheetPresented) {
 
         } content: {
-            
+
         }
     }
 }
@@ -67,7 +75,39 @@ struct CategoryEditorView: View {
     }
 }
 
+// MARK: - Section
 extension CategoryEditorView {
+    // MARK: Photo Section
+    private var photoSection: some View {
+        Button {
+            isPhotoInputPresented = true
+        } label: {
+            if let selectedPhoto {
+                selectedPhoto
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                photoPlaceholder
+            }
+        }
+        .frame(height: 200)
+        .clipShape(.rect(cornerRadius: 8))
+        .padding(.top, 12)
+        .onChange(of: photoItem) { _, newValue in
+            loadTransferable(from: newValue)
+        }
+        .confirmationDialog("사진을 첨부해 보세요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
+            Button("카메라 열기") {
+
+            }
+            Button("앨범에서 가져오기") {
+                isPhotoPickerPresented = true
+            }
+        })
+
+        .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
+    }
+
     private var photoPlaceholder: some View {
         RoundedRectangle(cornerRadius: 8)
             .foregroundStyle(.gray1)
@@ -85,10 +125,9 @@ extension CategoryEditorView {
                         .foregroundStyle(.gray4)
                 }
             }
-            .frame(height: 200)
-            .padding(.top, 12)
     }
 
+    // MARK: Title Input Section
     private var titleInputSection: some View {
         VStack(alignment: .leading) {
             Group {
@@ -110,6 +149,7 @@ extension CategoryEditorView {
         }
     }
 
+    // MARK: Description Input Section
     private var descriptionInputSection: some View {
         VStack(alignment: .leading) {
             Text("카테고리 소개")
@@ -127,6 +167,7 @@ extension CategoryEditorView {
         }
     }
 
+    // MARK: Period Setting Section
     private var periodSettingSection: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -158,6 +199,25 @@ extension CategoryEditorView {
                             RoundedRectangle(cornerRadius: 5)
                                 .foregroundStyle(.gray1)
                         }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Method
+extension CategoryEditorView {
+    private func loadTransferable(from imageSelection: PhotosPickerItem?) {
+        imageSelection?.loadTransferable(type: Image.self) { result in
+            DispatchQueue.main.async {
+                guard imageSelection == self.photoItem else { return }
+                switch result {
+                case .success(let image?):
+                    selectedPhoto = image
+                case .success(nil):
+                    break
+                case .failure(_):
+                    break
                 }
             }
         }

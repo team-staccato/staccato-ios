@@ -11,9 +11,10 @@ import PhotosUI
 struct CategoryEditorView: View {
     @State private var isPhotoInputPresented = false
     @State private var isPhotoPickerPresented = false
+    @State private var showCamera = false
 
     @State private var photoItem: PhotosPickerItem?
-    @State private var selectedPhoto: Image?
+    @State private var selectedPhoto: UIImage?
 
     @State private var categoryTitle = ""
     @FocusState private var isTitleFocused: Bool
@@ -84,7 +85,7 @@ extension CategoryEditorView {
             isPhotoInputPresented = true
         } label: {
             if let selectedPhoto {
-                selectedPhoto
+                Image(uiImage: selectedPhoto)
                     .resizable()
                     .scaledToFill()
             } else {
@@ -97,16 +98,23 @@ extension CategoryEditorView {
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
         }
+
         .confirmationDialog("사진을 첨부해 보세요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-
+                showCamera = true
             }
+
             Button("앨범에서 가져오기") {
                 isPhotoPickerPresented = true
             }
         })
 
         .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
+
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView(selectedImage: $selectedPhoto)
+                .background(.black)
+        }
     }
 
     private var photoPlaceholder: some View {
@@ -210,8 +218,8 @@ extension CategoryEditorView {
 extension CategoryEditorView {
     private func loadTransferable(from imageSelection: PhotosPickerItem?) {
         Task {
-            if let image = try? await imageSelection?.loadTransferable(type: Image.self) {
-                selectedPhoto = image
+            if let imageData = try? await imageSelection?.loadTransferable(type: Data.self) {
+                selectedPhoto = UIImage(data: imageData)
             }
         }
     }

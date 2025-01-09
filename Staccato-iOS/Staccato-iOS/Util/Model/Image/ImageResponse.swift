@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct Image: Codable {
-    let imageURL: String            // 이미지 URL
+struct ImageURL: Codable {
+    let ImageURL: String            // 이미지 URL
 }

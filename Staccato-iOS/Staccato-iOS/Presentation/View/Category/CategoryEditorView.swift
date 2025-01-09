@@ -209,17 +209,9 @@ extension CategoryEditorView {
 // MARK: - Method
 extension CategoryEditorView {
     private func loadTransferable(from imageSelection: PhotosPickerItem?) {
-        imageSelection?.loadTransferable(type: Image.self) { result in
-            DispatchQueue.main.async {
-                guard imageSelection == self.photoItem else { return }
-                switch result {
-                case .success(let image?):
-                    selectedPhoto = image
-                case .success(nil):
-                    break
-                case .failure(_):
-                    break
-                }
+        Task {
+            if let image = try? await imageSelection?.loadTransferable(type: Image.self) {
+                selectedPhoto = image
             }
         }
     }

@@ -64,7 +64,8 @@ struct CategoryEditorView: View {
         .sheet(isPresented: $isPeriodSheetPresented) {
 
         } content: {
-
+            // TODO: 달력 구현
+            Text("여기에 달력")
         }
     }
 }

@@ -8,36 +8,29 @@
 import Foundation
 
 enum APIEndpoint {
-    case signIn(email: String, password: String)
-    case fetchUserProfile(userID: String)
+    case searchMemory(memoryId: String)
 
     var baseURL: String {
-        return "https://api.example.com"
+        return "https://stage.staccato.kr"
     }
 
     var path: String {
         switch self {
-        case .signIn:
-            return "/auth/signin"
-        case .fetchUserProfile(let userID):
-            return "/users/\(userID)"
+        case .searchMemory(memoryId: let memoryId):
+            return "/memories/\(memoryId)"
         }
     }
 
     var method: String {
         switch self {
-        case .signIn:
-            return "POST"
-        case .fetchUserProfile:
+        case .searchMemory:
             return "GET"
         }
     }
 
     var parameters: [String: Any]? {
         switch self {
-        case .signIn(let email, let password):
-            return ["email": email, "password": password]
-        case .fetchUserProfile:
+        case .searchMemory:
             return nil
         }
     }

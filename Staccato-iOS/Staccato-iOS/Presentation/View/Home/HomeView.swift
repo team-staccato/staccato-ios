@@ -18,7 +18,7 @@ struct HomeView: View {
                 MapViewControllerBridge()
                     .edgesIgnoringSafeArea(.all)
                 
-                myPageNavigationLink()
+                myPageNavigationLink
                     .padding(20)
             }
         }
@@ -28,7 +28,7 @@ struct HomeView: View {
 
 // MARK: - Components
 extension HomeView {
-    func myPageNavigationLink() -> some View {
+    private var myPageNavigationLink: some View {
         NavigationLink(destination: TempMyPageView()) {
             Image(systemName: "person.circle.fill")
                 .resizable()

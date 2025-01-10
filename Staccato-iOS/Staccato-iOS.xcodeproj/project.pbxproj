@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 15926B272D2EF06E00026F56 /* GoogleMaps */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		137153882D26CDCA00EABE10 /* Staccato-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Staccato-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = "Staccato-iOS";
 			packageProductDependencies = (
+				15926B272D2EF06E00026F56 /* GoogleMaps */,
 			);
 			productName = "Staccato-iOS";
 			productReference = 137153882D26CDCA00EABE10 /* Staccato-iOS.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = 1371537F2D26CDCA00EABE10;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 137153892D26CDCA00EABE10 /* Products */;
 			projectDirPath = "";
@@ -140,6 +149,8 @@
 /* Begin XCBuildConfiguration section */
 		137153942D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
+			baseConfigurationReferenceRelativePath = Support/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -259,13 +270,15 @@
 		};
 		137153972D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
+			baseConfigurationReferenceRelativePath = Support/Config.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = G7X65ZSJ3J;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
@@ -295,7 +308,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = G7X65ZSJ3J;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
@@ -339,6 +352,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		15926B272D2EF06E00026F56 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 137153802D26CDCA00EABE10 /* Project object */;
 }

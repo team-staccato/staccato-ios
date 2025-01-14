@@ -16,9 +16,9 @@ struct CategoryDetailView: View {
 
             Divider()
 
-            Spacer()
-
             staccatoCollectionSection
+
+            Spacer()
         }
         .staccatoNavigationBar {
             Button("수정") {
@@ -89,6 +89,7 @@ extension CategoryDetailView {
                 Text("스타카토")
                     .typography(.title2)
                     .foregroundStyle(.staccatoBlack)
+                    .padding(.leading, 4)
 
                 Spacer()
 
@@ -97,8 +98,24 @@ extension CategoryDetailView {
                 }
                 .buttonStyle(.staccatoCapsule(icon: .chevronLeft))
             }
+
+            emptyCollection
+                .padding(.top, 40)
         }
-        .padding(.leading, 20)
-        .padding(.trailing, 16)
+        .padding(.horizontal, 16)
+    }
+
+    private var emptyCollection: some View {
+        VStack(spacing: 10) {
+            Image(.staccatoCharacter)
+                .resizable()
+                .scaledToFit()
+                .padding(.horizontal, 80)
+
+            Text("스타카토를 아직 찍지 않으셨군요!\n스타카토를 찍어볼까요?")
+                .typography(.body2)
+                .foregroundStyle(.staccatoBlack)
+                .multilineTextAlignment(.center)
+        }
     }
 }

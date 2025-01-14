@@ -36,6 +36,7 @@ struct StaccatoCapsuleButtonStyle: ButtonStyle {
             Image(icon)
             configuration.label
         }
+        .typography(.body5)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background {

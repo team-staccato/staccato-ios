@@ -8,17 +8,22 @@
 import SwiftUI
 
 struct CategoryDetailView: View {
+    // TODO: Staccato Model 생성 후 수정
+    @State var staccatoList: [String] = []
+
     var body: some View {
-        VStack(spacing: 16) {
-            headerSection
+        ScrollView {
+            VStack(spacing: 16) {
+                headerSection
 
-            descriptionSection
+                descriptionSection
 
-            Divider()
+                Divider()
 
-            staccatoCollectionSection
+                staccatoCollectionSection
 
-            Spacer()
+                Spacer()
+            }
         }
         .staccatoNavigationBar {
             Button("수정") {
@@ -32,8 +37,12 @@ struct CategoryDetailView: View {
     }
 }
 
-#Preview {
+#Preview("Preview - Empty") {
     CategoryDetailView()
+}
+
+#Preview("Preview - with Mock Data") {
+    CategoryDetailView(staccatoList: ["광안리", "페스티벌", "공연", "축제"])
 }
 
 extension CategoryDetailView {
@@ -66,14 +75,14 @@ extension CategoryDetailView {
 
     private var linearGradient: LinearGradient {
         LinearGradient(
-                    gradient: Gradient(stops: [
-                        .init(color: Color.black.opacity(0.2), location: 0.0),
-                        .init(color: Color.black.opacity(0.6), location: 0.67),
-                        .init(color: Color.black.opacity(0.85), location: 1.0)
-                    ]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+            gradient: Gradient(stops: [
+                .init(color: Color.black.opacity(0.2), location: 0.0),
+                .init(color: Color.black.opacity(0.6), location: 0.67),
+                .init(color: Color.black.opacity(0.85), location: 1.0)
+            ]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
     }
 
     private var descriptionSection: some View {
@@ -84,7 +93,12 @@ extension CategoryDetailView {
     }
 
     private var staccatoCollectionSection: some View {
-        VStack {
+        let columns = [
+            GridItem(.flexible(), spacing: 8),
+            GridItem(.flexible())
+        ]
+
+        return VStack {
             HStack {
                 Text("스타카토")
                     .typography(.title2)
@@ -99,8 +113,16 @@ extension CategoryDetailView {
                 .buttonStyle(.staccatoCapsule(icon: .chevronLeft))
             }
 
-            emptyCollection
-                .padding(.top, 40)
+            if staccatoList.isEmpty {
+                emptyCollection
+                    .padding(.top, 40)
+            } else {
+                LazyVGrid(columns: columns, spacing: 8) {
+                    ForEach(staccatoList, id: \.self) { staccato in
+                        StaccatoCollectionCell(title: staccato, date: .now)
+                    }
+                }
+            }
         }
         .padding(.horizontal, 16)
     }

@@ -11,7 +11,7 @@
 /// - Usage:
 ///   ```swift
 ///   // SF Symbol 사용 예시
-///   Image(systemName: StaccatoIcon.chevronLeft.rawValue)
+///   Image(.chevronLeft)
 ///     .resizable()
 ///     .frame(width: 24, height: 24)
 ///   ```

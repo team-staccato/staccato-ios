@@ -53,7 +53,7 @@ struct CategoryEditorView: View {
                 Button("저장") {
 
                 }
-                .buttonStyle(StaccatoFullWidthButtonStyle())
+                .buttonStyle(.staccatoFullWidth)
                 .disabled(isSubmitButtonDisabled)
             }
             .animation(.easeIn(duration: 0.15), value: isPeriodSettingActive)
@@ -122,7 +122,7 @@ extension CategoryEditorView {
             .foregroundStyle(.gray1)
             .overlay {
                 VStack(spacing: 0) {
-                    Image(systemName: StaccatoIcon.camera.rawValue)
+                    Image(.camera)
                         .resizable()
                         .scaledToFit()
                         .foregroundStyle(.gray4)

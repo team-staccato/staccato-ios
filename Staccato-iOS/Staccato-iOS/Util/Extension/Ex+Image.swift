@@ -5,4 +5,10 @@
 //  Created by Gyunni on 1/14/25.
 //
 
-import Foundation
+import SwiftUI
+
+extension Image {
+    init(_ icon: StaccatoIcon) {
+        self.init(systemName: icon.rawValue)
+    }
+}

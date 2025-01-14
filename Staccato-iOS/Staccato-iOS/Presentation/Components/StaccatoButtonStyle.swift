@@ -26,3 +26,22 @@ struct StaccatoFullWidthButtonStyle: ButtonStyle {
             }
     }
 }
+
+struct StaccatoCapsuleButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) var isEnabled
+    let icon: StaccatoIcon
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 1) {
+            Image(icon)
+            configuration.label
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background {
+            Capsule()
+                .stroke(lineWidth: 0.5)
+        }
+        .foregroundStyle(.gray3)
+    }
+}

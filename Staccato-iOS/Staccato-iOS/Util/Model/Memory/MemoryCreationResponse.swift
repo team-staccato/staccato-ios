@@ -8,5 +8,5 @@
 import Foundation
 
 struct MemoryCreationResponse: Codable {
-    let memoryId: Int64      // 메모리의 고유 ID
+    let memoryId: Int      // 메모리의 고유 ID
 }

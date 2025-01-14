@@ -9,7 +9,7 @@ import Foundation
 
 struct MomentCreationRequest: Codable {
     let staccatoTitle: String      // 스탠카토 제목
-    let memoryId: Int64           // 메모리 ID
+    let memoryId: Int           // 메모리 ID
     let placeName: String         // 장소 이름
     let latitude: Double          // 위도
     let longitude: Double         // 경도

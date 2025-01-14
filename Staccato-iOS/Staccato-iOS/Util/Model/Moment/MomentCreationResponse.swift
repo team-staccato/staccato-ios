@@ -8,5 +8,5 @@
 import Foundation
 
 struct MomentCreationResponse: Codable {
-    let momentId: Int64 // Moment ID
+    let momentId: Int // Moment ID
 }

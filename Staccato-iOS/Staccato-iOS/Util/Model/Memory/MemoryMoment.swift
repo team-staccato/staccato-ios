@@ -8,7 +8,7 @@
 import Foundation
 
 struct MemoryMoment: Codable {
-    let momentId: Int64         // momentId: Long에 해당
+    let momentId: Int         // momentId: Long에 해당
     let staccatoTitle: String   // staccatoTitle: String에 해당
     let staccatoImageUrl: String? // momentImageUrl에 해당, 선택적
     let visitedAt: String       // visitedAt에 해당

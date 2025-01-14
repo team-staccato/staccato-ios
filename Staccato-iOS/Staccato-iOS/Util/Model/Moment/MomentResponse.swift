@@ -8,8 +8,8 @@
 import Foundation
 
 struct MomentResponse: Codable {
-    let momentId: Int64        // Moment ID
-    let memoryId: Int64        // Memory ID
+    let momentId: Int        // Moment ID
+    let memoryId: Int        // Memory ID
     let memoryTitle: String    // Memory 제목
     let startAt: String?       // 시작 시간 (옵셔널)
     let endAt: String?         // 종료 시간 (옵셔널)

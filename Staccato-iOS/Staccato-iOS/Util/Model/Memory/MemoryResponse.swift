@@ -8,7 +8,7 @@
 import Foundation
 
 struct MemoryResponse: Codable {
-    var memoryId: Int64                  // 메모리 ID
+    var memoryId: Int                  // 메모리 ID
     var memoryThumbnailUrl: String?      // 썸네일 URL (선택적)
     var memoryTitle: String              // 제목
     var startAt: String?                 // 시작 시간 (선택적)

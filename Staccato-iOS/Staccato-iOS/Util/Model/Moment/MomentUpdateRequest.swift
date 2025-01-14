@@ -14,6 +14,6 @@ struct MomentUpdateRequest: Codable {
     let latitude: Double                // Latitude
     let longitude: Double               // Longitude
     let visitedAt: String               // Visited date and time
-    let memoryId: Int64                 // Memory ID
+    let memoryId: Int                 // Memory ID
     let momentImageUrls: [String]       // List of moment image URLs
 }

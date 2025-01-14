@@ -8,5 +8,5 @@
 import Foundation
 
 struct ImageURL: Codable {
-    let ImageURL: String            // 이미지 URL
+    let imageURL: String            // 이미지 URL
 }

@@ -8,6 +8,6 @@
 import Foundation
 
 struct TimelineMember: Codable {
-    let memberId: Int64        // 구성원의 고유 ID
+    let memberId: Int        // 구성원의 고유 ID
     let memberImageUrl: String // 구성원의 이미지 URL
 }

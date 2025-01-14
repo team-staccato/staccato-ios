@@ -8,6 +8,6 @@
 import Foundation
 
 struct CommentRequest: Codable {
-    let momentId: Int64       // 게시물 ID (momentId)
+    let momentId: Int       // 게시물 ID (momentId)
     let content: String       // 댓글 내용 (content)
 }

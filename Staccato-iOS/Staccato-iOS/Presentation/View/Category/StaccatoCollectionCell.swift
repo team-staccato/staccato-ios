@@ -34,7 +34,7 @@ struct StaccatoCollectionCell: View {
             .padding(.leading, 12)
             .foregroundStyle(.white)
         }
-        .frame(width: 160, height: 200)
+        .frame(height: 200)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }

@@ -17,7 +17,8 @@ final class NetworkService {
         responseType: T.Type,
         completion: @escaping (Result<T, NetworkError>) -> Void
     ) {
-        let urlString = endpoint.baseURL + endpoint.path
+        // TODO:  base URL Config로 빼야될듯
+        let urlString = "https://stage.staccato.kr" + endpoint.path
         guard let url = URL(string: urlString) else {
             completion(.failure(.invalidURL))
             return
@@ -40,3 +41,9 @@ final class NetworkService {
     }
 }
 
+protocol APIEndpoint {
+    var path: String { get }
+    var method: String { get }
+    var parameters: [String: Any]? { get }
+    var headers: [String: String]? { get }
+}

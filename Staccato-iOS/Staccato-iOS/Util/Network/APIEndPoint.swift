@@ -34,4 +34,14 @@ enum APIEndpoint {
             return nil
         }
     }
+    
+    var headers: [String: String]? {
+           switch self {
+           default:
+               return [
+                   "Authorization": "Bearer YOUR_ACCESS_TOKEN",
+                   "Content-Type": "application/json"
+               ]
+           }
+    }
 }

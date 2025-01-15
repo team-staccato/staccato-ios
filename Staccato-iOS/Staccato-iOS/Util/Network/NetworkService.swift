@@ -25,8 +25,9 @@ final class NetworkService {
 
         let method = HTTPMethod(rawValue: endpoint.method)
         let parameters = endpoint.parameters
-
-        AF.request(url, method: method, parameters: parameters, encoding: JSONEncoding.default)
+        let headers = HTTPHeaders(endpoint.headers ?? [:])
+        
+        AF.request(url, method: method, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
             .validate()
             .responseDecodable(of: responseType) { response in
                 switch response.result {

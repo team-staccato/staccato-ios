@@ -18,7 +18,8 @@ final class NetworkService {
         completion: @escaping (Result<T, NetworkError>) -> Void
     ) {
         // TODO:  base URL Config로 빼야될듯
-        let urlString = "https://stage.staccato.kr" + endpoint.path
+        let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as! String
+        let urlString = baseURL + endpoint.path
         guard let url = URL(string: urlString) else {
             completion(.failure(.invalidURL))
             return
@@ -28,7 +29,12 @@ final class NetworkService {
         let parameters = endpoint.parameters
         let headers = HTTPHeaders(endpoint.headers ?? [:])
         
-        AF.request(url, method: method, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
+        AF.request(
+            url, method: method,
+            parameters: parameters,
+            encoding: JSONEncoding.default,
+            headers: headers
+        )
             .validate()
             .responseDecodable(of: responseType) { response in
                 switch response.result {

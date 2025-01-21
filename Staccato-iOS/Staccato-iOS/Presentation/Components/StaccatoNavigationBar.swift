@@ -27,7 +27,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
                     Button  {
                         dismiss()
                     } label: {
-                        Image(systemName: StaccatoIcon.chevronLeft.rawValue)
+                        Image(.chevronLeft)
                             .resizable()
                             .scaledToFit()
                             .frame(height: 20)

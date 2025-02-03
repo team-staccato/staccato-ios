@@ -20,8 +20,6 @@ struct CategoryListView: View {
                 titleHStack
                 
                 categoryList
-                
-                Spacer()
             }
             .background(Color.white)
             .padding(.horizontal, 18)

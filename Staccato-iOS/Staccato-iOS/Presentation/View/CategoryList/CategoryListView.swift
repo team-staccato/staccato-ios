@@ -9,18 +9,42 @@ import SwiftUI
 
 struct CategoryListView: View {
     @State var userName: String = "UserName"
-    @State var categoryList: [CategoryModel] = []
+    @State var categories: [CategoryModel] = [
+        CategoryModel(
+            id: 1,
+            thumbNail: Image(uiImage: .staccatoCharacter),
+            title: "제주도 가족 여행",
+            startAt: "2024.8.16",
+            endAt: "2024.8.20"
+        ),
+        CategoryModel(
+            id: 2,
+            thumbNail: nil,
+            title: "제주도 가족 여행",
+            startAt: "2024.8.16",
+            endAt: "2024.8.20"
+        ),
+        CategoryModel(
+            id: 3,
+            thumbNail: Image(uiImage: .staccatoCharacter),
+            title: "제주도 가족 여행",
+            startAt: "2024.8.16",
+            endAt: "2024.8.20"
+        )]
     
     var body: some View {
-        ScrollView {
+        NavigationView {
             VStack {
                 titleHStack
+                
+                categoryList
             }
         }
     }
     
-    
 }
+
+// MARK: - Preview
 
 #Preview {
     CategoryListView()
@@ -30,6 +54,8 @@ struct CategoryListView: View {
 // MARK: - UI Components
 
 private extension CategoryListView {
+    
+    // MARK: - Title
     
     var titleHStack: some View {
         HStack {
@@ -45,15 +71,30 @@ private extension CategoryListView {
     }
     
     var categoryAddButton: some View {
-        capsuleButton(icon: UIImage.iconFolder, text: "추가") {
+        capsuleButton(icon: .iconFolder, text: "추가") {
             print("추가 버튼 클릭됨")
         }
     }
     
     var categorySortButton: some View {
-        capsuleButton(icon: UIImage.iconSort, text: "정렬") {
+        capsuleButton(icon: .iconSort, text: "정렬") {
             print("정렬 버튼 클릭됨")
         }
+    }
+    
+    
+    // MARK: - List
+    
+    var categoryList: some View {
+        List(categories) { categoryInfo in
+            NavigationLink(destination: ContentView()) {
+                CategoryListCell(categoryInfo)
+            }
+            .padding(6)
+            .listRowInsets(EdgeInsets())
+            .listRowSeparator(.hidden)
+        }
+        .listStyle(.plain)
     }
     
 }
@@ -71,6 +112,8 @@ private extension CategoryListView {
         Button(action: action) {
             HStack(spacing: 5) {
                 Image(uiImage: icon)
+                    .frame(width: 14, height: 14)
+                
                 Text(text)
                     .typography(.body4)
                     .foregroundStyle(.gray3)

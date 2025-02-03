@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct CategoryModel: Equatable {
+struct CategoryModel: Identifiable {
     
     let id: Int
     
-    let thumbNailUrl: Image
+    let thumbNail: Image?
     
     let title: String
     

@@ -12,7 +12,11 @@ struct CategoryListView: View {
     @State var categoryList: [CategoryModel] = []
     
     var body: some View {
-        titleHStack
+        ScrollView {
+            VStack {
+                titleHStack
+            }
+        }
     }
     
     
@@ -25,17 +29,61 @@ struct CategoryListView: View {
 
 // MARK: - UI Components
 
-extension CategoryListView {
+private extension CategoryListView {
     
-    private var titleHStack: some View {
+    var titleHStack: some View {
         HStack {
             Text("\(userName)의 추억들")
                 .typography(.title1)
             Spacer()
-//            Button(label: {
-//                Image()
-//            })
+            
+            HStack(spacing: 5) {
+                categoryAddButton
+                categorySortButton
+            }
         }
+    }
+    
+    var categoryAddButton: some View {
+        capsuleButton(icon: UIImage.iconFolder, text: "추가") {
+            print("추가 버튼 클릭됨")
+        }
+    }
+    
+    var categorySortButton: some View {
+        capsuleButton(icon: UIImage.iconSort, text: "정렬") {
+            print("정렬 버튼 클릭됨")
+        }
+    }
+    
+}
+
+
+// MARK: - UI Component Generator
+
+private extension CategoryListView {
+    
+    func capsuleButton(
+        icon: UIImage,
+        text: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 5) {
+                Image(uiImage: icon)
+                Text(text)
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+                    .frame(minWidth: 23)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+        }
+        .buttonStyle(.plain)
+        .overlay(
+            Capsule()
+                .stroke(.gray3, lineWidth: 0.5)
+        )
     }
     
 }

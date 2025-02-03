@@ -66,7 +66,12 @@ private extension CategoryListView {
     
     var categoryList: some View {
         List(viewModel.categories) { categoryInfo in
-            NavigationLink(destination: ContentView()) {
+            ZStack {
+                NavigationLink(destination: ContentView()) {
+                    EmptyView()
+                }
+                    .opacity(0)
+                
                 CategoryListCell(categoryInfo)
             }
             .padding(6)

@@ -64,6 +64,7 @@ private extension CategoryListView {
     
     // MARK: - List
     
+    // TODO: padding 영역까지 선택되는 문제 해결
     var categoryList: some View {
         List(viewModel.categories) { categoryInfo in
             ZStack {

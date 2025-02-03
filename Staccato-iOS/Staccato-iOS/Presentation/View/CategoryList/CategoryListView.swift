@@ -13,9 +13,11 @@ struct CategoryListView: View {
     
     var body: some View {
             VStack {
-                handle
+                Capsule()
+                    .frame(width: 40, height: 4)
                     .padding(.top, 10)
                     .padding(.bottom, 22)
+                    .foregroundStyle(.gray2)
                 
                 titleHStack
                 
@@ -38,13 +40,6 @@ struct CategoryListView: View {
 
 private extension CategoryListView {
     
-    // MARK: - Handle
-    
-    var handle: some View {
-        Image(uiImage: .iconHandle)
-    }
-    
-    
     // MARK: - TitleView
     
     var titleHStack: some View {
@@ -61,13 +56,13 @@ private extension CategoryListView {
     }
     
     var categoryAddButton: some View {
-        capsuleButton(icon: .iconFolder, text: "추가") {
+        capsuleButton(icon: Image(.folderFill), text: "추가") {
             print("추가 버튼 클릭됨")
         }
     }
     
     var categorySortButton: some View {
-        capsuleButton(icon: .iconSort, text: "정렬") {
+        capsuleButton(icon: Image(.sliderHorizontal3), text: "정렬") {
             print("정렬 버튼 클릭됨")
         }
     }
@@ -101,14 +96,17 @@ private extension CategoryListView {
 private extension CategoryListView {
     
     func capsuleButton(
-        icon: UIImage,
+        icon: Image,
         text: String,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             HStack(spacing: 5) {
-                Image(uiImage: icon)
+                icon
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
                     .frame(width: 14, height: 14)
+                    .foregroundStyle(.gray3)
                 
                 Text(text)
                     .typography(.body4)

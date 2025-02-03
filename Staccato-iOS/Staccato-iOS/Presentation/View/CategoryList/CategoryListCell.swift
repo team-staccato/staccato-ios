@@ -45,10 +45,11 @@ struct CategoryListCell: View {
 private extension CategoryListCell {
     
     var folderIcon: some View {
-        Image(uiImage: .iconFolder)
+        Image(.folderFill)
             .resizable()
-            .foregroundStyle(.gray2)
+            .aspectRatio(contentMode: .fit)
             .frame(width: 18, height: 18)
+            .foregroundStyle(.gray2)
     }
     
     var labelStack: some View {

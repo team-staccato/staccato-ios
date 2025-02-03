@@ -12,7 +12,6 @@ struct CategoryListView: View {
     @StateObject var viewModel = CategoryListViewModel()
     
     var body: some View {
-        NavigationView {
             VStack {
                 handle
                     .padding(.top, 10)
@@ -21,9 +20,11 @@ struct CategoryListView: View {
                 titleHStack
                 
                 categoryList
+                
+                Spacer()
             }
+            .background(Color.white)
             .padding(.horizontal, 18)
-        }
     }
     
 }

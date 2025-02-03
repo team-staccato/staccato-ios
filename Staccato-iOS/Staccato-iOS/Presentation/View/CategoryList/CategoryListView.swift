@@ -8,29 +8,8 @@
 import SwiftUI
 
 struct CategoryListView: View {
-    @State var userName: String = "UserName"
-    @State var categories: [CategoryModel] = [
-        CategoryModel(
-            id: 1,
-            thumbNail: Image(uiImage: .staccatoCharacter),
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        ),
-        CategoryModel(
-            id: 2,
-            thumbNail: nil,
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        ),
-        CategoryModel(
-            id: 3,
-            thumbNail: Image(uiImage: .staccatoCharacter),
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        )]
+    
+    @StateObject var viewModel = CategoryListViewModel()
     
     var body: some View {
         NavigationView {
@@ -59,7 +38,7 @@ private extension CategoryListView {
     
     var titleHStack: some View {
         HStack {
-            Text("\(userName)의 추억들")
+            Text("\(viewModel.userName)의 추억들")
                 .typography(.title1)
             Spacer()
             
@@ -86,7 +65,7 @@ private extension CategoryListView {
     // MARK: - List
     
     var categoryList: some View {
-        List(categories) { categoryInfo in
+        List(viewModel.categories) { categoryInfo in
             NavigationLink(destination: ContentView()) {
                 CategoryListCell(categoryInfo)
             }

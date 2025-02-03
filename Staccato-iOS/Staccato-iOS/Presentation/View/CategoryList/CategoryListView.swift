@@ -14,10 +14,15 @@ struct CategoryListView: View {
     var body: some View {
         NavigationView {
             VStack {
+                handle
+                    .padding(.top, 10)
+                    .padding(.bottom, 22)
+                
                 titleHStack
                 
                 categoryList
             }
+            .padding(.horizontal, 18)
         }
     }
     
@@ -34,7 +39,14 @@ struct CategoryListView: View {
 
 private extension CategoryListView {
     
-    // MARK: - Title
+    // MARK: - Handle
+    
+    var handle: some View {
+        Image(uiImage: .iconHandle)
+    }
+    
+    
+    // MARK: - TitleView
     
     var titleHStack: some View {
         HStack {
@@ -75,7 +87,7 @@ private extension CategoryListView {
                 
                 CategoryListCell(categoryInfo)
             }
-            .padding(6)
+            .padding(.vertical, 6)
             .listRowInsets(EdgeInsets())
             .listRowSeparator(.hidden)
         }

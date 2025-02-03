@@ -13,8 +13,8 @@ struct HomeView: View {
     
     // MARK: - State for Modal
     
-        @State private var modalHeight: CGFloat = 200  // 기본 모달 높이
-        @State private var dragOffset: CGFloat = 0      // 드래그 오프셋
+    @State private var modalHeight: CGFloat = HomeModalSize.medium.height
+    @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
     
     // MARK: - Body
@@ -26,7 +26,7 @@ struct HomeView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 myPageNavigationLink
-                    .padding(20)
+                    .padding(10)
                 
                 categoryListModal
                     .edgesIgnoringSafeArea(.all)
@@ -73,12 +73,12 @@ extension HomeView {
                         }
                         .onEnded { value in
                             // 드래그 종료 후, 모달의 최종 높이를 설정
-                            if modalHeight < 200 {
-                                modalHeight = 100  // 짧은 형태
-                            } else if modalHeight < 500 {
-                                modalHeight = 320  // 중간 형태
+                            if modalHeight < HomeModalSize.small.height + dragOffset {
+                                modalHeight = HomeModalSize.small.height  // small
+                            } else if modalHeight < HomeModalSize.medium.height + dragOffset {
+                                modalHeight = HomeModalSize.medium.height  // medium
                             } else {
-                                modalHeight = 700  // 큰 형태
+                                modalHeight = HomeModalSize.large.height  // large
                             }
                         }
                 )
@@ -86,10 +86,6 @@ extension HomeView {
         
     }
     
-}
-
-#Preview {
-    HomeView()
 }
 
 

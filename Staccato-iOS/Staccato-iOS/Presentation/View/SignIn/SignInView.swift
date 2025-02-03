@@ -14,12 +14,13 @@ struct SignInView: View {
     var body: some View {
         NavigationView {
             VStack {
-                //TODO: 이미지 바꿔야됨
-                Image(systemName: "globe")
+                Image("staccato_login_logo")
                     .imageScale(.large)
                     .foregroundStyle(.tint)
+                    .padding(.bottom, 100)
                 TextField("닉네임을 입력해주세요", text: $nickName)
                     .padding()
+                    .typography(.body4)
                     .background(.gray1)
                     .cornerRadius(4)
                     .shadow(color: .gray3.opacity(0.5), radius: 10, x: 0, y: 5)

@@ -38,8 +38,8 @@ extension StaccatoDatePicker {
     }
 
     var calendarGrid: some View {
-        ForEach(monthDates.indices, id: \.self) { index in
-            if let date = monthDates[index] {
+        ForEach(monthDates, id: \.self) { date in
+            if let date {
                 Button {
                     selectDate(date)
                 } label: {

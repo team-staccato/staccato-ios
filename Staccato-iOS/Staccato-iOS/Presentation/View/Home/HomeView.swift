@@ -20,17 +20,15 @@ struct HomeView: View {
     // MARK: - Body
     
     var body: some View {
-        NavigationView {
-            ZStack(alignment: .topLeading) {
-                MapViewControllerBridge()
-                    .edgesIgnoringSafeArea(.all)
-                
-                myPageNavigationLink
-                    .padding(10)
-                
-                categoryListModal
-                    .edgesIgnoringSafeArea(.all)
-            }
+        ZStack(alignment: .topLeading) {
+            MapViewControllerBridge()
+                .edgesIgnoringSafeArea(.all)
+            
+            myPageNavigationLink
+                .padding(10)
+            
+            categoryListModal
+                .edgesIgnoringSafeArea(.bottom)
         }
     }
 }

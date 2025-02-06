@@ -74,7 +74,7 @@ private extension CategoryListView {
     var categoryList: some View {
         List(viewModel.categories) { categoryInfo in
             ZStack {
-                NavigationLink(destination: ContentView()) {
+                NavigationLink(destination: CategoryDetailView()) {
                     EmptyView()
                 }
                     .opacity(0)

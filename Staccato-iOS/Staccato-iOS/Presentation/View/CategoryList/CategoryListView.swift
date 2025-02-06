@@ -18,7 +18,7 @@ struct CategoryListView: View {
             NavigationStack {
                 VStack {
                     titleHStack
-                        .padding(.top, 13)
+                        .padding(.top, 23)
                     categoryList
                 }
                 .background(Color.white)
@@ -47,7 +47,6 @@ private extension CategoryListView {
         Capsule()
             .frame(width: 40, height: 4)
             .padding(.top, 10)
-            .padding(.bottom, 10)
             .foregroundStyle(.gray2)
     }
     

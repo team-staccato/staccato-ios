@@ -12,22 +12,23 @@ struct CategoryListView: View {
     @StateObject var viewModel = CategoryListViewModel()
     
     var body: some View {
-            VStack {
-                Capsule()
-                    .frame(width: 40, height: 4)
-                    .padding(.top, 10)
-                    .padding(.bottom, 22)
-                    .foregroundStyle(.gray2)
-                
-                titleHStack
-                
-                categoryList
+        VStack {
+            modalTop
+            
+            NavigationStack {
+                VStack {
+                    titleHStack
+                        .padding(.top, 13)
+                    categoryList
+                }
+                .background(Color.white)
+                .padding(.horizontal, 18)
             }
-            .background(Color.white)
-            .padding(.horizontal, 18)
+        }
     }
     
 }
+
 
 // MARK: - Preview
 
@@ -39,6 +40,17 @@ struct CategoryListView: View {
 // MARK: - UI Components
 
 private extension CategoryListView {
+    
+    // MARK: - Modal top
+    
+    var modalTop: some View {
+        Capsule()
+            .frame(width: 40, height: 4)
+            .padding(.top, 10)
+            .padding(.bottom, 10)
+            .foregroundStyle(.gray2)
+    }
+    
     
     // MARK: - TitleView
     
@@ -77,7 +89,7 @@ private extension CategoryListView {
                 NavigationLink(destination: CategoryDetailView()) {
                     EmptyView()
                 }
-                    .opacity(0)
+                .opacity(0)
                 
                 CategoryListCell(categoryInfo)
             }

@@ -60,7 +60,7 @@ extension HomeView {
             CategoryListView()
                 .frame(height: modalHeight)
                 .background(Color.white)
-                .cornerRadius(20)
+                .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
                 .shadow(radius: 5)
                 .gesture(
                     DragGesture()

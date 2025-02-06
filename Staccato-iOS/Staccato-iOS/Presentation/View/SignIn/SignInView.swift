@@ -15,7 +15,9 @@ struct SignInView: View {
         NavigationView {
             VStack {
                 Image("staccato_login_logo")
-                    .imageScale(.large)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 176)
                     .foregroundStyle(.tint)
                     .padding(.bottom, 100)
                 TextField("닉네임을 입력해주세요", text: $nickName)
@@ -23,7 +25,6 @@ struct SignInView: View {
                     .typography(.body4)
                     .background(.gray1)
                     .cornerRadius(4)
-                    .shadow(color: .gray3.opacity(0.5), radius: 10, x: 0, y: 5)
                     .onChange(of: nickName) { _, newValue in
                         if newValue.count > 20 {
                             nickName = String(newValue.prefix(20))
@@ -34,18 +35,11 @@ struct SignInView: View {
                     .foregroundStyle(.gray3)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.bottom)
-                Button(action: {
+                Button("시작하기") {
                     //TODO: 버튼 액션 추가해야됨
                     print("시작하기 버튼이 눌렸습니다.")
-                }) {
-                    Text("시작하기")
-                        .typography(.title3)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 45)
-                        .background(.gray1)
-                        .foregroundColor(.gray4)
-                        .cornerRadius(4)
                 }
+                .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
                 NavigationLink(destination: RecoverAccountView()) {
                     Text("이전 기록을 불러오려면 여기를 눌러주세요")

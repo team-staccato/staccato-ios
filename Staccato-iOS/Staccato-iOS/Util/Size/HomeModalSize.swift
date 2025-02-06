@@ -15,7 +15,7 @@ enum HomeModalSize: CaseIterable {
         switch self {
         case .small: return 74 / 640 * ScreenUtils.height
         case .medium: return ScreenUtils.height / 2
-        case .large: return 560 / 640 * ScreenUtils.height
+        case .large: return ScreenUtils.height - ScreenUtils.safeAreaInsets.top - 10
         }
     }
     

@@ -22,4 +22,13 @@ struct ScreenUtils {
         return UIScreen.main.bounds.height
     }
     
+    
+    // MARK: 디바이스 SafeAreaInsets (최상위 창 기준)
+    
+    static var safeAreaInsets: UIEdgeInsets {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?.windows.first?.safeAreaInsets ?? .zero
+    }
+    
 }

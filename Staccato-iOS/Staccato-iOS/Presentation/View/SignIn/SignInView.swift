@@ -5,6 +5,10 @@ struct SignInView: View {
     @State private var nickName: String = ""
     @State private var isLoggedIn: Bool = false
     
+    var isButtonDisabled: Bool {
+         nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+     }
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -14,7 +18,6 @@ struct SignInView: View {
                     .frame(width: 176)
                     .foregroundStyle(.tint)
                     .padding(.bottom, 100)
-                
                 TextField("닉네임을 입력해주세요", text: $nickName)
                     .padding()
                     .typography(.body4)
@@ -25,24 +28,29 @@ struct SignInView: View {
                             nickName = String(newValue.prefix(20))
                         }
                     }
-                
                 Text("\(nickName.count)/20")
                     .typography(.body4)
                     .foregroundStyle(.gray3)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .padding(.bottom)
-                
                 Button("시작하기") {
                     login(nickname: nickName)
                     print("시작하기 버튼이 눌렸습니다.")
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
-
+                .disabled(isButtonDisabled)
                 NavigationLink(value: isLoggedIn) {
                     EmptyView()
                 }
                 .hidden()
+                NavigationLink(destination: RecoverAccountView()) {
+                    Text("이전 기록을 불러오려면 여기를 눌러주세요")
+                        .typography(.body4)
+                        .foregroundColor(.gray4)
+                        .underline()
+                }
+                .padding(.vertical)
             }
             .padding(.horizontal, 24)
             .navigationDestination(isPresented: $isLoggedIn) {

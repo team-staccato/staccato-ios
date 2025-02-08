@@ -27,7 +27,6 @@ struct RecoverAccountView: View {
             .padding()
             .background(.gray1)
             .cornerRadius(4)
-            .shadow(color: .gray3.opacity(0.5), radius: 10, x: 0, y: 5)
             .onChange(of: code) { _, newValue in
                 if newValue.count > 36 {
                     code = String(newValue.prefix(36))
@@ -39,20 +38,12 @@ struct RecoverAccountView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.bottom)
             Spacer()
-            Button(action: {
-                //TODO: 버튼 액션 추가해야됨
+            Button("시작하기") {
                 print("불러오기 버튼 눌렸음")
-            }) {
-                Text("불러오기")
-                    .typography(.title3)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 45)
-                    .background(.gray1)
-                    .foregroundColor(.gray4)
-                    .cornerRadius(4)
-                    .padding(.bottom)
             }
+            .buttonStyle(.staccatoFullWidth)
             .padding(.vertical)
+            .disabled(code.count != 36)
         }
         .padding(.horizontal, 24)
         .staccatoNavigationBar()

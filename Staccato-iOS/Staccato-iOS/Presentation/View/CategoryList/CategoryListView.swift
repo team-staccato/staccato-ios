@@ -10,6 +10,8 @@ import SwiftUI
 struct CategoryListView: View {
     
     @StateObject var viewModel = CategoryListViewModel()
+    @State private var selectedCategory: CategoryModel?
+    @State private var isDetailPresented: Bool = false
     
     var body: some View {
         VStack {
@@ -23,6 +25,15 @@ struct CategoryListView: View {
                 }
                 .background(Color.white)
                 .padding(.horizontal, 18)
+                .navigationDestination(isPresented: $isDetailPresented) {
+                    if let category = selectedCategory {
+                        // TODO: category 바인딩
+                        CategoryDetailView()
+                            .onDisappear {
+                                isDetailPresented = false
+                            }
+                    }
+                }
             }
         }
     }
@@ -91,22 +102,19 @@ private extension CategoryListView {
     
     // MARK: - List
     
-    // TODO: padding 영역까지 선택되는 문제 해결
     var categoryList: some View {
-        List(viewModel.categories) { categoryInfo in
-            ZStack {
-                NavigationLink(destination: CategoryDetailView()) {
-                    EmptyView()
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(viewModel.categories, id: \.id) { categoryInfo in
+                    Button {
+                        selectedCategory = categoryInfo
+                        isDetailPresented = true
+                    } label: {
+                        CategoryListCell(categoryInfo)
+                    }
                 }
-                .opacity(0)
-                
-                CategoryListCell(categoryInfo)
             }
-            .padding(.vertical, 6)
-            .listRowInsets(EdgeInsets())
-            .listRowSeparator(.hidden)
         }
-        .listStyle(.plain)
     }
     
 }

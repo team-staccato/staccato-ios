@@ -67,15 +67,25 @@ private extension CategoryListView {
     }
     
     var categoryAddButton: some View {
-        capsuleButton(icon: Image(.folderFill), text: "추가") {
+        Button("추가") {
             print("추가 버튼 클릭됨")
         }
+        .buttonStyle(.staccatoCapsule(
+            icon: .folderFill,
+            font: .body4,
+            spacing: 4)
+        )
     }
     
     var categorySortButton: some View {
-        capsuleButton(icon: Image(.sliderHorizontal3), text: "정렬") {
+        Button("정렬") {
             print("정렬 버튼 클릭됨")
         }
+        .buttonStyle(.staccatoCapsule(
+            icon: .sliderHorizontal3,
+            font: .body4,
+            spacing: 4)
+        )
     }
     
     
@@ -97,41 +107,6 @@ private extension CategoryListView {
             .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
-    }
-    
-}
-
-
-// MARK: - UI Component Generator
-
-private extension CategoryListView {
-    
-    func capsuleButton(
-        icon: Image,
-        text: String,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 5) {
-                icon
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 14, height: 14)
-                    .foregroundStyle(.gray3)
-                
-                Text(text)
-                    .typography(.body4)
-                    .foregroundStyle(.gray3)
-                    .frame(minWidth: 23)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-        }
-        .buttonStyle(.plain)
-        .overlay(
-            Capsule()
-                .stroke(.gray3, lineWidth: 0.5)
-        )
     }
     
 }

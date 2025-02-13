@@ -30,13 +30,15 @@ struct StaccatoFullWidthButtonStyle: ButtonStyle {
 struct StaccatoCapsuleButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     let icon: StaccatoIcon
+    let font: StaccatoFont
+    let spacing: CGFloat
 
     func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: 1) {
+        HStack(spacing: spacing) {
             Image(icon)
             configuration.label
         }
-        .typography(.body5)
+        .typography(font)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background {

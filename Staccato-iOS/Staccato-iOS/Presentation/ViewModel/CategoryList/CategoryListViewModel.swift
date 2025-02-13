@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import Observation
 
-class CategoryListViewModel: ObservableObject {
+@Observable final class CategoryListViewModel {
     
     // MARK: - Properties
     
-    @Published var userName: String = "UserName"
+    var userName: String = "UserName"
     
-    @Published var categories: [CategoryModel] = [
+    var categories: [CategoryModel] = [
         CategoryModel(
             id: 1,
             thumbNail: Image(uiImage: .staccatoCharacter),

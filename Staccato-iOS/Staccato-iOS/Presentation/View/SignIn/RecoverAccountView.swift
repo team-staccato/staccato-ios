@@ -20,6 +20,7 @@ struct RecoverAccountView: View {
                 .multilineTextAlignment(.leading)
                 .padding(.bottom)
                 .padding(.top)
+            
             TextField(
                 "ex) bt2hnhd4-07kght-0pp2ln",
                 text: $code
@@ -32,12 +33,15 @@ struct RecoverAccountView: View {
                     code = String(newValue.prefix(36))
                 }
             }
+            
             Text("\(code.count)/36")
                 .typography(.body4)
                 .foregroundStyle(.gray3)
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.bottom)
+            
             Spacer()
+            
             Button("시작하기") {
                 print("불러오기 버튼 눌렸음")
             }

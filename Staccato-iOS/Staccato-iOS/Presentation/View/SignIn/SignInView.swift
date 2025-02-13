@@ -42,6 +42,7 @@ struct SignInView: View {
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
                 .disabled(isButtonDisabled)
+                
                 NavigationLink(value: isLoggedIn) {
                     EmptyView()
                 }

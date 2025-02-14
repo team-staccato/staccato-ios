@@ -32,6 +32,12 @@ struct MyPageView: View {
     }
 }
 
+#Preview {
+    NavigationStack {
+        MyPageView()
+    }
+}
+
 extension MyPageView {
     private var profileImageSection: some View {
         ZStack {
@@ -82,41 +88,42 @@ extension MyPageView {
 
     private var menuSection: some View {
         VStack {
-            HStack {
-                NavigationLink {
-
-                } label: {
+            NavigationLink {
+                EmbedWebView(title: "개인정보처리방침", urlString: "https://app.websitepolicies.com/policies/view/7jel2uwv")
+            } label: {
+                HStack {
                     Text("개인정보처리방침")
                         .typography(.title3)
                         .foregroundStyle(.staccatoBlack)
+
+                    Spacer()
+
+                    Image(.chevronRight)
+                        .foregroundStyle(.gray2)
                 }
-                .padding(.vertical, 26)
-
-                Spacer()
-
-                Image(.chevronRight)
-                    .foregroundStyle(.gray2)
             }
+            .padding(.vertical, 26)
             .padding(.horizontal, 24)
+
 
             Divider()
 
-            HStack {
-                NavigationLink {
-
-                } label: {
+            NavigationLink {
+                EmbedWebView(title: "피드백으로 혼내주기", urlString: "https://forms.gle/fuxgta7HxDNY5KvSA")
+            } label: {
+                HStack {
                     Text("피드백으로 혼내주기")
                         .typography(.title3)
                         .foregroundStyle(.staccatoBlack)
+
+                    Spacer()
+
+                    Image(.chevronRight)
+                        .foregroundStyle(.gray2)
                 }
                 .padding(.vertical, 26)
-
-                Spacer()
-
-                Image(.chevronRight)
-                    .foregroundStyle(.gray2)
+                .padding(.horizontal, 24)
             }
-            .padding(.horizontal, 24)
 
             Divider()
 
@@ -134,8 +141,4 @@ extension MyPageView {
             .padding(.top, 12)
         }
     }
-}
-
-#Preview {
-    MyPageView()
 }

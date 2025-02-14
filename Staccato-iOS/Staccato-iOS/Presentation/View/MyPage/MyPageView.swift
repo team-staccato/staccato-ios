@@ -12,7 +12,7 @@ struct MyPageView: View {
         VStack {
 
         }
-        .staccatoNavigationBar(title: "마이페이지")
+        .staccatoNavigationBar(title: "마이페이지", titlePosition: .center)
     }
 }
 

@@ -42,21 +42,19 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
                             .foregroundStyle(.gray2)
                     }
 
-                    if titlePosition == .center {
-                        Spacer()
-                    }
+                    if titlePosition == .leading {
+                        VStack(alignment: .leading) {
+                            if let title {
+                                Text(title)
+                                    .typography(.title2)
+                                    .foregroundStyle(.gray5)
+                            }
 
-                    VStack(alignment: .leading) {
-                        if let title {
-                            Text(title)
-                                .typography(.title2)
-                                .foregroundStyle(.gray5)
-                        }
-
-                        if let subtitle {
-                            Text(subtitle)
-                                .typography(.body4)
-                                .foregroundStyle(.gray5)
+                            if let subtitle {
+                                Text(subtitle)
+                                    .typography(.body4)
+                                    .foregroundStyle(.gray5)
+                            }
                         }
                     }
 
@@ -69,6 +67,20 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
                     .padding(.trailing, 10)
                     .typography(.body2)
                     .foregroundStyle(.gray5)
+                }
+
+                if titlePosition == .center {
+                    HStack {
+                        Spacer()
+
+                        if let title {
+                            Text(title)
+                                .typography(.title2)
+                                .foregroundStyle(.gray5)
+                        }
+
+                        Spacer()
+                    }
                 }
 
             }
@@ -98,7 +110,11 @@ enum TitlePosition {
                 Text("컨텐츠")
                 Text("컨텐츠")
             }
-            .staccatoNavigationBar(title: "카테고리 만들기", subtitle: "스타카토를 담을 카테고리를 만들어 보세요!")
+            .staccatoNavigationBar(title: "카테고리 만들기", subtitle: "스타카토를 담을 카테고리를 만들어 보세요!") {
+                Button("버튼") { }
+                Button("버튼") { }
+                Button("버튼") { }
+            }
         } label: {
             Text("NavigationTest : 다음 화면으로 이동")
         }

@@ -20,16 +20,15 @@ struct WebView: UIViewRepresentable {
 
         webView.navigationDelegate = context.coordinator
 
-
+        if let urlString = urlString, let url = URL(string: urlString) {
+            let request = URLRequest(url: url)
+            webView.load(request)
+        }
+        
         return webView
     }
 
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        if let urlString = urlString, let url = URL(string: urlString) {
-            let request = URLRequest(url: url)
-            uiView.load(request)
-        }
-    }
+    func updateUIView(_ uiView: WKWebView, context: Context) { }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -37,6 +36,7 @@ struct WebView: UIViewRepresentable {
 
     class Coordinator: NSObject, WKNavigationDelegate {
         var parent: WebView
+        private weak var webView: WKWebView?
 
         init(_ parent: WebView) {
             self.parent = parent
@@ -44,12 +44,15 @@ struct WebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
             DispatchQueue.main.async {
+                print("로딩 시작")
                 self.parent.isLoading = true
+                self.webView = webView
             }
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             DispatchQueue.main.async {
+                print("로딩 끝")
                 self.parent.isLoading = false
             }
         }
@@ -71,11 +74,11 @@ struct EmbedWebView: View {
     @State var isLoading: Bool = false
 
     var body: some View {
-        VStack {
+        ZStack {
+            WebView(urlString: urlString, isLoading: $isLoading)
+
             if isLoading {
                 ProgressView()
-            } else {
-                WebView(urlString: urlString, isLoading: $isLoading)
             }
         }
         .staccatoNavigationBar(title: title, titlePosition: .center)

@@ -44,7 +44,6 @@ struct WebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
             DispatchQueue.main.async {
-                print("로딩 시작")
                 self.parent.isLoading = true
                 self.webView = webView
             }
@@ -52,7 +51,6 @@ struct WebView: UIViewRepresentable {
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             DispatchQueue.main.async {
-                print("로딩 끝")
                 self.parent.isLoading = false
             }
         }

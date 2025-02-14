@@ -6,9 +6,16 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct MyPageView: View {
-    @State var copyButtonPressed: Bool = false
+    @State var copyButtonPressed = false
+    @State var isPhotoInputPresented = false
+    @State var showCamera = false
+    @State var isPhotoPickerPresented = false
+
+    @State private var photoItem: PhotosPickerItem?
+    @State private var selectedPhoto: UIImage?
 
     var body: some View {
         VStack {
@@ -40,26 +47,51 @@ struct MyPageView: View {
 
 extension MyPageView {
     private var profileImageSection: some View {
-        ZStack {
-            Image(.personCircleFill)
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.gray2)
-            VStack {
-                Spacer()
-
-                HStack {
+        Button {
+            isPhotoInputPresented = true
+        } label: {
+            ZStack {
+                Image(.personCircleFill)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(.gray2)
+                VStack {
                     Spacer()
 
-                    Image(.pencilCircleFill)
-                        .resizable()
-                        .scaledToFit()
-                        .foregroundStyle(.gray5)
-                        .frame(width: 20, height: 20)
+                    HStack {
+                        Spacer()
+
+                        Image(.pencilCircleFill)
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundStyle(.gray5)
+                            .frame(width: 20, height: 20)
+                    }
                 }
             }
         }
         .frame(width: 84, height: 84)
+
+        .confirmationDialog("프로필 이미지를 변경해요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
+            Button("카메라 열기") {
+                showCamera = true
+            }
+
+            Button("앨범에서 가져오기") {
+                isPhotoPickerPresented = true
+            }
+        })
+
+        .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
+
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView(selectedImage: $selectedPhoto)
+                .background(.black)
+        }
+
+        .onChange(of: photoItem) { _, newValue in
+            loadTransferable(from: newValue)
+        }
     }
 
     private var userNameSection: some View {
@@ -134,7 +166,7 @@ extension MyPageView {
                     .padding(.leading, 24)
 
                 Spacer()
-                
+
                 Button {
                     let instagramUrl = URL(string: WebViewURLs.instagramApp)!
                     if UIApplication.shared.canOpenURL(instagramUrl) {
@@ -148,6 +180,16 @@ extension MyPageView {
                 }
             }
             .padding(.top, 12)
+        }
+    }
+}
+
+extension MyPageView {
+    private func loadTransferable(from imageSelection: PhotosPickerItem?) {
+        Task {
+            if let imageData = try? await imageSelection?.loadTransferable(type: Data.self) {
+                selectedPhoto = UIImage(data: imageData)
+            }
         }
     }
 }

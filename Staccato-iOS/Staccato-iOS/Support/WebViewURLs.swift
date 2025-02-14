@@ -10,5 +10,6 @@ import Foundation
 enum WebViewURLs {
     static let privacyPolicy = "https://app.websitepolicies.com/policies/view/7jel2uwv"
     static let feedback = "https://forms.gle/fuxgta7HxDNY5KvSA"
-    static let instagram = "https://www.instagram.com/staccato_team/profilecard/?igsh=Y241bHoybnZmZjA5"
+    static let instagramWeb = "https://www.instagram.com/staccato_team/profilecard/?igsh=Y241bHoybnZmZjA5"
+    static let instagramApp = "instagram://user?username=staccato_team"
 }

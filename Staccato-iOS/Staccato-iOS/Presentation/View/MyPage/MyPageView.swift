@@ -134,9 +134,18 @@ extension MyPageView {
                     .padding(.leading, 24)
 
                 Spacer()
-
-                Image("instagram_icon")
-                    .padding(.trailing, 20)
+                
+                Button {
+                    let instagramUrl = URL(string: WebViewURLs.instagramApp)!
+                    if UIApplication.shared.canOpenURL(instagramUrl) {
+                        UIApplication.shared.open(instagramUrl)
+                    } else {
+                        UIApplication.shared.open(URL(string: WebViewURLs.instagramWeb)!)
+                    }
+                } label: {
+                    Image("instagram_icon")
+                        .padding(.trailing, 20)
+                }
             }
             .padding(.top, 12)
         }

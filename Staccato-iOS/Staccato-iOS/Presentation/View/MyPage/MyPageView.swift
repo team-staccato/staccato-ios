@@ -89,7 +89,7 @@ extension MyPageView {
     private var menuSection: some View {
         VStack {
             NavigationLink {
-                EmbedWebView(title: "개인정보처리방침", urlString: "https://app.websitepolicies.com/policies/view/7jel2uwv")
+                EmbedWebView(title: "개인정보처리방침", urlString: WebViewURLs.privacyPolicy)
             } label: {
                 HStack {
                     Text("개인정보처리방침")
@@ -109,7 +109,7 @@ extension MyPageView {
             Divider()
 
             NavigationLink {
-                EmbedWebView(title: "피드백으로 혼내주기", urlString: "https://forms.gle/fuxgta7HxDNY5KvSA")
+                EmbedWebView(title: "피드백으로 혼내주기", urlString: WebViewURLs.feedback)
             } label: {
                 HStack {
                     Text("피드백으로 혼내주기")

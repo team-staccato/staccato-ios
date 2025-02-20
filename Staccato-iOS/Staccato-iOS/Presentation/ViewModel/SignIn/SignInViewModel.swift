@@ -8,22 +8,11 @@
 import SwiftUI
 
 class SignInViewModel: ObservableObject {
-    @Published var nickName: String = "" {
-        didSet {
-            if nickName.count > 20 {
-                nickName = String(nickName.prefix(20))
-            }
-        }
-    }
-    @Published var isLoggedIn: Bool = false
-
-    var isButtonDisabled: Bool {
-        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
+    @State var isLoggedIn: Bool = false
 }
 
 extension SignInViewModel {
-    func login() {
+    func login(nickName: String) {
         NetworkService.shared.request(
             endpoint: AuthorizationAPI.login(nickname: nickName),
             responseType: LoginResponse.self

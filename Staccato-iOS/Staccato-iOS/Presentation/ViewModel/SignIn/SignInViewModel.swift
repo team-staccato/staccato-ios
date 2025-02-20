@@ -8,7 +8,8 @@
 import SwiftUI
 
 class SignInViewModel: ObservableObject {
-    @State var isLoggedIn: Bool = false
+    @Published var isLoggedIn: Bool = false
+    @Published var isValid: Bool = true
 }
 
 extension SignInViewModel {
@@ -27,5 +28,10 @@ extension SignInViewModel {
                 print("로그인 실패: \(error.localizedDescription)")
             }
         }
+    }
+    // 한글, 영어, 마침표, 언더바(_)만 허용
+    func validateText(nickName: String) {
+        let regex = "^[가-힣a-zA-Z._]{1,\(20)}$"
+        isValid = NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: nickName)
     }
 }

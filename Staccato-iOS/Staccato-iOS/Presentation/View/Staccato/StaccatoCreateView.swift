@@ -12,7 +12,7 @@ struct StaccatoCreateView: View {
     @FocusState var isTitleFocused: Bool
 
     var body: some View {
-        VStack {
+        VStack(spacing: 40) {
             titleInputSection
 
             locationInputSection
@@ -20,6 +20,10 @@ struct StaccatoCreateView: View {
             dateInputSection
 
             categorySelectSection
+
+            Spacer()
+
+            saveButton
         }
         .padding(.horizontal, 24)
         .staccatoNavigationBar(
@@ -35,7 +39,7 @@ struct StaccatoCreateView: View {
 
 extension StaccatoCreateView {
     private var titleInputSection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "스타카토 제목")
 
             StaccatoTextField(
@@ -49,26 +53,82 @@ extension StaccatoCreateView {
     }
 
     private var locationInputSection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
 
-            Button("퍼") {
+            Button("장소명, 주소, 위치로 검색해보세요") {
 
             }
-            .buttonStyle(.staccatoCapsule(icon: .calendar))
+            .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass))
+            .padding(.bottom, 10)
+
+            Text("상세 주소")
+                .typography(.title3)
+                .foregroundStyle(.staccatoBlack)
+                .padding(.bottom, 6)
+
+            Text("상세주소는 여기에 표시됩니다.")
+                .foregroundStyle(.gray3)
+                .typography(.body1)
+                .padding(.vertical, 12)
+                .padding(.leading, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background {
+                    RoundedRectangle(cornerRadius: 5)
+                        .stroke(lineWidth: 1)
+                        .foregroundStyle(.gray2)
+                }
+                .padding(.bottom, 10)
+
+            Button {
+
+            } label: {
+                Label {
+                    Text("현재 위치의 주소 불러오기")
+                } icon: {
+                    Image(.location)
+                }
+                .foregroundStyle(.gray4)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .background {
+                    Capsule()
+                        .stroke(lineWidth: 1)
+                        .foregroundStyle(.gray3)
+                }
+
+            }
         }
     }
 
     private var dateInputSection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
+
+            Button("방문 날짜를 선택해주세요") {
+
+            }
+            .buttonStyle(.staticTextFieldButtonStyle())
         }
     }
 
     private var categorySelectSection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
+
+            Button("카테고리를 선택해주세요") {
+                
+            }
+            .buttonStyle(.staticTextFieldButtonStyle())
         }
+    }
+
+    private var saveButton: some View {
+        Button("저장") {
+
+        }
+        .buttonStyle(.staccatoFullWidth)
+        .disabled(true)
     }
 
     private func sectionTitle(title: String) -> some View {
@@ -79,6 +139,6 @@ extension StaccatoCreateView {
                 .foregroundStyle(.accent)
         }
         .typography(.title2)
-        .padding(.bottom, 10)
+        .padding(.bottom, 8)
     }
 }

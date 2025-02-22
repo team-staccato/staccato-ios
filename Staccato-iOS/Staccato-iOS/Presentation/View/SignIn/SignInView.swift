@@ -1,21 +1,15 @@
 import SwiftUI
 
 struct SignInView: View {
-    
     @StateObject private var viewModel = SignInViewModel()
-    
-    @State private var nickName: String = "" {
-        didSet {
-            if nickName.count > 20 {
-                nickName = String(nickName.prefix(20))
-            }
-        }
-    }
+    @State private var nickName: String = ""
     @State private var validationMessage: String = ""
+    @State private var isChanging: Bool = false
     @State private var shakeOffset: CGFloat = 0
+    @State private var debounceWorkItem: DispatchWorkItem?
     
     private var isButtonDisabled: Bool {
-        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChanging
     }
     
     var body: some View {
@@ -38,6 +32,10 @@ struct SignInView: View {
                             .stroke(viewModel.isValid ? Color.clear : Color.red, lineWidth: 2)
                     )
                     .offset(x: viewModel.isValid ? 0 : shakeOffset)
+                    .onChange(of: nickName) {
+                        isChanging = true
+                        debounceValidation(text: nickName)
+                    }
                 
                 HStack {
                     Text(validationMessage)
@@ -55,18 +53,12 @@ struct SignInView: View {
                 }
                 
                 Button("시작하기") {
-                    viewModel.validateText(nickName: nickName)
-                    
-                    if viewModel.isValid {
-                        viewModel.login(nickName: nickName)
-                    } else {
-                        shakeAnimation()
-                        validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
-                    }
+                    print(nickName)
+                    viewModel.login(nickName: nickName)
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
-                .disabled(isButtonDisabled)
+                .disabled(isButtonDisabled || !viewModel.isValid)
                 
                 NavigationLink(destination: RecoverAccountView()) {
                     Text("이전 기록을 불러오려면 여기를 눌러주세요")
@@ -88,9 +80,10 @@ struct SignInView: View {
     SignInView()
 }
 
+//MARK: Animation
 extension SignInView {
     private func shakeAnimation() {
-        let shakeValues: [CGFloat] = [0, -10, 10, -8, 8, -5, 5, 0] // 흔들리는 값
+        let shakeValues: [CGFloat] = [0, -10, 10, -8, 8, -5, 5, 0]
         for (index, value) in shakeValues.enumerated() {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 * Double(index)) {
                 withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
@@ -98,5 +91,24 @@ extension SignInView {
                 }
             }
         }
+    }
+}
+
+//MARK: Debounce
+extension SignInView {
+    private func debounceValidation(text: String) {
+        debounceWorkItem?.cancel()
+        let workItem = DispatchWorkItem {
+            viewModel.validateText(nickName: text)
+            if !viewModel.isValid {
+                shakeAnimation()
+                validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
+            } else {
+                validationMessage = ""
+            }
+            isChanging = false
+        }
+        debounceWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
     }
 }

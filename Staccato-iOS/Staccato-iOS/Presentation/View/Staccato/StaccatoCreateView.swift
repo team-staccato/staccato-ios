@@ -13,6 +13,8 @@ struct StaccatoCreateView: View {
 
     var body: some View {
         VStack(spacing: 40) {
+            photoInputSection
+
             titleInputSection
 
             locationInputSection
@@ -38,6 +40,39 @@ struct StaccatoCreateView: View {
 }
 
 extension StaccatoCreateView {
+    private var photoInputSection: some View {
+        VStack(alignment: .leading) {
+            HStack(spacing: 3) {
+                Text("사진")
+                    .foregroundStyle(.staccatoBlack)
+                    .typography(.title2)
+
+                Text("(0/5)")
+                    .foregroundStyle(.gray3)
+                    .typography(.body4)
+
+                Spacer()
+            }
+            .padding(.bottom, 16)
+
+            photoInputPlaceholder
+
+        }
+    }
+
+    private var photoInputPlaceholder: some View {
+        VStack(spacing: 8) {
+            Image(.camera)
+                .frame(width: 28)
+
+            Text("사진을 첨부해 보세요")
+                .typography(.body3)
+        }
+        .foregroundStyle(.gray3)
+        .frame(width: 150, height: 150)
+        .background(.gray1, in: .rect(cornerRadius: 5))
+    }
+
     private var titleInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "스타카토 제목")

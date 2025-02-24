@@ -13,9 +13,10 @@ import SwiftUI
 struct GMSMapViewRepresentable: UIViewRepresentable {
     
     static let shared = GMSMapViewRepresentable()
+    init() {}
     
-    private let locationManager = CLLocationManager() // 👈 현재위치를 불러올 locationManager 추가
-    private let mapView = GMSMapView(frame: .zero) // 👈 mapView를 전역변수로 설정
+    private let locationManager = CLLocationManager()
+    private let mapView = GMSMapView(frame: .zero)
     
     func makeCoordinator() -> Coordinator {
         Coordinator(self)

@@ -35,6 +35,7 @@ struct HomeView: View {
             LocationAuthorizationManager.shared.checkLocationAuthorization()
         }
     }
+    
 }
 
 
@@ -85,7 +86,6 @@ extension HomeView {
                         }
                 )
         }
-        
     }
     
 }

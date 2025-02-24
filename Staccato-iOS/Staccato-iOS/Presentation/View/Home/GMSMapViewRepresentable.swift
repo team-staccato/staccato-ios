@@ -66,4 +66,24 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
         
         parent.mapView.animate(to: camera)
     }
+    
+}
+
+
+// MARK: - Internal Methods
+
+extension GMSMapViewRepresentable {
+    
+    func updateLocationForOneSec() {
+        locationManager.startUpdatingLocation()
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 1초 뒤 업데이트 멈춤
+        }
+    }
+    
+    func stopUpdatingLocation() {
+        locationManager.stopUpdatingLocation()
+    }
+    
 }

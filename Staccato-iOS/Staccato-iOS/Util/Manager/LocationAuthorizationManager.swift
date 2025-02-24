@@ -10,36 +10,43 @@ import SwiftUI
 
 class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
     
+    // MARK: - Properties
+    
     static let shared = LocationAuthorizationManager()
     
     private var locationManager = CLLocationManager()
+    
+    
+    // MARK: - Methods
     
     override init() {
         super.init()
         locationManager.delegate = self
     }
     
-    func checkLocationAuthorization() {
+    func checkLocationAuthorization() -> Bool {
         let status = locationManager.authorizationStatus
         
         switch status {
         case .notDetermined:
             // 처음 실행 시 권한 요청
-            print("🗺️Location authorization: notDetermined")
+            print("🗺️Location authorization: NotDetermined")
             locationManager.requestWhenInUseAuthorization()
+            return false
             
         case .restricted, .denied:
             // 권한 거부 상태: 설정 앱으로 유도
-            print("🗺️Location authorization: restricted / denied")
+            print("🗺️Location authorization: Restricted or Denied")
             showAlertToOpenSettings()
+            return false
             
         case .authorizedWhenInUse, .authorizedAlways:
             // "앱 사용 중 허용" 상태: 앱 플로우 진입
-            print("🗺️Location authorization: authorizedWhenInUse / authorizedAlways")
-            proceedToAppFlow()
+            print("🗺️Location authorization: AuthorizedWhenInUse or AuthorizedAlways")
+            return true
             
         @unknown default:
-            break
+            return false
         }
     }
     
@@ -68,9 +75,5 @@ class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
             }
         }
     }
-    
-    private func proceedToAppFlow() {
-        GMSMapViewRepresentable.shared.updateLocationForOneSec()
-     }
     
 }

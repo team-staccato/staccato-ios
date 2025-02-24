@@ -17,11 +17,16 @@ struct HomeView: View {
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
     
+    // MARK: - Instances
+    
+    private let googleMapView = GMSMapViewRepresentable()
+    
+    
     // MARK: - Body
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            GMSMapViewRepresentable.shared
+            googleMapView
                 .edgesIgnoringSafeArea(.all)
                 .padding(.bottom, modalHeight - 40)
             
@@ -32,7 +37,9 @@ struct HomeView: View {
                 .edgesIgnoringSafeArea(.bottom)
         }
         .onAppear {
-            LocationAuthorizationManager.shared.checkLocationAuthorization()
+            if LocationAuthorizationManager.shared.checkLocationAuthorization() {
+                googleMapView.updateLocationForOneSec()
+            }
         }
     }
     

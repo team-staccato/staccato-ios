@@ -83,8 +83,4 @@ extension GMSMapViewRepresentable {
         }
     }
     
-    func stopUpdatingLocation() {
-        locationManager.stopUpdatingLocation()
-    }
-    
 }

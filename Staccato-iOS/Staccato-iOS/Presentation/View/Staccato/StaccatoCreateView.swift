@@ -10,6 +10,8 @@ import SwiftUI
 struct StaccatoCreateView: View {
     @State var title: String = ""
     @State var locationManager = LocationManager()
+    @State var showDatePickerSheet = false
+    @State var selectedDate: Date?
     @FocusState var isTitleFocused: Bool
 
     var body: some View {
@@ -146,10 +148,15 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
 
-            Button("방문 날짜를 선택해주세요") {
-
+            Button(selectedDate?.formattedAsFullDateWithHour ?? "방문 날짜를 선택해주세요") {
+                showDatePickerSheet = true
             }
             .buttonStyle(.staticTextFieldButtonStyle())
+
+            .sheet(isPresented: $showDatePickerSheet) {
+                DatePickerView(selectedDate: $selectedDate)
+                    .presentationDetents([.fraction(0.4)])
+            }
         }
     }
 
@@ -158,7 +165,7 @@ extension StaccatoCreateView {
             sectionTitle(title: "카테고리 선택")
 
             Button("카테고리를 선택해주세요") {
-                
+
             }
             .buttonStyle(.staticTextFieldButtonStyle())
         }

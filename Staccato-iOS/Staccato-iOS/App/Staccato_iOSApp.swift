@@ -7,13 +7,21 @@
 
 import SwiftUI
 
+import GoogleMaps
+
 @main
 struct Staccato_iOSApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    init() {
+        let apiKey = Bundle.main.infoDictionary?["API_KEY"] as! String
+        GMSServices.provideAPIKey(apiKey)
+        LocationAuthorizationManager.shared.checkLocationAuthorization()
+    }
     
     var body: some Scene {
         WindowGroup {
             HomeView()
         }
     }
+    
 }

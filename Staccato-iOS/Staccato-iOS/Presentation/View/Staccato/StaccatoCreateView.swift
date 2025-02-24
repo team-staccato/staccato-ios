@@ -9,6 +9,7 @@ import SwiftUI
 
 struct StaccatoCreateView: View {
     @State var title: String = ""
+    @State var locationManager = LocationManager()
     @FocusState var isTitleFocused: Bool
 
     var body: some View {
@@ -94,6 +95,7 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
 
+            // - TODO: 검색 시트 띄우기
             Button("장소명, 주소, 위치로 검색해보세요") {
 
             }
@@ -105,7 +107,8 @@ extension StaccatoCreateView {
                 .foregroundStyle(.staccatoBlack)
                 .padding(.bottom, 6)
 
-            Text("상세주소는 여기에 표시됩니다.")
+            // - TODO: 주소 값으로 불러오기
+            Text((locationManager.currentCoordinate != nil) ? locationManager.currentCoordinate.debugDescription : "상세주소는 여기에 표시됩니다.")
                 .foregroundStyle(.gray3)
                 .typography(.body1)
                 .padding(.vertical, 12)
@@ -119,7 +122,7 @@ extension StaccatoCreateView {
                 .padding(.bottom, 10)
 
             Button {
-
+                locationManager.requestLocation()
             } label: {
                 Label {
                     Text("현재 위치의 주소 불러오기")

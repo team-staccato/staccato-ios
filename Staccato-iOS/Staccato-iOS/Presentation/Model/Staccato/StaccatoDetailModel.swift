@@ -8,7 +8,7 @@
 import SwiftUI
 
 // TODO: 수정 필요
-struct StaccatoModel: Identifiable {
+struct StaccatoDetailModel: Identifiable {
     
     let id: UUID
     
@@ -41,9 +41,9 @@ struct StaccatoModel: Identifiable {
 }
 
 // TODO: 삭제
-extension StaccatoModel {
+extension StaccatoDetailModel {
     
-    static let sample = StaccatoModel(
+    static let sample = StaccatoDetailModel(
         id: UUID(),
         momentId: 1,
         memoryId: 1,

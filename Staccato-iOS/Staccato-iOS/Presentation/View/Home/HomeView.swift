@@ -16,6 +16,8 @@ struct HomeView: View {
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
+    @State private var locationManager = LocationAuthorizationManager.shared
+
     
     // MARK: - Instances
     
@@ -36,8 +38,11 @@ struct HomeView: View {
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
         }
-        .onAppear {
-            if LocationAuthorizationManager.shared.checkLocationAuthorization() {
+        .onAppear() {
+            locationManager.checkLocationAuthorization()
+        }
+        .onChange(of: locationManager.hasLocationAuthorization) { oldValue, newValue in
+            if newValue {
                 googleMapView.updateLocationForOneSec()
             }
         }

@@ -7,8 +7,10 @@
 
 import CoreLocation
 import SwiftUI
+import Observation
 
-class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
+@Observable
+class LocationAuthorizationManager: NSObject {
     
     // MARK: - Properties
     
@@ -16,15 +18,23 @@ class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
     
     private var locationManager = CLLocationManager()
     
+    var hasLocationAuthorization: Bool = false
+    
     
     // MARK: - Methods
     
     override init() {
         super.init()
         locationManager.delegate = self
+        updateAuthorizationStatus()
     }
     
-    func checkLocationAuthorization() -> Bool {
+    private func updateAuthorizationStatus() {
+        let status = locationManager.authorizationStatus
+        hasLocationAuthorization = (status == .authorizedAlways || status == .authorizedWhenInUse)
+    }
+    
+    func checkLocationAuthorization() {
         let status = locationManager.authorizationStatus
         
         switch status {
@@ -32,29 +42,22 @@ class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
             // 처음 실행 시 권한 요청
             print("🗺️Location authorization: NotDetermined")
             locationManager.requestWhenInUseAuthorization()
-            return false
             
         case .restricted, .denied:
             // 권한 거부 상태: 설정 앱으로 유도
             print("🗺️Location authorization: Restricted or Denied")
             showAlertToOpenSettings()
-            return false
             
         case .authorizedWhenInUse, .authorizedAlways:
             // "앱 사용 중 허용" 상태: 앱 플로우 진입
             print("🗺️Location authorization: AuthorizedWhenInUse or AuthorizedAlways")
-            return true
             
         @unknown default:
-            return false
+            break
         }
     }
     
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        // 권한 상태 변경 시 처리
-        checkLocationAuthorization()
-    }
+
 
     private func showAlertToOpenSettings() {
         // 설정 앱으로 유도하는 Alert
@@ -74,6 +77,19 @@ class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
                 topVC.present(alert, animated: true, completion: nil)
             }
         }
+    }
+    
+}
+
+
+// MARK: - CLLocationManagerDelegate
+
+extension LocationAuthorizationManager: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        // 권한 상태 변경 시 처리
+        checkLocationAuthorization()
+        updateAuthorizationStatus()
     }
     
 }

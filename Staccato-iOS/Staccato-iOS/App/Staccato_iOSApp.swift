@@ -14,7 +14,7 @@ struct Staccato_iOSApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                StaccatoCreateView()
+                HomeView()
             }
         }
     }

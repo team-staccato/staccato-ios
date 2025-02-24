@@ -159,7 +159,8 @@ private extension StaccatoDetailView {
                         .typography(.body2)
                         .foregroundStyle(.staccatoBlack)
                 }
-                .padding(.bottom, 38)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 28)
             } else {
                 VStack(spacing: 12) {
                     ForEach(comments, id: \.commentId) { comment in

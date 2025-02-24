@@ -9,18 +9,11 @@ import GoogleMaps
 
 import SwiftUI
 
-struct MapViewControllerBridge: UIViewControllerRepresentable {
-    
-    func makeUIViewController(context: Context) -> MapViewController {
-        return MapViewController()
-    }
-    
-    func updateUIViewController(_ uiViewController: MapViewController, context: Context) {
-    }
-}
-
 
 struct GMSMapViewRepresentable: UIViewRepresentable {
+    
+    static let shared = GMSMapViewRepresentable()
+    
     private let locationManager = CLLocationManager() // 👈 현재위치를 불러올 locationManager 추가
     private let mapView = GMSMapView(frame: .zero) // 👈 mapView를 전역변수로 설정
     
@@ -35,7 +28,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         locationManager.startUpdatingLocation()
         locationManager.delegate = context.coordinator
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 1초 뒤 업데이트 멈춤
         }
         
@@ -47,15 +40,12 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        locationManager.startUpdatingLocation()
     }
     
-    func stopUpdatingLocation() {
-        locationManager.stopUpdatingLocation()
-    }
 }
 
 extension GMSMapViewRepresentable {
+    
     final class Coordinator: NSObject {
         let parent: GMSMapViewRepresentable
         
@@ -63,9 +53,11 @@ extension GMSMapViewRepresentable {
             self.parent = parent
         }
     }
+    
 }
 
 extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location: CLLocation = locations.last!
         print("Location: \(location)")

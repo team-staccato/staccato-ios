@@ -12,9 +12,6 @@ import SwiftUI
 
 struct GMSMapViewRepresentable: UIViewRepresentable {
     
-    static let shared = GMSMapViewRepresentable()
-    init() {}
-    
     private let locationManager = CLLocationManager()
     private let mapView = GMSMapView(frame: .zero)
     

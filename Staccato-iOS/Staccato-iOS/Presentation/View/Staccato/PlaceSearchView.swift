@@ -9,32 +9,28 @@
 import SwiftUI
 import CoreLocation
 import GooglePlacesSwift
+import UIKit
+import GooglePlaces
 
 struct PlaceSearchView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("Hello, World!")
             .task {
                 let placesClient = PlacesClient.shared
-                
-                let restriction: RectangularCoordinateRegion = RectangularCoordinateRegion(northEast: CLLocationCoordinate2D(latitude: 20, longitude: 30), southWest: CLLocationCoordinate2D(latitude: 40, longitude: 50))!
 
-                let searchByTextRequest = SearchByTextRequest(
-                        textQuery: "pizza in New York",
-                        placeProperties: [ .displayName, .placeID ],
-                        locationRestriction: restriction,
-                        includedType: .restaurant,
-                        maxResultCount: 5,
-                        minRating: 3.5,
-                        priceLevels: [ .moderate, .inexpensive ],
-                        isStrictTypeFiltering: true
-                )
+                let center = CLLocation(37.3913916, -122.0879074)
+                let northEast = CLLocationCoordinate2D(37.388162, -122.088137)
+                let southWest = CLLocationCoordinate2D(37.395804, -122.077023)
 
-                switch await placesClient.searchByText(with: searchByTextRequest) {
-                case .success(let places):
-                    print("결과")
-                    print(places)
+                let bias = RectangularCoordinateRegion(northEast: northEast, southWest: southWest)
+                let filter = AutocompleteFilter(types: [ .restaurant ], origin: center, coordinateRegionBias: bias)
+
+                let autocompleteRequest = AutocompleteRequest(query: "Sicilian piz", filter: filter)
+                switch await placesClient.fetchAutocompleteSuggestions(with: autocompleteRequest) {
+                case .success(let autocompleteSuggestions):
+                    print(autocompleteSuggestions)
                 case .failure(let placesError):
-                    print("에러발생")
+                    print("error")
                     print(placesError)
                 }
             }
@@ -43,4 +39,16 @@ struct PlaceSearchView: View {
 
 #Preview {
     PlaceSearchView()
+}
+
+extension CLLocationCoordinate2D {
+    init(_ latitude: Double, _ longitude: Double) {
+        self.init(latitude: latitude, longitude: longitude)
+    }
+}
+
+extension CLLocation {
+    convenience init(_ latitude: Double, _ longitude: Double) {
+        self.init(latitude: latitude, longitude: longitude)
+    }
 }

@@ -21,14 +21,18 @@ struct HomeView: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            MapViewControllerBridge()
+            GMSMapViewRepresentable.shared
                 .edgesIgnoringSafeArea(.all)
+                .padding(.bottom, modalHeight - 40)
             
             myPageNavigationLink
                 .padding(10)
             
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
+        }
+        .onAppear {
+            LocationAuthorizationManager.shared.checkLocationAuthorization()
         }
     }
 }

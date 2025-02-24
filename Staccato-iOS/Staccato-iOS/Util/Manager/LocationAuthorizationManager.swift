@@ -21,27 +21,21 @@ class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
     
     func checkLocationAuthorization() {
         let status = locationManager.authorizationStatus
-        print("status: \(status)")
         
         switch status {
         case .notDetermined:
             // 처음 실행 시 권한 요청
-            print("🗺️location authorization: notDetermined")
+            print("🗺️Location authorization: notDetermined")
             locationManager.requestWhenInUseAuthorization()
             
         case .restricted, .denied:
             // 권한 거부 상태: 설정 앱으로 유도
-            print("🗺️location authorization: restricted/denied")
+            print("🗺️Location authorization: restricted / denied")
             showAlertToOpenSettings()
             
-        case .authorizedWhenInUse:
+        case .authorizedWhenInUse, .authorizedAlways:
             // "앱 사용 중 허용" 상태: 앱 플로우 진입
-            print("🗺️location authorization: authorizedWhenInUse")
-            proceedToAppFlow()
-            
-        case .authorizedAlways:
-            // "항상 허용" 상태: 앱 플로우 진입
-            print("🗺️location authorization: authorizedAlways")
+            print("🗺️Location authorization: authorizedWhenInUse / authorizedAlways")
             proceedToAppFlow()
             
         @unknown default:
@@ -76,8 +70,7 @@ class LocationAuthorizationManager: NSObject, CLLocationManagerDelegate {
     }
     
     private func proceedToAppFlow() {
-        //TODO: 추후 앱 시작 시 필요 코드 추가
-        GMSMapViewRepresentable.shared.startUpdatingLocation()
+        GMSMapViewRepresentable.shared.updateLocationForOneSec()
      }
     
 }

@@ -12,21 +12,24 @@ struct StaccatoCreateView: View {
     @FocusState var isTitleFocused: Bool
 
     var body: some View {
-        VStack(spacing: 40) {
-            photoInputSection
+        ScrollView {
+            VStack(spacing: 40) {
+                photoInputSection
 
-            titleInputSection
+                titleInputSection
 
-            locationInputSection
+                locationInputSection
 
-            dateInputSection
+                dateInputSection
 
-            categorySelectSection
+                categorySelectSection
 
-            Spacer()
+                Spacer()
 
-            saveButton
+                saveButton
+            }
         }
+        .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
         .staccatoNavigationBar(
             title: "스타카토 기록하기",

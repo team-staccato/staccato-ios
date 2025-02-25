@@ -41,8 +41,17 @@ final class NetworkService {
             case .success(let data):
                 completion(.success(data))
             case .failure(let error):
-                print("❌ 네트워크 요청 실패: \(error.localizedDescription)")
                 print("❌ 상태 코드: \(response.response?.statusCode ?? 0)")
+                if let data = response.data {
+                    do {
+                        let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: data)
+                        print("❌ 네트워크 요청 실패: \(errorResponse.message)")
+                    } catch {
+                        print("❌ 알 수 없는 오류: \(error.localizedDescription)")
+                    }
+                } else {
+                    print("❌ 알 수 없는 오류: \(error.localizedDescription)")
+                }
                 completion(.failure(.requestFailed))
             }
         }

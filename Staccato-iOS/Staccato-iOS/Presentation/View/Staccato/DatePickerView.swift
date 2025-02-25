@@ -18,18 +18,18 @@ extension StaccatoCreateView {
 
         private let calendar: Calendar = Calendar.current
 
-        private var yearRange: Range<Int> {
+        private var yearRange: ClosedRange<Int> {
             guard let maximumYear = calendar.dateComponents(in: .current, from: .now).year else {
-                return 1900..<2026
+                return 1900...2025
             }
-            return 1900..<maximumYear + 1
+            return 1900...maximumYear
         }
 
-        private var monthRange: Range<Int> {
-            return 1..<13
+        private var monthRange: ClosedRange<Int> {
+            return 1...12
         }
 
-        private var dayRange: Range<Int> {
+        private var dayRange: ClosedRange<Int> {
             let selectedMonth = DateComponents(
                 calendar: .current,
                 timeZone: .current,
@@ -37,16 +37,16 @@ extension StaccatoCreateView {
                 month: self.month
             )
 
-            guard let monthInterval = calendar.dateInterval(of: .month, for: selectedMonth.date ?? .now) else { return 1..<31 }
+            guard let monthInterval = calendar.dateInterval(of: .month, for: selectedMonth.date ?? .now) else { return 1...31 }
             let lastDayDate = monthInterval.end.addingTimeInterval(-1)
 
-            guard let lastDay = calendar.dateComponents(in: .current, from: lastDayDate).day else { return 1..<31 }
+            guard let lastDay = calendar.dateComponents(in: .current, from: lastDayDate).day else { return 1...31 }
 
-            return 1..<lastDay + 1
+            return 1...lastDay
         }
 
-        private var hourRange: Range<Int> {
-            return 0..<24
+        private var hourRange: ClosedRange<Int> {
+            return 0...23
         }
 
         init(selectedDate: Binding<Date?>) {

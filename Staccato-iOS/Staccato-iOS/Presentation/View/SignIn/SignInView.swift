@@ -53,8 +53,13 @@ struct SignInView: View {
                 }
                 
                 Button("시작하기") {
-                    print(nickName)
-                    viewModel.login(nickName: nickName)
+                    Task {
+                        do {
+                            try await viewModel.login(nickName: nickName)
+                        } catch {
+                            print(error)
+                        }
+                    }
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
@@ -72,6 +77,16 @@ struct SignInView: View {
             .navigationDestination(isPresented: $viewModel.isLoggedIn) {
                 HomeView()
             }
+        }
+        .alert(isPresented: Binding<Bool>(
+            get: { viewModel.errorMessage != nil },
+            set: { _ in viewModel.errorMessage = nil }
+        )) {
+            Alert(
+                title: Text("로그인 실패"),
+                message: Text(viewModel.errorMessage ?? "알 수 없는 오류"),
+                dismissButton: .default(Text("확인"))
+            )
         }
     }
 }

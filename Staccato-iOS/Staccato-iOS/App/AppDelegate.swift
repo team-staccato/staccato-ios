@@ -12,6 +12,7 @@ import UIKit
 
 // Maps SDK 초기화를 위해 AppDelegate 구현
 class AppDelegate: NSObject, UIApplicationDelegate {
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -22,4 +23,5 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         return true
     }
+    
 }

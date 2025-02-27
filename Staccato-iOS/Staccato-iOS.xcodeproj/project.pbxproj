@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		133087FD2D66D89800085E6F /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 133087FC2D66D89800085E6F /* GooglePlaces */; };
+		133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 133087FE2D66D89800085E6F /* GooglePlacesSwift */; };
 		15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 15926B272D2EF06E00026F56 /* GoogleMaps */; };
 		79E999F42D4D11790066E0CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 79E999F32D4D11790066E0CA /* Alamofire */; };
 /* End PBXBuildFile section */
@@ -41,8 +43,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				133087FD2D66D89800085E6F /* GooglePlaces in Frameworks */,
 				15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */,
 				79E999F42D4D11790066E0CA /* Alamofire in Frameworks */,
+				133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +91,8 @@
 			packageProductDependencies = (
 				15926B272D2EF06E00026F56 /* GoogleMaps */,
 				79E999F32D4D11790066E0CA /* Alamofire */,
+				133087FC2D66D89800085E6F /* GooglePlaces */,
+				133087FE2D66D89800085E6F /* GooglePlacesSwift */,
 			);
 			productName = "Staccato-iOS";
 			productReference = 137153882D26CDCA00EABE10 /* Staccato-iOS.app */;
@@ -119,6 +125,7 @@
 			packageReferences = (
 				15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
 				79E999F22D4D11790066E0CA /* XCRemoteSwiftPackageReference "Alamofire" */,
+				133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 137153892D26CDCA00EABE10 /* Products */;
@@ -316,10 +323,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
-				DEVELOPMENT_TEAM = L995XJC5CV;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L995XJC5CV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
@@ -337,6 +347,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.teamstaccato.staccato-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "staccato-iOS-dev";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -367,6 +379,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.3.0;
+			};
+		};
 		15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
@@ -386,6 +406,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		133087FC2D66D89800085E6F /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
+		133087FE2D66D89800085E6F /* GooglePlacesSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlacesSwift;
+		};
 		15926B272D2EF06E00026F56 /* GoogleMaps */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;

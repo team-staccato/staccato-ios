@@ -56,7 +56,7 @@ struct HomeView: View {
 extension HomeView {
     
     private var myPageNavigationLink: some View {
-        NavigationLink(destination: TempMyPageView()) {
+        NavigationLink(destination: MyPageView()) {
             Image(systemName: "person.circle.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
@@ -100,15 +100,4 @@ extension HomeView {
         }
     }
     
-}
-
-
-// TODO: 추후 삭제
-struct TempMyPageView: View {
-    var body: some View {
-        Text("My Page")
-            .font(.largeTitle)
-            .fontWeight(.bold)
-            .padding()
-    }
 }

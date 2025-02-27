@@ -34,6 +34,7 @@ enum StaccatoIcon: String {
     // MARK: - Staccato Creation/Update
     case location = "location"
     case minusCircle = "minus.circle"
+    case magnifyingGlass = "magnifyingglass"
 
     // MARK: - MyPage
     case pencilCircleFill = "pencil.circle.fill"

@@ -6,6 +6,7 @@
 //
 
 import GoogleMaps
+import GooglePlacesSwift
 
 import UIKit
 
@@ -18,6 +19,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         let apiKey = Bundle.main.infoDictionary?["API_KEY"] as! String
         GMSServices.provideAPIKey(apiKey)
+        let _ = PlacesClient.provideAPIKey(apiKey)
+
         return true
     }
     

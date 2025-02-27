@@ -27,4 +27,11 @@ extension Date {
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: self)
     }
+
+    var formattedAsFullDateWithHour: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "YYYY년 MM월 dd일 a h시"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: self)
+    }
 }

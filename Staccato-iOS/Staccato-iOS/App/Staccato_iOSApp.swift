@@ -7,8 +7,11 @@
 
 import SwiftUI
 
+import GoogleMaps
+
 @main
 struct Staccato_iOSApp: App {
+    
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     var body: some Scene {
@@ -18,4 +21,5 @@ struct Staccato_iOSApp: App {
             }
         }
     }
+    
 }

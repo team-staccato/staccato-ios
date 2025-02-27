@@ -16,13 +16,21 @@ struct HomeView: View {
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
+    @State private var locationManager = LocationAuthorizationManager.shared
+
+    
+    // MARK: - Instances
+    
+    private let googleMapView = GMSMapViewRepresentable()
+    
     
     // MARK: - Body
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            MapViewControllerBridge()
+            googleMapView
                 .edgesIgnoringSafeArea(.all)
+                .padding(.bottom, modalHeight - 40)
             
             myPageNavigationLink
                 .padding(10)
@@ -30,7 +38,16 @@ struct HomeView: View {
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
         }
+        .onAppear() {
+            locationManager.checkLocationAuthorization()
+        }
+        .onChange(of: locationManager.hasLocationAuthorization) { oldValue, newValue in
+            if newValue {
+                googleMapView.updateLocationForOneSec()
+            }
+        }
     }
+    
 }
 
 
@@ -81,7 +98,6 @@ extension HomeView {
                         }
                 )
         }
-        
     }
     
 }

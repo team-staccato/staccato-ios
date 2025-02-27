@@ -26,3 +26,15 @@ extension ButtonStyle where Self == StaccatoFullWidthButtonStyle {
         .init()
     }
 }
+
+extension ButtonStyle where Self == StaticTextFieldButtonStyle {
+    static func staticTextFieldButtonStyle(
+        icon: StaccatoIcon? = nil,
+        isActive: Binding<Bool> = .constant(false)
+    ) -> StaticTextFieldButtonStyle {
+        .init(
+            icon: icon,
+            isActive: isActive
+        )
+    }
+}

@@ -150,26 +150,35 @@ private extension StaccatoDetailView {
     
     
     var commentSection: some View {
-        Group {
-            if comments.isEmpty {
-                VStack(spacing: 10) {
-                    Image(.staccatoCharacter)
-                    
-                    Text("코멘트가 없어요! 코멘트를 달아보세요.")
-                        .typography(.body2)
-                        .foregroundStyle(.staccatoBlack)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 28)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(comments, id: \.commentId) { comment in
-                        makeCommentView(userId: userId, comment: comment)
+        VStack(alignment: .leading) {
+            Text("코멘트")
+                .typography(.title2)
+                .foregroundStyle(.staccatoBlack)
+            
+            Group {
+                if comments.isEmpty {
+                    VStack(spacing: 10) {
+                        Image(.staccatoCharacter)
+                        
+                        Text("코멘트가 없어요! 코멘트를 달아보세요.")
+                            .typography(.body2)
+                            .foregroundStyle(.staccatoBlack)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 11)
+                    .padding(.bottom, 28)
+                } else {
+                    VStack(spacing: 12) {
+                        ForEach(comments, id: \.commentId) { comment in
+                            makeCommentView(userId: userId, comment: comment)
+                        }
+                    }
+                    .padding(.top, 16)
+                    .padding(.bottom, 22)
                 }
-                .padding(.bottom, 22)
             }
         }
+        .padding(.horizontal, horizontalInset)
     }
     
     var commentTypingView: some View {
@@ -265,8 +274,7 @@ private extension StaccatoDetailView {
                     }
                     profileImage
                 }
-                .padding(.leading, 40)
-                .padding(.trailing, horizontalInset)
+                .padding(.leading, 24)
             } else {
                 HStack(alignment: .top, spacing: 6) {
                     profileImage
@@ -275,8 +283,7 @@ private extension StaccatoDetailView {
                         commentView
                     }
                 }
-                .padding(.leading, horizontalInset)
-                .padding(.trailing, 40)
+                .padding(.trailing, 24)
             }
         }
     }

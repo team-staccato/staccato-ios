@@ -11,8 +11,14 @@ enum FeelingType: CaseIterable, Identifiable {
     
     case excited, angry, happy, scared, sad
     
-    var id: String {
-        return serverKey
+    var id: Int {
+        switch self {
+        case .excited: return 0
+        case .angry: return 1
+        case .happy: return 2
+        case .scared: return 3
+        case .sad: return 4
+        }
     }
     
     var serverKey: String {

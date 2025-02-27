@@ -41,4 +41,7 @@ enum StaccatoIcon: String {
     case squareOnSquare = "square.on.square"
     case chevronRight = "chevron.right"
     case personCircleFill = "person.circle.fill"
+    
+    // MARK: - Staccato Detail
+    case arrowRightCircleFill = "arrow.right.circle.fill"
 }

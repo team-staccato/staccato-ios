@@ -202,9 +202,10 @@ private extension StaccatoDetailView {
                 // TODO: 서버 통신
                 commentText.removeAll()
             } label: {
-                Image(commentText.isEmpty ? .arrowCircleRightDisabled : .arrowCircleRightEnabled)
+                Image(StaccatoIcon.arrowRightCircleFill)
                     .resizable()
                     .scaledToFit()
+                    .foregroundStyle(commentText.isEmpty ? .gray3 : .accent)
                     .frame(width: 30, height: 30)
             }
             .disabled(commentText.isEmpty)

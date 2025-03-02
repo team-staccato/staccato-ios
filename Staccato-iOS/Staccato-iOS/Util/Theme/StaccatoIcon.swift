@@ -34,10 +34,14 @@ enum StaccatoIcon: String {
     // MARK: - Staccato Creation/Update
     case location = "location"
     case minusCircle = "minus.circle"
+    case magnifyingGlass = "magnifyingglass"
 
     // MARK: - MyPage
     case pencilCircleFill = "pencil.circle.fill"
     case squareOnSquare = "square.on.square"
     case chevronRight = "chevron.right"
     case personCircleFill = "person.circle.fill"
+    
+    // MARK: - Staccato Detail
+    case arrowRightCircleFill = "arrow.right.circle.fill"
 }

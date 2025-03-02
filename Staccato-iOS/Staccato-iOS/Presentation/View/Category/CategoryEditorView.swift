@@ -23,7 +23,14 @@ struct CategoryEditorView: View {
     @FocusState private var isDescriptionFocused: Bool
 
     @State private var isPeriodSettingActive = false
-    @State var categoryPeriod: String?
+    @State private var selectedStartDate: Date?
+    @State private var selectedEndDate: Date?
+    
+    private var categoryPeriod: String? {
+        guard let selectedStartDate, let selectedEndDate else { return nil }
+        return "\(selectedStartDate.formattedAsFullDate + " ~ " + selectedEndDate.formattedAsFullDate)" 
+    }
+
     @State private var isPeriodSheetPresented = false
 
     private var isSubmitButtonDisabled: Bool {
@@ -63,10 +70,7 @@ struct CategoryEditorView: View {
         .ignoresSafeArea(.all, edges: .bottom)
 
         .sheet(isPresented: $isPeriodSheetPresented) {
-
-        } content: {
-            // TODO: 달력 구현
-            Text("여기에 달력")
+            StaccatoDatePicker(isDatePickerPresented: $isPeriodSheetPresented, selectedStartDate: $selectedStartDate, selectedEndDate: $selectedEndDate)
         }
     }
 }

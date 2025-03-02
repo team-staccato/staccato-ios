@@ -1,12 +1,15 @@
 import SwiftUI
 
 struct SignInView: View {
-    
+    @StateObject private var viewModel = SignInViewModel()
     @State private var nickName: String = ""
-    @State private var isLoggedIn: Bool = false
+    @State private var validationMessage: String = ""
+    @State private var isChanging: Bool = false
+    @State private var shakeOffset: CGFloat = 0
+    @State private var debounceWorkItem: DispatchWorkItem?
     
-    var isButtonDisabled: Bool {
-        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    private var isButtonDisabled: Bool {
+        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChanging
     }
     
     var body: some View {
@@ -24,29 +27,43 @@ struct SignInView: View {
                     .typography(.body4)
                     .background(.gray1)
                     .cornerRadius(4)
-                    .onChange(of: nickName) { _, newValue in
-                        if newValue.count > 20 {
-                            nickName = String(newValue.prefix(20))
-                        }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(viewModel.isValid ? Color.clear : Color.red, lineWidth: 2)
+                    )
+                    .offset(x: viewModel.isValid ? 0 : shakeOffset)
+                    .onChange(of: nickName) {
+                        isChanging = true
+                        debounceValidation(text: nickName)
                     }
                 
-                Text("\(nickName.count)/20")
-                    .typography(.body4)
-                    .foregroundStyle(.gray3)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.bottom)
+                HStack {
+                    Text(validationMessage)
+                        .typography(.body4)
+                        .foregroundColor(.red)
+                        .opacity(viewModel.isValid ? 0 : 1)
+                    
+                    Spacer()
+                    
+                    Text("\(nickName.count)/20")
+                        .typography(.body4)
+                        .foregroundStyle(.gray3)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.bottom)
+                }
                 
                 Button("시작하기") {
-                    login(nickname: nickName)
+                    Task {
+                        do {
+                            try await viewModel.login(nickName: nickName)
+                        } catch {
+                            print(error)
+                        }
+                    }
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
-                .disabled(isButtonDisabled)
-                
-                NavigationLink(value: isLoggedIn) {
-                    EmptyView()
-                }
-                .hidden()
+                .disabled(isButtonDisabled || !viewModel.isValid)
                 
                 NavigationLink(destination: RecoverAccountView()) {
                     Text("이전 기록을 불러오려면 여기를 눌러주세요")
@@ -57,32 +74,56 @@ struct SignInView: View {
                 .padding(.vertical)
             }
             .padding(.horizontal, 24)
-            .navigationDestination(isPresented: $isLoggedIn) {
+            .navigationDestination(isPresented: $viewModel.isLoggedIn) {
                 HomeView()
             }
         }
-    }
-}
-
-extension SignInView {
-    func login(nickname: String) {
-        NetworkService.shared.request(
-            endpoint: AuthorizationAPI.login(nickname: nickname),
-            responseType: LoginResponse.self
-        ) { result in
-            switch result {
-            case .success(let response):
-                AuthTokenManager.shared.saveToken(response.token)
-                DispatchQueue.main.async {
-                    self.isLoggedIn = true
-                }
-            case .failure(let error):
-                print("로그인 실패: \(error.localizedDescription)")
-            }
+        .alert(isPresented: Binding<Bool>(
+            get: { viewModel.errorMessage != nil },
+            set: { _ in viewModel.errorMessage = nil }
+        )) {
+            Alert(
+                title: Text("로그인 실패"),
+                message: Text(viewModel.errorMessage ?? "알 수 없는 오류"),
+                dismissButton: .default(Text("확인"))
+            )
         }
     }
 }
 
 #Preview {
     SignInView()
+}
+
+//MARK: Animation
+extension SignInView {
+    private func shakeAnimation() {
+        let shakeValues: [CGFloat] = [0, -10, 10, -8, 8, -5, 5, 0]
+        for (index, value) in shakeValues.enumerated() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05 * Double(index)) {
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
+                    shakeOffset = value
+                }
+            }
+        }
+    }
+}
+
+//MARK: Debounce
+extension SignInView {
+    private func debounceValidation(text: String) {
+        debounceWorkItem?.cancel()
+        let workItem = DispatchWorkItem {
+            viewModel.validateText(nickName: text)
+            if !viewModel.isValid {
+                shakeAnimation()
+                validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
+            } else {
+                validationMessage = ""
+            }
+            isChanging = false
+        }
+        debounceWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
+    }
 }

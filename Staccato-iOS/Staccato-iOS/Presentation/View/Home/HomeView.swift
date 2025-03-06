@@ -18,6 +18,7 @@ struct HomeView: View {
     
     @State private var locationManager = LocationAuthorizationManager.shared
 
+    @State private var categoryNavigationState = CategoryNavigationState()
     
     // MARK: - Instances
     
@@ -96,7 +97,8 @@ extension HomeView {
     
     private var staccatoAddButton: some View {
         Button {
-            print("staccatoAddbuttonTapped")
+            categoryNavigationState.navigate(to: .staccatoAdd)
+            // TODO: modal fullScreen mode
         } label: {
             Image(.plus)
                 .resizable()
@@ -114,7 +116,7 @@ extension HomeView {
         VStack {
             Spacer()
             
-            CategoryListView()
+            CategoryListView(categoryNavigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))

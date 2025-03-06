@@ -73,7 +73,7 @@ extension HomeView {
         Button {
             isMyPagePresented = true
         } label: {
-            Image(systemName: "person.circle.fill")
+            Image(.personCircleFill)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40, height: 40)

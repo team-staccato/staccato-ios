@@ -39,6 +39,11 @@ struct HomeView: View {
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .topTrailing)
             
+            staccatoAddButton
+                .padding(.trailing, 12)
+                .padding(.bottom, modalHeight - 20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
         }
@@ -89,6 +94,22 @@ extension HomeView {
         .shadow(radius: 2)
     }
     
+    private var staccatoAddButton: some View {
+        Button {
+            print("staccatoAddbuttonTapped")
+        } label: {
+            Image(.plus)
+                .resizable()
+                .fontWeight(.bold)
+                .frame(width: 25, height: 25)
+                .foregroundStyle(.white)
+        }
+        .frame(width: 48, height: 48)
+        .background(.accent)
+        .clipShape(.circle)
+        .shadow(radius: 4, y: 4)
+    }
+    
     private var categoryListModal: some View {
         VStack {
             Spacer()
@@ -97,7 +118,7 @@ extension HomeView {
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
-                .shadow(radius: 5)
+                .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
                 .gesture(
                     DragGesture()
                         .onChanged { value in

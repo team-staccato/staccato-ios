@@ -11,8 +11,8 @@ import SwiftUI
 
 struct HomeView: View {
     
-    // MARK: - State for Modal
-    
+    // MARK: - Properties
+    // NOTE: 모달
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
@@ -20,7 +20,8 @@ struct HomeView: View {
     @State private var isMyPagePresented = false
     @State private var categoryNavigationState = CategoryNavigationState()
     
-    // MARK: - Instances
+    // NOTE: 위치 접근 권한
+    @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
     
     private let googleMapView = GMSMapViewRepresentable()
     
@@ -49,9 +50,9 @@ struct HomeView: View {
                 .edgesIgnoringSafeArea(.bottom)
         }
         .onAppear() {
-            locationManager.checkLocationAuthorization()
+            locationAuthorizationManager.checkLocationAuthorization()
         }
-        .onChange(of: locationManager.hasLocationAuthorization) { oldValue, newValue in
+        .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
                 googleMapView.updateLocationForOneSec()
             }

@@ -35,6 +35,10 @@ struct HomeView: View {
             myPageNavigationLink
                 .padding(10)
             
+            myLocationButton
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .topTrailing)
+            
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
         }
@@ -68,6 +72,21 @@ extension HomeView {
                     Circle().stroke(Color.white, lineWidth: 2)
                 }
         }
+    }
+    
+    private var myLocationButton: some View {
+        Button {
+            googleMapView.updateLocationForOneSec()
+        } label: {
+            Image(.dotScope)
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.gray4)
+        }
+        .frame(width: 38, height: 38)
+        .background(.white)
+        .clipShape(.circle)
+        .shadow(radius: 2)
     }
     
     private var categoryListModal: some View {

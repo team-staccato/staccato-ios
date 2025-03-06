@@ -16,8 +16,8 @@ struct HomeView: View {
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
-    @State private var locationManager = LocationAuthorizationManager.shared
-
+    // NOTE: 화면 전환
+    @State private var isMyPagePresented = false
     @State private var categoryNavigationState = CategoryNavigationState()
     
     // MARK: - Instances
@@ -33,7 +33,7 @@ struct HomeView: View {
                 .edgesIgnoringSafeArea(.all)
                 .padding(.bottom, modalHeight - 40)
             
-            myPageNavigationLink
+            myPageButton
                 .padding(10)
             
             myLocationButton
@@ -56,6 +56,9 @@ struct HomeView: View {
                 googleMapView.updateLocationForOneSec()
             }
         }
+        .fullScreenCover(isPresented: $isMyPagePresented) {
+            MyPageView()
+        }
     }
     
 }
@@ -65,8 +68,10 @@ struct HomeView: View {
 
 extension HomeView {
     
-    private var myPageNavigationLink: some View {
-        NavigationLink(destination: MyPageView()) {
+    private var myPageButton: some View {
+        Button {
+            isMyPagePresented = true
+        } label: {
             Image(systemName: "person.circle.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)

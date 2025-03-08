@@ -42,7 +42,7 @@ final class NetworkService {
                 completion(.success(data))
             case .failure(let error):
                 logErrorResponse(response, error)
-                completion(.failure(ErrorHandler.handleError(response.response)))
+                completion(.failure(ErrorHandler.handleError(response.response, response.data)))
             }
         }
         

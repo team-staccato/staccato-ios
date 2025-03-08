@@ -40,53 +40,54 @@ struct ImageSliderWithDot: View {
     // MARK: - UI Components
     
     var imageSlider: some View {
-            HStack(spacing: 0) {
-                ForEach(images.indices, id: \.self) { index in
-                    images[index]
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: imageWidth, height: imageHeight)
-                        .clipped()
-                }
+        HStack(spacing: 0) {
+            ForEach(images.indices, id: \.self) { index in
+                images[index]
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: imageWidth, height: imageHeight)
+                    .clipped()
             }
-            .frame(width: imageWidth, alignment: .leading)
-            .offset(x: -CGFloat(currentIndex) * imageWidth + offset)
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        offset = value.translation.width
-                    }
-                    .onEnded { value in
-                        let dragAmount = value.translation.width
-                        // 왼쪽으로 스와이프
-                        if dragAmount < -minimumDragDistance && currentIndex < images.count - 1 {
-                            withAnimation {
-                                currentIndex += 1
-                            }
-                        }
-                        // 오른쪽으로 스와이프
-                        if dragAmount > minimumDragDistance && currentIndex > 0 {
-                            withAnimation {
-                                currentIndex -= 1
-                            }
-                        }
-                        // 오프셋 초기화
+        }
+        .frame(width: imageWidth, alignment: .leading)
+        .offset(x: -CGFloat(currentIndex) * imageWidth + offset)
+        .gesture(
+            DragGesture()
+                .onChanged { value in
+                    offset = value.translation.width
+                }
+                .onEnded { value in
+                    let dragAmount = value.translation.width
+                    // 왼쪽으로 스와이프
+                    if dragAmount < -minimumDragDistance && currentIndex < images.count - 1 {
                         withAnimation {
-                            offset = 0
+                            currentIndex += 1
                         }
                     }
-            )
+                    // 오른쪽으로 스와이프
+                    if dragAmount > minimumDragDistance && currentIndex > 0 {
+                        withAnimation {
+                            currentIndex -= 1
+                        }
+                    }
+                    // 오프셋 초기화
+                    withAnimation {
+                        offset = 0
+                    }
+                }
+        )
     }
     
     var dotCarousel: some View {
         HStack(spacing: 5) {
             ForEach(0..<images.count, id: \.self) { index in
                 Circle()
-                    .fill(currentIndex == index ? Color.gray3 : Color.gray2)
+                    .fill(currentIndex == index ? .gray3 : .gray2)
                     .frame(width: 6, height: 6)
             }
         }
     }
+    
 }
 
 

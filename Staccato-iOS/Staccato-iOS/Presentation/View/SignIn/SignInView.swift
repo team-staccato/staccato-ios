@@ -3,7 +3,8 @@ import SwiftUI
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
     @State private var nickName: String = ""
-    @State private var validationMessage: String = ""
+    @State private var errorMessage: String?
+    @State private var validationMessage: String?
     @State private var isChanging: Bool = false
     @State private var shakeOffset: CGFloat = 0
     @State private var debounceWorkItem: DispatchWorkItem?
@@ -38,7 +39,7 @@ struct SignInView: View {
                     }
                 
                 HStack {
-                    Text(validationMessage)
+                    Text(validationMessage ?? "")
                         .typography(.body4)
                         .foregroundColor(.red)
                         .opacity(viewModel.isValid ? 0 : 1)
@@ -53,13 +54,7 @@ struct SignInView: View {
                 }
                 
                 Button("시작하기") {
-                    Task {
-                        do {
-                            try await viewModel.login(nickName: nickName)
-                        } catch {
-                            print(error)
-                        }
-                    }
+                    login()
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
@@ -79,12 +74,12 @@ struct SignInView: View {
             }
         }
         .alert(isPresented: Binding<Bool>(
-            get: { viewModel.errorMessage != nil },
-            set: { _ in viewModel.errorMessage = nil }
+            get: { errorMessage != nil },
+            set: { _ in errorMessage = nil }
         )) {
             Alert(
                 title: Text("로그인 실패"),
-                message: Text(viewModel.errorMessage ?? "알 수 없는 오류"),
+                message: Text(errorMessage ?? "알 수 없는 오류"),
                 dismissButton: .default(Text("확인"))
             )
         }
@@ -93,6 +88,26 @@ struct SignInView: View {
 
 #Preview {
     SignInView()
+}
+
+//MARK: Login
+extension SignInView {
+    private func login() {
+        Task {
+            do {
+                let _ = try await viewModel.login(nickName: nickName)
+            } catch let error as NetworkError {
+                switch error {
+                case .badRequest(let message):
+                    errorMessage = message
+                default:
+                    errorMessage = error.description
+                }
+            } catch {
+                errorMessage = "알 수 없는 오류"
+            }
+        }
+    }
 }
 
 //MARK: Animation

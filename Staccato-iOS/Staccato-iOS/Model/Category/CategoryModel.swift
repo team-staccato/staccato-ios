@@ -7,16 +7,18 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct CategoryModel: Identifiable {
     
-    let id: Int
+    let id: Int64
     
-    let thumbNail: Image?
+    let thumbNailURL: String?
     
     let title: String
     
-    let startAt: String
+    let startAt: String?
     
-    let endAt: String
+    let endAt: String?
     
 }

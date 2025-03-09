@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct CategoryListCell: View {
     
     var categoryInfo: CategoryModel
@@ -65,18 +67,28 @@ private extension CategoryListCell {
             .foregroundColor(.staccatoBlack)
     }
     
+    @ViewBuilder
     var periodLabel: some View {
-        Text(categoryInfo.startAt + " ~ " + categoryInfo.endAt)
-            .typography(.body4)
-            .foregroundStyle(.staccatoBlack)
+        if let startAt: String = categoryInfo.startAt,
+           let endAt: String = categoryInfo.endAt {
+            Text(startAt + " ~ " + endAt)
+                .typography(.body4)
+                .foregroundStyle(.staccatoBlack)
+        }
     }
     
+    @ViewBuilder
     var thumbnailImage: some View {
-        categoryInfo.thumbNail?
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 100, height: 78)
-            .clipped()
+        if let thumbnailURL: String = categoryInfo.thumbNailURL {
+            KFImage(URL(string: thumbnailURL))
+                .resizable()
+                .placeholder {
+                    ProgressView()
+                }
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 100, height: 78)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+        }
     }
     
 }
@@ -88,7 +100,7 @@ private extension CategoryListCell {
     CategoryListCell(
         CategoryModel(
             id: 1,
-            thumbNail: Image(uiImage: .staccatoCharacter),
+            thumbNailURL: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcR0tFzso1HmfFFy1kXeevUflb-F0c5uHZeH5Iqj10Eyu-1FFkJlBuHroyURFRao_3Mmi0b6HaUNP2Vt_jA4pRu4DeckXegB-3yxeFbI084",
             title: "제주도 가족 여행",
             startAt: "2024.8.16",
             endAt: "2024.8.20"

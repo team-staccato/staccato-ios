@@ -7,6 +7,8 @@
 
 import Foundation
 
+import Alamofire
+
 enum AuthorizationAPI: APIEndpoint {
     
     case login(nickname: String)
@@ -18,10 +20,10 @@ enum AuthorizationAPI: APIEndpoint {
         }
     }
     
-    var method: String {
+    var method: HTTPMethod {
         switch self {
         case .login:
-            return "POST"
+            return .post
         }
     }
     
@@ -42,4 +44,5 @@ enum AuthorizationAPI: APIEndpoint {
             ]
         }
     }
+    
 }

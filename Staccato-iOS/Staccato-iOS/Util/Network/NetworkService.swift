@@ -25,7 +25,7 @@ final class NetworkService {
             return
         }
         
-        let method = HTTPMethod(rawValue: endpoint.method)
+        let method = endpoint.method
         let parameters = endpoint.parameters
         let headers = HTTPHeaders(endpoint.headers ?? [:])
         
@@ -60,7 +60,7 @@ final class NetworkService {
 
 protocol APIEndpoint {
     var path: String { get }
-    var method: String { get }
+    var method: HTTPMethod { get }
     var parameters: [String: Any]? { get }
     var headers: [String: String]? { get }
 }

@@ -7,7 +7,7 @@ struct SignInView: View {
     @State private var validationMessage: String?
     @State private var isChanging: Bool = false
     @State private var shakeOffset: CGFloat = 0
-    @State private var debounceWorkItem: DispatchWorkItem?
+    @State private var validationTask: Task<Void, Never>?
     
     private var isButtonDisabled: Bool {
         nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChanging
@@ -34,8 +34,12 @@ struct SignInView: View {
                     )
                     .offset(x: viewModel.isValid ? 0 : shakeOffset)
                     .onChange(of: nickName) {
-                        isChanging = true
-                        debounceValidation(text: nickName)
+                        if nickName.count > 20 {
+                            nickName = String(nickName.prefix(20))
+                        } else {
+                            isChanging = true
+                            debounceValidation(text: nickName)
+                        }
                     }
                 
                 HStack {
@@ -127,18 +131,23 @@ extension SignInView {
 //MARK: Debounce
 extension SignInView {
     private func debounceValidation(text: String) {
-        debounceWorkItem?.cancel()
-        let workItem = DispatchWorkItem {
-            viewModel.validateText(nickName: text)
-            if !viewModel.isValid {
-                shakeAnimation()
-                validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
-            } else {
-                validationMessage = ""
+        isChanging = true
+        validationTask?.cancel() // 기존 Task 취소
+        
+        validationTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초 대기
+            if Task.isCancelled { return } // Task가 취소되었으면 종료
+            
+            await MainActor.run {
+                viewModel.validateText(nickName: text)
+                if !viewModel.isValid {
+                    shakeAnimation()
+                    validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
+                } else {
+                    validationMessage = ""
+                }
+                isChanging = false
             }
-            isChanging = false
         }
-        debounceWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
     }
 }

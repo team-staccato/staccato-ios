@@ -9,8 +9,7 @@ import SwiftUI
 
 struct CategoryListView: View {
     
-    let viewModel = CategoryListViewModel()
-    
+    @StateObject private var viewModel = CategoryListViewModel()
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     

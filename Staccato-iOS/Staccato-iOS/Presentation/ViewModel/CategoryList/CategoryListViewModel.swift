@@ -6,13 +6,12 @@
 //
 
 import SwiftUI
-import Observation
 
-@Observable final class CategoryListViewModel {
+final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Properties
     
-    var userName: String = "UserName"
+    @Published var userName: String = "UserName" // TODO: API 연결
     
     @Published var categories: [CategoryModel] = []
     

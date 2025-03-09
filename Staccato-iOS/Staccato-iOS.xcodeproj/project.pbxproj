@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		133087FD2D66D89800085E6F /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 133087FC2D66D89800085E6F /* GooglePlaces */; };
 		133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 133087FE2D66D89800085E6F /* GooglePlacesSwift */; };
+		151667772D7DEA9700F7F956 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 151667762D7DEA9700F7F956 /* Kingfisher */; };
 		15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 15926B272D2EF06E00026F56 /* GoogleMaps */; };
 		79E999F42D4D11790066E0CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 79E999F32D4D11790066E0CA /* Alamofire */; };
 /* End PBXBuildFile section */
@@ -47,6 +48,7 @@
 				15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */,
 				79E999F42D4D11790066E0CA /* Alamofire in Frameworks */,
 				133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */,
+				151667772D7DEA9700F7F956 /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +95,7 @@
 				79E999F32D4D11790066E0CA /* Alamofire */,
 				133087FC2D66D89800085E6F /* GooglePlaces */,
 				133087FE2D66D89800085E6F /* GooglePlacesSwift */,
+				151667762D7DEA9700F7F956 /* Kingfisher */,
 			);
 			productName = "Staccato-iOS";
 			productReference = 137153882D26CDCA00EABE10 /* Staccato-iOS.app */;
@@ -126,6 +129,7 @@
 				15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
 				79E999F22D4D11790066E0CA /* XCRemoteSwiftPackageReference "Alamofire" */,
 				133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
+				151667752D7DEA9700F7F956 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 137153892D26CDCA00EABE10 /* Products */;
@@ -387,6 +391,14 @@
 				minimumVersion = 9.3.0;
 			};
 		};
+		151667752D7DEA9700F7F956 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.3.0;
+			};
+		};
 		15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
@@ -415,6 +427,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
 			productName = GooglePlacesSwift;
+		};
+		151667762D7DEA9700F7F956 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 151667752D7DEA9700F7F956 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		15926B272D2EF06E00026F56 /* GoogleMaps */ = {
 			isa = XCSwiftPackageProductDependency;

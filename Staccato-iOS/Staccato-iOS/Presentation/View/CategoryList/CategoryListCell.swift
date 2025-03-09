@@ -12,6 +12,8 @@ import Kingfisher
 struct CategoryListCell: View {
     
     var categoryInfo: CategoryModel
+    @State private var isLoading = true
+    @State private var image: Image?
     
     init(_ categoryInfo: CategoryModel) {
         self.categoryInfo = categoryInfo
@@ -79,21 +81,93 @@ private extension CategoryListCell {
     
     @ViewBuilder
     var thumbnailImage: some View {
-        if let thumbnailURL: String = categoryInfo.thumbNailURL {
-            KFImage(URL(string: thumbnailURL))
-                .resizable()
-                .placeholder {
-                    ProgressView()
-                }
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 100, height: 78)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+        if let thumbnailURL = categoryInfo.thumbNailURL,
+           let url = URL(string: thumbnailURL) {
+            ThumbnailImageView(url: url)
         }
     }
     
 }
 
 
+// MARK: - Image Loading State
+
+private enum ImageLoadingState {
+    case loading
+    case loaded(Image)
+    case failed
+    
+    var view: some View {
+        switch self {
+        case .loading:
+            return AnyView(ProgressView())
+        case .loaded(let image):
+            return AnyView(
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            )
+        case .failed:
+            return AnyView(
+                ImageLoadingErrorView()
+            )
+        }
+    }
+}
+
+
+// MARK: - Error View
+
+private struct ImageLoadingErrorView: View {
+    var body: some View {
+        ZStack {
+            Image(.photoBadgeExclamationmark)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+                .foregroundColor(.white)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.gray2)
+    }
+}
+
+
+// MARK: - Thumbnail Image View
+
+private struct ThumbnailImageView: View {
+    
+    private let url: URL
+    @State private var loadingState: ImageLoadingState = .loading
+    
+    init(url: URL) {
+        self.url = url
+    }
+    
+    var body: some View {
+        loadingState.view
+            .frame(width: 100, height: 76)
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .task {
+                await loadImage()
+            }
+    }
+    
+    private func loadImage() async {
+        do {
+            let result = try await KingfisherManager.shared.retrieveImage(with: url)
+            await MainActor.run {
+                loadingState = .loaded(Image(uiImage: result.image))
+            }
+        } catch {
+            await MainActor.run {
+                loadingState = .failed
+            print("😢 Failed to load thumbnail: \(error)")
+            }
+        }
+    }
+    
+}
 
 
 #Preview {

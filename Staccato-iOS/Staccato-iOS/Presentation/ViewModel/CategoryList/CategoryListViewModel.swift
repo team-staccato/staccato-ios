@@ -18,7 +18,7 @@ final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Networking
     
-    func getCategoryList(filters: CategoryFilterType?, sort: CategorySortType?) {
+    func getCategoryList(filters: CategoryListFilterType?, sort: CategoryListSortType?) {
         STService.shared.categoryServie.getCategoryList(
             GetCategoryListRequestQuery(
                 filters: filters?.serverKey,

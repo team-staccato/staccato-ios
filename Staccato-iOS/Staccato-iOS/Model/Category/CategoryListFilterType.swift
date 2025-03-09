@@ -7,13 +7,28 @@
 
 import Foundation
 
-enum CategoryListFilterType {
+enum CategoryListFilterType: CaseIterable, Identifiable {
     
-    case term
+    case all, term
     
-    var serverKey: String {
+    var id: Int {
         switch self {
+        case .all: return 0
+        case .term: return 1
+        }
+    }
+    
+    var serverKey: String? {
+        switch self {
+        case .all: return nil
         case .term: return "TERM"
+        }
+    }
+    
+    var text: String {
+        switch self {
+        case .all: return "전체 보기"
+        case .term: return "기간 설정된 카테고리만 보기"
         }
     }
     

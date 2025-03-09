@@ -37,6 +37,9 @@ struct CategoryListView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.getCategoryList(filters: nil, sort: nil)
+        }
     }
     
 }

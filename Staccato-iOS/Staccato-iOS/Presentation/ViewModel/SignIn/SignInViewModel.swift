@@ -33,7 +33,7 @@ extension SignInViewModel {
     
     // 한글, 영어, 마침표, 언더바(_)만 허용
     func validateText(nickName: String) {
-        let regex = "^[가-힣a-zA-Z._]{1,\(20)}$"
+        let regex = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z._]{1,\(20)}$"
         isValid = NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: nickName)
     }
 }

@@ -27,6 +27,12 @@ enum AuthorizationAPI: APIEndpoint {
         }
     }
     
+    var encoding: any Alamofire.ParameterEncoding {
+        switch self {
+        case .login: return JSONEncoding.default
+        }
+    }
+    
     var parameters: [String: Any]? {
         switch self {
         case .login(nickname: let nickname):

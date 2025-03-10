@@ -28,6 +28,12 @@ extension CategoryEndpoint: APIEndpoint {
         }
     }
     
+    var encoding: any Alamofire.ParameterEncoding {
+        switch self {
+        case .getCategoryList: return URLEncoding.queryString
+        }
+    }
+    
     var parameters: [String : Any]? {
         switch self {
         case .getCategoryList(let query):

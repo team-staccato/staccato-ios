@@ -15,14 +15,26 @@ final class CategoryListViewModel: ObservableObject {
     
     @Published var categories: [CategoryModel] = []
     
+    @Published var filterSelection: CategoryListFilterType = .all {
+        didSet {
+            getCategoryList()
+        }
+    }
+    
+    @Published var sortSelection: CategoryListSortType = .recentlyUpdated {
+        didSet {
+            getCategoryList()
+        }
+    }
+    
     
     // MARK: - Networking
     
-    func getCategoryList(filters: CategoryListFilterType?, sort: CategoryListSortType?) {
+    func getCategoryList() {
         STService.shared.categoryServie.getCategoryList(
             GetCategoryListRequestQuery(
-                filters: filters?.serverKey,
-                sort: sort?.serverKey
+                filters: filterSelection.serverKey,
+                sort: sortSelection.serverKey
             )
         ) { [weak self] response in
             guard let self = self else {

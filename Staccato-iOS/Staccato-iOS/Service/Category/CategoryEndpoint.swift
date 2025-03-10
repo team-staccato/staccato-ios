@@ -50,7 +50,7 @@ extension CategoryEndpoint: APIEndpoint {
     
     var headers: [String : String]? {
         switch self {
-        case .getCategoryList: return HeaderType.token()
+        case .getCategoryList: return HeaderType.tokenOnly()
         }
     }
     

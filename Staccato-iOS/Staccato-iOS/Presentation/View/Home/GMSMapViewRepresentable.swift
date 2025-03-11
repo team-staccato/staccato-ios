@@ -12,7 +12,7 @@ import SwiftUI
 
 struct GMSMapViewRepresentable: UIViewRepresentable {
     
-    private let locationManager = CLLocationManager()
+    @ObservedObject var viewModel: HomeViewModel
     private let mapView = GMSMapView(frame: .zero)
     
     init(_ viewModel: HomeViewModel) {

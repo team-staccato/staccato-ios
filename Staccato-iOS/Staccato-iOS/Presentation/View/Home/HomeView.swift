@@ -14,7 +14,13 @@ struct HomeView: View {
     // MARK: - Properties
     //NOTE: 뷰모델
     @StateObject private var viewModel = HomeViewModel()
-    // NOTE: 모달
+    
+    // NOTE: 뷰
+    private var mapView: GMSMapViewRepresentable {
+        GMSMapViewRepresentable(viewModel)
+    }
+    
+    // NOTE: 모달 크기
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
@@ -24,16 +30,14 @@ struct HomeView: View {
     // NOTE: 위치 접근 권한
     @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
     
-    private let googleMapView = GMSMapViewRepresentable()
-    
     
     // MARK: - Body
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            googleMapView
+            mapView
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40)
+                .padding(.bottom, modalHeight - 40) // TODO: 리팩토링 - 모달 크기 바뀔 때마다 updateUIView 호출됨
             
             myPageButton
                 .padding(10)

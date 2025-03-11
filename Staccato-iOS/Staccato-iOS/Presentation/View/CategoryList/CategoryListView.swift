@@ -10,15 +10,26 @@ import SwiftUI
 struct CategoryListView: View {
     
     @StateObject private var viewModel = CategoryListViewModel()
+    @State private var navigationState: CategoryNavigationState
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
+    
+    
+    // MARK: - Initializer
+    
+    init(_ navigationState: CategoryNavigationState) {
+        self.navigationState = navigationState
+    }
+    
+    
+    // MARK: - Body
     
     var body: some View {
         VStack {
             modalTop
             
-            NavigationStack {
+            NavigationStack(path: $navigationState.path) {
                 VStack(spacing: 0) {
                     titleHStack
                         .padding(.top, 22)
@@ -27,13 +38,12 @@ struct CategoryListView: View {
                 }
                 .background(Color.white)
                 .padding(.horizontal, 18)
-                .navigationDestination(isPresented: $isDetailPresented) {
-                    if let category = selectedCategory {
-                        // TODO: category 바인딩
-                        CategoryDetailView()
-                            .onDisappear {
-                                isDetailPresented = false
-                            }
+                .navigationDestination(for: CategoryNavigationDestination.self) { destination in
+                    switch destination {
+                    case .staccatoDetail: StaccatoDetailView()
+                    case .staccatoAdd: StaccatoCreateView()
+                    case .categoryDetail: CategoryDetailView()
+                    case .categoryAdd: CategoryEditorView()
                     }
                 }
             }
@@ -43,13 +53,6 @@ struct CategoryListView: View {
         }
     }
     
-}
-
-
-// MARK: - Preview
-
-#Preview {
-    CategoryListView()
 }
 
 
@@ -116,7 +119,8 @@ private extension CategoryListView {
     
     var categoryAddButton: some View {
         Button("추가") {
-            print("추가 버튼 클릭됨")
+            navigationState.navigate(to: .categoryAdd)
+            // TODO: modal fullScreen mode
         }
         .buttonStyle(.staccatoCapsule(
             icon: .folderFillBadgePlus,
@@ -134,7 +138,7 @@ private extension CategoryListView {
                 ForEach(viewModel.categories, id: \.id) { categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
-                        isDetailPresented = true
+                        navigationState.navigate(to: .categoryDetail)
                     } label: {
                         CategoryListCell(categoryInfo)
                     }

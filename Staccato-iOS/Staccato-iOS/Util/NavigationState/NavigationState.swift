@@ -10,7 +10,7 @@ import Observation
 
 // MARK: - Destinations
 
-enum CategoryNavigationDestination: Hashable {
+enum HomeModalNavigationDestination: Hashable {
     case staccatoDetail(_ staccatoID: Int64)
     case staccatoAdd
     case categoryDetail
@@ -21,11 +21,11 @@ enum CategoryNavigationDestination: Hashable {
 // MARK: - Navigation States
 
 @Observable
-class CategoryNavigationState {
+class HomeModalNavigationState {
     var path = NavigationPath()
-    var lastDestination: CategoryNavigationDestination?
+    var lastDestination: HomeModalNavigationDestination?
     
-    func navigate(to destination: CategoryNavigationDestination) {
+    func navigate(to destination: HomeModalNavigationDestination) {
         // NOTE: 지도 마커 클릭하여 스타카토 -> 스타카토로 가는 경우, 스타카토 경로를 누적하지 않음
         if case .staccatoDetail = destination,
            case .staccatoDetail = lastDestination {

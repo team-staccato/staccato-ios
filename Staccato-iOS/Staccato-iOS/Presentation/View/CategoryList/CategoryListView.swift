@@ -10,7 +10,7 @@ import SwiftUI
 struct CategoryListView: View {
     
     @StateObject private var viewModel = CategoryListViewModel()
-    @State private var navigationState: CategoryNavigationState
+    @State private var navigationState: HomeModalNavigationState
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
@@ -18,7 +18,7 @@ struct CategoryListView: View {
     
     // MARK: - Initializer
     
-    init(_ navigationState: CategoryNavigationState) {
+    init(_ navigationState: HomeModalNavigationState) {
         self.navigationState = navigationState
     }
     
@@ -38,7 +38,7 @@ struct CategoryListView: View {
                 }
                 .background(Color.white)
                 .padding(.horizontal, 18)
-                .navigationDestination(for: CategoryNavigationDestination.self) { destination in
+                .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail: StaccatoDetailView()
                     case .staccatoAdd: StaccatoCreateView()

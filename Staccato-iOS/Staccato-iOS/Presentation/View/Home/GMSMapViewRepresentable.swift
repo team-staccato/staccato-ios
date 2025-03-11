@@ -12,7 +12,6 @@ import SwiftUI
 struct GMSMapViewRepresentable: UIViewRepresentable {
     
     @ObservedObject var viewModel: HomeViewModel
-    @State private var isAddingMarkers: Bool = false
     
     private let mapView = GMSMapView()
     

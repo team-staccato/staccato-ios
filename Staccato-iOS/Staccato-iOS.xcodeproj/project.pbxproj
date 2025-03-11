@@ -332,8 +332,8 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
-        DEVELOPMENT_TEAM = L995XJC5CV;
-        "DEVELOPMENT_TEAM[sdk=iphoneos*]" = L995XJC5CV;
+				DEVELOPMENT_TEAM = L995XJC5CV;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L995XJC5CV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CategoryListSortFilterView: View {
+    
     @Binding var sortSelection: CategoryListSortType
     @Binding var filterSelection: CategoryListFilterType
     @Binding var isPresented: Bool
@@ -41,7 +42,7 @@ struct CategoryListSortFilterView: View {
 
 extension CategoryListSortFilterView {
     
-    // MARK: - Headers
+    // MARK: - Header, Divider
     
     func makeHeader(text: String) -> some View {
         HStack {
@@ -124,12 +125,4 @@ extension CategoryListSortFilterView {
         }
     }
     
-}
-
-
-// MARK: -  Preview
-struct CategoryListView_Previews: PreviewProvider {
-    static var previews: some View {
-        CategoryListView()
-    }
 }

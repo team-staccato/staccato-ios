@@ -15,20 +15,13 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     private let locationManager = CLLocationManager()
     private let mapView = GMSMapView(frame: .zero)
     
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
+    init(_ viewModel: HomeViewModel) {
+        self.viewModel = viewModel
     }
     
     func makeUIView(context: Context) -> GMSMapView {
-        // locationManager 설정
-        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
-        locationManager.delegate = context.coordinator
-        
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-            locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 1초 뒤 업데이트 멈춤
-        }
+        // locationManager delegate
+        viewModel.locationManager.delegate = context.coordinator
         
         // mapView 설정
         mapView.settings.myLocationButton = false // 우측아래 내위치 버튼 숨김

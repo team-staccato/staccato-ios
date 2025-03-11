@@ -31,7 +31,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         }
         
         // mapView 설정
-        mapView.settings.myLocationButton = true // 우측아래 내위치
+        mapView.settings.myLocationButton = false // 우측아래 내위치 버튼 숨김
         mapView.isMyLocationEnabled = true // 내위치 파란점으로 표시
         
         return mapView

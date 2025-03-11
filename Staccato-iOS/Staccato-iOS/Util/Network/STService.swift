@@ -18,4 +18,6 @@ class STService {
     
     lazy var categoryServie = CategoryService()
     
+    lazy var staccatoService = StaccatoService()
+    
 }

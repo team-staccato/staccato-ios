@@ -9,19 +9,20 @@ import SwiftUI
 
 struct CategoryListView: View {
     
-    let viewModel = CategoryListViewModel()
-    
+    @StateObject private var viewModel = CategoryListViewModel()
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
+    @State private var isSortFilterMenuPresented: Bool = false
     
     var body: some View {
         VStack {
             modalTop
             
             NavigationStack {
-                VStack {
+                VStack(spacing: 0) {
                     titleHStack
-                        .padding(.top, 23)
+                        .padding(.top, 22)
+                        .padding(.bottom, 12)
                     categoryList
                 }
                 .background(Color.white)
@@ -36,6 +37,9 @@ struct CategoryListView: View {
                     }
                 }
             }
+        }
+        .onAppear {
+            viewModel.getCategoryList()
         }
     }
     
@@ -66,15 +70,47 @@ private extension CategoryListView {
     // MARK: - TitleView
     
     var titleHStack: some View {
-        HStack {
+        VStack(alignment: .leading) {
             Text("\(viewModel.userName)의 추억들")
                 .typography(.title1)
-            Spacer()
             
-            HStack(spacing: 5) {
+            HStack {
+                categorySortFilterButton
+                Spacer()
                 categoryAddButton
-                categorySortButton
             }
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    var categorySortFilterButton: some View {
+        Button {
+            isSortFilterMenuPresented.toggle()
+        } label: {
+            HStack(spacing: 4) {
+                Image(.sliderHorizontal3)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                Text("정렬/필터")
+                    .typography(.body3)
+                Image(.arrowtriangleDownFill)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 6, height: 6)
+            }
+            .foregroundStyle(.gray3)
+        }
+        .popover(
+            isPresented: $isSortFilterMenuPresented,
+            attachmentAnchor: .point(.bottom),
+            arrowEdge: .top
+        ) {
+            CategoryListSortFilterView(
+                sortSelection: $viewModel.sortSelection,
+                filterSelection: $viewModel.filterSelection,
+                isPresented: $isSortFilterMenuPresented)
+            .presentationCompactAdaptation(.popover)
         }
     }
     
@@ -83,19 +119,8 @@ private extension CategoryListView {
             print("추가 버튼 클릭됨")
         }
         .buttonStyle(.staccatoCapsule(
-            icon: .folderFill,
-            font: .body4,
-            spacing: 4)
-        )
-    }
-    
-    var categorySortButton: some View {
-        Button("정렬") {
-            print("정렬 버튼 클릭됨")
-        }
-        .buttonStyle(.staccatoCapsule(
-            icon: .sliderHorizontal3,
-            font: .body4,
+            icon: .folderFillBadgePlus,
+            font: .body3,
             spacing: 4)
         )
     }

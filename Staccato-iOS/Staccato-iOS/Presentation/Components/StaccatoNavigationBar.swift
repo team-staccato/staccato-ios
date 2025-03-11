@@ -39,7 +39,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
                             .scaledToFit()
                             .frame(height: 20)
                             .padding(.leading, 16)
-                            .foregroundStyle(.gray2)
+                            .foregroundStyle(.gray3)
                     }
 
                     if titlePosition == .leading {

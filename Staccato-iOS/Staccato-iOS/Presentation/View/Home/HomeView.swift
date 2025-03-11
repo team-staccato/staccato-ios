@@ -51,10 +51,12 @@ struct HomeView: View {
         }
         .onAppear() {
             locationAuthorizationManager.checkLocationAuthorization()
+            viewModel.updateLocationForOneSec()
+            viewModel.fetchStaccatos()
         }
         .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
-                googleMapView.updateLocationForOneSec()
+                viewModel.updateLocationForOneSec()
             }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
@@ -88,7 +90,7 @@ extension HomeView {
     
     private var myLocationButton: some View {
         Button {
-            googleMapView.updateLocationForOneSec()
+            viewModel.updateLocationForOneSec()
         } label: {
             Image(.dotScope)
                 .resizable()

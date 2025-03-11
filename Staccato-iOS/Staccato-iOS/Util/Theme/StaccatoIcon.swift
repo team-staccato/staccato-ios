@@ -19,9 +19,13 @@ enum StaccatoIcon: String {
     // MARK: - Toolbar
     case chevronLeft = "chevron.left"
 
-    // MARK: - Categories
+    // MARK: - CategoryList
     case folderFill = "folder.fill"
+    case folderFillBadgePlus = "folder.fill.badge.plus"
     case sliderHorizontal3 = "slider.horizontal.3"
+    case arrowtriangleDownFill = "arrowtriangle.down.fill"
+    case checkmark = "checkmark"
+    case photoBadgeExclamationmark = "photo.badge.exclamationmark"
 
     // MARK: - Category
     case pencilLine = "pencil.line"
@@ -44,4 +48,8 @@ enum StaccatoIcon: String {
     
     // MARK: - Staccato Detail
     case arrowRightCircleFill = "arrow.right.circle.fill"
+    
+    // MARK: - Home
+    case plus = "plus"
+    case dotScope = "dot.scope"
 }

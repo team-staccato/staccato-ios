@@ -40,7 +40,7 @@ final class NetworkService {
         .validate()
         .responseDecodable(of: responseType) { response in
 #if DEBUG
-            print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(parameters) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n-----------------------------------------------")
+            print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(parameters) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
 #endif
             switch response.result {
             case .success(let data):

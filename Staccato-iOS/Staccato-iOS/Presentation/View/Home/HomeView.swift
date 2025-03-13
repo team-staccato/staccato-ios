@@ -12,27 +12,32 @@ import SwiftUI
 struct HomeView: View {
     
     // MARK: - Properties
-    // NOTE: 모달
+    //NOTE: 뷰모델
+    @StateObject private var viewModel = HomeViewModel()
+    
+    // NOTE: 뷰
+    private var mapView: GMSMapViewRepresentable {
+        GMSMapViewRepresentable(viewModel)
+    }
+    
+    // NOTE: 모달 크기
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
     // NOTE: 화면 전환
     @State private var isMyPagePresented = false
-    @State private var categoryNavigationState = CategoryNavigationState()
     
     // NOTE: 위치 접근 권한
     @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
-    
-    private let googleMapView = GMSMapViewRepresentable()
     
     
     // MARK: - Body
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            googleMapView
+            mapView
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40)
+                .padding(.bottom, modalHeight - 40) // TODO: 리팩토링 - 모달 크기 바뀔 때마다 updateUIView 호출됨
             
             myPageButton
                 .padding(10)
@@ -51,10 +56,12 @@ struct HomeView: View {
         }
         .onAppear() {
             locationAuthorizationManager.checkLocationAuthorization()
+            viewModel.updateLocationForOneSec()
+            viewModel.fetchStaccatos()
         }
         .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
-                googleMapView.updateLocationForOneSec()
+                viewModel.updateLocationForOneSec()
             }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
@@ -88,7 +95,7 @@ extension HomeView {
     
     private var myLocationButton: some View {
         Button {
-            googleMapView.updateLocationForOneSec()
+            viewModel.updateLocationForOneSec()
         } label: {
             Image(.dotScope)
                 .resizable()
@@ -103,7 +110,7 @@ extension HomeView {
     
     private var staccatoAddButton: some View {
         Button {
-            categoryNavigationState.navigate(to: .staccatoAdd)
+            viewModel.categoryNavigationState.navigate(to: .staccatoAdd)
             // TODO: modal fullScreen mode
         } label: {
             Image(.plus)
@@ -122,7 +129,7 @@ extension HomeView {
         VStack {
             Spacer()
             
-            CategoryListView(categoryNavigationState)
+            CategoryListView(viewModel.categoryNavigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))

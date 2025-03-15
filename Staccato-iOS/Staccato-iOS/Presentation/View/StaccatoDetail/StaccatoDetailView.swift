@@ -31,7 +31,7 @@ struct StaccatoDetailView: View {
         VStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    imageTabView
+                    imageSlider
                     
                     titleLabel
                     
@@ -77,18 +77,13 @@ struct StaccatoDetailView: View {
 
 private extension StaccatoDetailView {
     
-    var imageTabView: some View {
-        TabView {
-            ForEach(staccato.momentImages.indices, id: \.self) { index in
-                staccato.momentImages[index]
-                    .resizable()
-                    .scaledToFill()
-                    .background(Color.gray2)
-            }
-        }
-        .frame(width: ScreenUtils.width, height: ScreenUtils.width)
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always)) // TODO: 점이 이미지 아래에 있도록 커스텀
-        .padding(.bottom, 10)
+    var imageSlider: some View {
+        ImageSliderWithDot(
+            images: staccato.momentImages,
+            imageWidth: ScreenUtils.width,
+            imageHeight: ScreenUtils.width
+        )
+        .padding(.bottom, 7)
     }
     
     var titleLabel: some View {
@@ -101,7 +96,7 @@ private extension StaccatoDetailView {
     }
     
     var locationSection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             Text(staccato.placeName)
                 .typography(.body1)
                 .foregroundStyle(.staccatoBlack)

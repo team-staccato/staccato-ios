@@ -11,40 +11,61 @@ import SwiftUI
 
 struct HomeView: View {
     
-    // MARK: - State for Modal
+    // MARK: - Properties
+    //NOTE: 뷰모델
+    @StateObject private var viewModel = HomeViewModel()
     
+    // NOTE: 뷰
+    private var mapView: GMSMapViewRepresentable {
+        GMSMapViewRepresentable(viewModel)
+    }
+    
+    // NOTE: 모달 크기
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
     
-    @State private var locationManager = LocationAuthorizationManager.shared
-
+    // NOTE: 화면 전환
+    @State private var isMyPagePresented = false
     
-    // MARK: - Instances
-    
-    private let googleMapView = GMSMapViewRepresentable()
+    // NOTE: 위치 접근 권한
+    @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
     
     
     // MARK: - Body
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            googleMapView
+            mapView
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40)
+                .padding(.bottom, modalHeight - 40) // TODO: 리팩토링 - 모달 크기 바뀔 때마다 updateUIView 호출됨
             
-            myPageNavigationLink
+            myPageButton
                 .padding(10)
+            
+            myLocationButton
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .topTrailing)
+            
+            staccatoAddButton
+                .padding(.trailing, 12)
+                .padding(.bottom, modalHeight - 20)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
             
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
         }
         .onAppear() {
-            locationManager.checkLocationAuthorization()
+            locationAuthorizationManager.checkLocationAuthorization()
+            viewModel.updateLocationForOneSec()
+            viewModel.fetchStaccatos()
         }
-        .onChange(of: locationManager.hasLocationAuthorization) { oldValue, newValue in
+        .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
-                googleMapView.updateLocationForOneSec()
+                viewModel.updateLocationForOneSec()
             }
+        }
+        .fullScreenCover(isPresented: $isMyPagePresented) {
+            MyPageView()
         }
     }
     
@@ -55,9 +76,11 @@ struct HomeView: View {
 
 extension HomeView {
     
-    private var myPageNavigationLink: some View {
-        NavigationLink(destination: MyPageView()) {
-            Image(systemName: "person.circle.fill")
+    private var myPageButton: some View {
+        Button {
+            isMyPagePresented = true
+        } label: {
+            Image(.personCircleFill)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40, height: 40)
@@ -70,15 +93,47 @@ extension HomeView {
         }
     }
     
+    private var myLocationButton: some View {
+        Button {
+            viewModel.updateLocationForOneSec()
+        } label: {
+            Image(.dotScope)
+                .resizable()
+                .frame(width: 24, height: 24)
+                .foregroundStyle(.gray4)
+        }
+        .frame(width: 38, height: 38)
+        .background(.white)
+        .clipShape(.circle)
+        .shadow(radius: 2)
+    }
+    
+    private var staccatoAddButton: some View {
+        Button {
+            viewModel.categoryNavigationState.navigate(to: .staccatoAdd)
+            // TODO: modal fullScreen mode
+        } label: {
+            Image(.plus)
+                .resizable()
+                .fontWeight(.bold)
+                .frame(width: 25, height: 25)
+                .foregroundStyle(.white)
+        }
+        .frame(width: 48, height: 48)
+        .background(.accent)
+        .clipShape(.circle)
+        .shadow(radius: 4, y: 4)
+    }
+    
     private var categoryListModal: some View {
         VStack {
             Spacer()
             
-            CategoryListView()
+            CategoryListView(viewModel.categoryNavigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
-                .shadow(radius: 5)
+                .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
                 .gesture(
                     DragGesture()
                         .onChanged { value in

@@ -25,34 +25,28 @@ final class NetworkService {
             return
         }
         
-        let method = HTTPMethod(rawValue: endpoint.method)
+        let method = endpoint.method
         let parameters = endpoint.parameters
+        let encoding = endpoint.encoding
         let headers = HTTPHeaders(endpoint.headers ?? [:])
         
         AF.request(
-            url, method: method,
+            url,
+            method: method,
             parameters: parameters,
-            encoding: JSONEncoding.default,
+            encoding: encoding,
             headers: headers
         )
         .validate()
         .responseDecodable(of: responseType) { response in
+#if DEBUG
+            print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(parameters) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
+#endif
             switch response.result {
             case .success(let data):
                 completion(.success(data))
             case .failure(let error):
-                logErrorResponse(response, error)
-                completion(.failure(ErrorHandler.handleError(response.response, response.data)))
-            }
-        }
-        
-        func logErrorResponse(_ response: DataResponse<T, AFError>, _ error: AFError) {
-            print("❌ 상태 코드: \(response.response?.statusCode ?? 0)")
-            if let data = response.data {
-                do {
-                    let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: data)
-                    print("❌ 네트워크 요청 실패: \(errorResponse.message)")
-                } catch {
+
                     print("❌ 알 수 없는 오류: \(error.localizedDescription)")
                 }
             } else {
@@ -64,7 +58,8 @@ final class NetworkService {
 
 protocol APIEndpoint {
     var path: String { get }
-    var method: String { get }
+    var method: HTTPMethod { get }
+    var encoding: ParameterEncoding { get }
     var parameters: [String: Any]? { get }
     var headers: [String: String]? { get }
 }

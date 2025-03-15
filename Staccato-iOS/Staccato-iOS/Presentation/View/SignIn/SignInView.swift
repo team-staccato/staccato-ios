@@ -3,10 +3,11 @@ import SwiftUI
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
     @State private var nickName: String = ""
-    @State private var validationMessage: String = ""
+    @State private var errorMessage: String?
+    @State private var validationMessage: String?
     @State private var isChanging: Bool = false
     @State private var shakeOffset: CGFloat = 0
-    @State private var debounceWorkItem: DispatchWorkItem?
+    @State private var validationTask: Task<Void, Never>?
     
     private var isButtonDisabled: Bool {
         nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChanging
@@ -33,12 +34,16 @@ struct SignInView: View {
                     )
                     .offset(x: viewModel.isValid ? 0 : shakeOffset)
                     .onChange(of: nickName) {
-                        isChanging = true
-                        debounceValidation(text: nickName)
+                        if nickName.count > 20 {
+                            nickName = String(nickName.prefix(20))
+                        } else {
+                            isChanging = true
+                            debounceValidation(text: nickName)
+                        }
                     }
                 
                 HStack {
-                    Text(validationMessage)
+                    Text(validationMessage ?? "")
                         .typography(.body4)
                         .foregroundColor(.red)
                         .opacity(viewModel.isValid ? 0 : 1)
@@ -53,13 +58,7 @@ struct SignInView: View {
                 }
                 
                 Button("시작하기") {
-                    Task {
-                        do {
-                            try await viewModel.login(nickName: nickName)
-                        } catch {
-                            print(error)
-                        }
-                    }
+                    login()
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .padding(.vertical)
@@ -79,12 +78,12 @@ struct SignInView: View {
             }
         }
         .alert(isPresented: Binding<Bool>(
-            get: { viewModel.errorMessage != nil },
-            set: { _ in viewModel.errorMessage = nil }
+            get: { errorMessage != nil },
+            set: { _ in errorMessage = nil }
         )) {
             Alert(
                 title: Text("로그인 실패"),
-                message: Text(viewModel.errorMessage ?? "알 수 없는 오류"),
+                message: Text(errorMessage ?? "알 수 없는 오류"),
                 dismissButton: .default(Text("확인"))
             )
         }
@@ -93,6 +92,26 @@ struct SignInView: View {
 
 #Preview {
     SignInView()
+}
+
+//MARK: Login
+extension SignInView {
+    private func login() {
+        Task {
+            do {
+                let _ = try await viewModel.login(nickName: nickName)
+            } catch let error as NetworkError {
+                switch error {
+                case .badRequest(let message):
+                    errorMessage = message
+                default:
+                    errorMessage = error.description
+                }
+            } catch {
+                errorMessage = "알 수 없는 오류"
+            }
+        }
+    }
 }
 
 //MARK: Animation
@@ -112,18 +131,23 @@ extension SignInView {
 //MARK: Debounce
 extension SignInView {
     private func debounceValidation(text: String) {
-        debounceWorkItem?.cancel()
-        let workItem = DispatchWorkItem {
-            viewModel.validateText(nickName: text)
-            if !viewModel.isValid {
-                shakeAnimation()
-                validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
-            } else {
-                validationMessage = ""
+        isChanging = true
+        validationTask?.cancel() // 기존 Task 취소
+        
+        validationTask = Task {
+            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초 대기
+            if Task.isCancelled { return } // Task가 취소되었으면 종료
+            
+            await MainActor.run {
+                viewModel.validateText(nickName: text)
+                if !viewModel.isValid {
+                    shakeAnimation()
+                    validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
+                } else {
+                    validationMessage = ""
+                }
+                isChanging = false
             }
-            isChanging = false
         }
-        debounceWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: workItem)
     }
 }

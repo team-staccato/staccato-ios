@@ -6,36 +6,56 @@
 //
 
 import SwiftUI
-import Observation
 
-@Observable final class CategoryListViewModel {
+final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Properties
     
-    var userName: String = "UserName"
+    @Published var userName: String = "UserName" // TODO: API 연결
     
-    var categories: [CategoryModel] = [
-        CategoryModel(
-            id: 1,
-            thumbNail: Image(uiImage: .staccatoCharacter),
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        ),
-        CategoryModel(
-            id: 2,
-            thumbNail: nil,
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        ),
-        CategoryModel(
-            id: 3,
-            thumbNail: Image(uiImage: .staccatoCharacter),
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        )
-    ]
+    @Published var categories: [CategoryModel] = []
+    
+    @Published var filterSelection: CategoryListFilterType = .all {
+        didSet {
+            getCategoryList()
+        }
+    }
+    
+    @Published var sortSelection: CategoryListSortType = .recentlyUpdated {
+        didSet {
+            getCategoryList()
+        }
+    }
+    
+    
+    // MARK: - Networking
+    
+    func getCategoryList() {
+        STService.shared.categoryServie.getCategoryList(
+            GetCategoryListRequestQuery(
+                filters: filterSelection.serverKey,
+                sort: sortSelection.serverKey
+            )
+        ) { [weak self] response in
+            guard let self = self else {
+                print("🥑 self is nil")
+                return
+            }
+            
+            let categories = response.categories.map {
+                CategoryModel(
+                    id: $0.categoryId,
+                    thumbNailURL: $0.categoryThumbnailUrl,
+                    title: $0.categoryTitle,
+                    startAt: $0.startAt,
+                    endAt: $0.endAt
+                )
+            }
+            
+            DispatchQueue.main.async {
+                self.categories = categories
+            }
+        }
+    }
     
 }

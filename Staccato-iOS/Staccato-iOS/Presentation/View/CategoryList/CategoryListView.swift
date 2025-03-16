@@ -49,7 +49,12 @@ struct CategoryListView: View {
             }
         }
         .onAppear {
-            viewModel.getCategoryList()
+            do {
+                try viewModel.getCategoryList()
+            } catch {
+                // 여기서 에러 메세지 띄우는 동작 등 구현
+                print(error.localizedDescription)
+            }
         }
     }
     

@@ -14,21 +14,17 @@ class SignInViewModel: ObservableObject {
 
 extension SignInViewModel {
     func login(nickName: String) async throws -> LoginResponse {
-        return try await withCheckedThrowingContinuation { continuation in
-            NetworkService.shared.request(
+        guard let loginResponse = try await NetworkService.shared.request(
                 endpoint: AuthorizationAPI.login(nickname: nickName),
                 responseType: LoginResponse.self
-            ) { result in
-                switch result {
-                case .success(let response):
-                    AuthTokenManager.shared.saveToken(response.token)
-                    self.isLoggedIn = true
-                    continuation.resume(returning: response)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
+        ) else {
+            throw StaccatoError.optionalBindingFailed
         }
+        
+        AuthTokenManager.shared.saveToken(loginResponse.token)
+        self.isLoggedIn = true
+        
+        return loginResponse
     }
     
     // 한글, 영어, 마침표, 언더바(_)만 허용

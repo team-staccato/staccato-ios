@@ -105,7 +105,7 @@ extension SignInView {
                 case .badRequest(let message):
                     errorMessage = message
                 default:
-                    errorMessage = error.description
+                    errorMessage = error.localizedDescription
                 }
             } catch {
                 errorMessage = "알 수 없는 오류"

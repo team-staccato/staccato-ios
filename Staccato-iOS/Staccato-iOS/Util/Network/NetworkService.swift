@@ -19,7 +19,7 @@ final class NetworkService {
     ) {
         let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as! String
         let urlString = baseURL + endpoint.path
-        print(urlString)
+        
         guard let url = URL(string: urlString) else {
             completion(.failure(.invalidURL))
             return
@@ -40,16 +40,12 @@ final class NetworkService {
         .validate()
         .responseDecodable(of: responseType) { response in
 #if DEBUG
-            print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(parameters) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
+            print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(String(describing: parameters)) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
 #endif
             switch response.result {
             case .success(let data):
                 completion(.success(data))
             case .failure(let error):
-
-                    print("❌ 알 수 없는 오류: \(error.localizedDescription)")
-                }
-            } else {
                 print("❌ 알 수 없는 오류: \(error.localizedDescription)")
             }
         }

@@ -110,7 +110,7 @@ extension HomeView {
     
     private var staccatoAddButton: some View {
         Button {
-            viewModel.categoryNavigationState.navigate(to: .staccatoAdd)
+            viewModel.modalNavigationState.navigate(to: .staccatoAdd)
             // TODO: modal fullScreen mode
         } label: {
             Image(.plus)
@@ -129,7 +129,7 @@ extension HomeView {
         VStack {
             Spacer()
             
-            CategoryListView(viewModel.categoryNavigationState)
+            CategoryListView(viewModel.modalNavigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))

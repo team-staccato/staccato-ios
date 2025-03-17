@@ -32,10 +32,12 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        print("GMSMapViewRepresentable updated")
         if viewModel.presentedStaccatos.isEmpty { // NOTE: 마커 없는 경우만 실행
             addAllStaccatoMarkers(to: uiView)
         }
+#if DEBUG
+        print("GMSMapViewRepresentable updated")
+#endif
     }
     
 }

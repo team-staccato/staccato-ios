@@ -46,10 +46,6 @@ final class NetworkService {
             case .success(let data):
                 completion(.success(data))
             case .failure(let error):
-
-                    print("❌ 알 수 없는 오류: \(error.localizedDescription)")
-                }
-            } else {
                 print("❌ 알 수 없는 오류: \(error.localizedDescription)")
             }
         }

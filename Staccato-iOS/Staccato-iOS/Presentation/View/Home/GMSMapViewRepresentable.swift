@@ -32,10 +32,12 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        print("GMSMapViewRepresentable updated")
         if viewModel.presentedStaccatos.isEmpty { // NOTE: 마커 없는 경우만 실행
             addAllStaccatoMarkers(to: uiView)
         }
+#if DEBUG
+        print("GMSMapViewRepresentable updated")
+#endif
     }
     
 }
@@ -80,7 +82,7 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
             print("tappedStaccato: \(userdata)")
-            viewModel.categoryNavigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
+            viewModel.modalNavigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
         } else {
             print("⚠️ No StaccatoData found for this marker.")
         }

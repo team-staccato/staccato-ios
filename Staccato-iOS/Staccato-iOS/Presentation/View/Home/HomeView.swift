@@ -128,7 +128,7 @@ extension HomeView {
     private var categoryListModal: some View {
         VStack {
             Spacer()
-            
+
             CategoryListView(viewModel.modalNavigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)

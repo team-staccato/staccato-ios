@@ -55,32 +55,31 @@ extension HomeViewModel {
 // MARK: - Network
 
 extension HomeViewModel {
-    
+    @MainActor
     func fetchStaccatos() {
-        STService.shared.staccatoService.getStaccatoList { [weak self] response in
-            guard let self = self else {
-                print("🥑 self is nil")
-                return
-            }
-            
+        Task {
             guard !isfetchingStaccatoList else {
                 print("🥑 is Loading staccatos")
                 return
             }
             
             isfetchingStaccatoList = true
+            defer { self.isfetchingStaccatoList = false }
             
-            let locations: [StaccatoCoordinateModel] = response.staccatoLocationResponses.map {
-                StaccatoCoordinateModel(
-                    staccatoId: $0.staccatoId,
-                    latitude: $0.latitude,
-                    longitude: $0.longitude
-                )
-            }
-            
-            DispatchQueue.main.async {
+            do {
+                let staccatoList = try await STService.shared.staccatoService.getStaccatoList()
+                
+                let locations: [StaccatoCoordinateModel] = staccatoList.staccatoLocationResponses.map {
+                    StaccatoCoordinateModel(
+                        staccatoId: $0.staccatoId,
+                        latitude: $0.latitude,
+                        longitude: $0.longitude
+                    )
+                }
+                
                 self.staccatoCoordinates = locations
-                self.isfetchingStaccatoList = false
+            } catch {
+                print("Error fetching staccatos: \(error.localizedDescription)")
             }
         }
     }

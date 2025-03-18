@@ -17,32 +17,38 @@ final class CategoryListViewModel: ObservableObject {
     
     @Published var filterSelection: CategoryListFilterType = .all {
         didSet {
-            getCategoryList()
+            do {
+                try getCategoryList()
+            } catch {
+                // 여기서 에러 처리
+                print(error.localizedDescription)
+            }
         }
     }
     
     @Published var sortSelection: CategoryListSortType = .recentlyUpdated {
         didSet {
-            getCategoryList()
+            do {
+                try getCategoryList()
+            } catch {
+                print(error.localizedDescription)
+            }
         }
     }
     
     
     // MARK: - Networking
     
-    func getCategoryList() {
-        STService.shared.categoryServie.getCategoryList(
-            GetCategoryListRequestQuery(
-                filters: filterSelection.serverKey,
-                sort: sortSelection.serverKey
+    func getCategoryList() throws {
+        Task {
+            let categoryList = try await STService.shared.categoryServie.getCategoryList(
+                GetCategoryListRequestQuery(
+                    filters: filterSelection.serverKey,
+                    sort: sortSelection.serverKey
+                )
             )
-        ) { [weak self] response in
-            guard let self = self else {
-                print("🥑 self is nil")
-                return
-            }
             
-            let categories = response.categories.map {
+            let categories = categoryList.categories.map {
                 CategoryModel(
                     id: $0.categoryId,
                     thumbNailURL: $0.categoryThumbnailUrl,
@@ -52,9 +58,7 @@ final class CategoryListViewModel: ObservableObject {
                 )
             }
             
-            DispatchQueue.main.async {
-                self.categories = categories
-            }
+            self.categories = categories
         }
     }
     

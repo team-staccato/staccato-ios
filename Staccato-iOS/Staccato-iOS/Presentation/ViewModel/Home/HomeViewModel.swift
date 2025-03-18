@@ -55,7 +55,7 @@ extension HomeViewModel {
 // MARK: - Network
 
 extension HomeViewModel {
-    
+    @MainActor
     func fetchStaccatos() {
         Task {
             guard !isfetchingStaccatoList else {

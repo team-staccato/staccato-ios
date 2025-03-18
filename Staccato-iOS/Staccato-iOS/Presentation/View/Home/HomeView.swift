@@ -110,8 +110,7 @@ extension HomeView {
     
     private var staccatoAddButton: some View {
         Button {
-            // - TODO: 없는 메서드 호출 확인 필요
-//            viewModel.categoryNavigationState.navigate(to: .staccatoAdd)
+            viewModel.modalNavigationState.navigate(to: .staccatoAdd)
             // TODO: modal fullScreen mode
         } label: {
             Image(.plus)
@@ -129,10 +128,8 @@ extension HomeView {
     private var categoryListModal: some View {
         VStack {
             Spacer()
-            
-            
-            // - TODO: 없는 메서드 호출 확인 필요
-            CategoryListView(.init())
+
+            CategoryListView(viewModel.modalNavigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))

@@ -9,24 +9,21 @@ import Foundation
 
 protocol StaccatoServiceProtocol {
     
-    func getStaccatoList(completion: @escaping (GetStaccatoListResponse) -> Void)
+    func getStaccatoList() async throws -> GetStaccatoListResponse
     
 }
 
 class StaccatoService: StaccatoServiceProtocol {
     
-    func getStaccatoList(completion: @escaping (GetStaccatoListResponse) -> Void) {
-        NetworkService.shared.request(
+    func getStaccatoList() async throws -> GetStaccatoListResponse {
+        guard let staccatoList = try await NetworkService.shared.request(
             endpoint: StaccatoEndpoint.getStaccatoList,
             responseType: GetStaccatoListResponse.self
-        ) { result in
-            switch result {
-            case .success(let response):
-                completion(response)
-            case .failure(let error):
-                print("😢 getStaccatoList 실패 - \(error)")
-            }
+        ) else {
+            throw StaccatoError.optionalBindingFailed
         }
+        
+        return staccatoList
     }
     
 }

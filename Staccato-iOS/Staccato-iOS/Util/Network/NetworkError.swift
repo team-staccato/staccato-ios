@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-enum NetworkError: Error {
+enum NetworkError: LocalizedError {
     case invalidURL
     case badRequest(String)
     case unauthorized
@@ -19,8 +19,8 @@ enum NetworkError: Error {
     case unknownError
 }
 
-extension NetworkError: CustomStringConvertible {
-    var description: String {
+extension NetworkError {
+    var errorDescription: String? {
             switch self {
             case .invalidURL:
                 return "❌ 유효하지 않은 URL입니다."

@@ -9,26 +9,21 @@ import Foundation
 
 protocol CategoryServiceProtocol {
     
-    func getCategoryList(_ query: GetCategoryListRequestQuery,
-                         completion: @escaping (GetCategoryListResponse) -> Void)
+    func getCategoryList(_ query: GetCategoryListRequestQuery) async throws -> GetCategoryListResponse
     
 }
 
 class CategoryService: CategoryServiceProtocol {
     
-    func getCategoryList(_ query: GetCategoryListRequestQuery,
-                         completion: @escaping (GetCategoryListResponse) -> Void) {
-        NetworkService.shared.request(
+    func getCategoryList(_ query: GetCategoryListRequestQuery) async throws -> GetCategoryListResponse {
+        guard let categoryList = try await NetworkService.shared.request(
             endpoint: CategoryEndpoint.getCategoryList(query),
             responseType: GetCategoryListResponse.self
-        ) { result in
-            switch result {
-            case .success(let response):
-                completion(response)
-            case .failure(let error):
-                print("😢 getCategoryList 실패 - \(error)")
-            }
+        ) else {
+            throw StaccatoError.optionalBindingFailed
         }
+        
+        return categoryList
     }
     
 }

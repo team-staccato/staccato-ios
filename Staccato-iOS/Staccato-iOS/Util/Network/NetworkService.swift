@@ -14,15 +14,13 @@ final class NetworkService {
     
     func request<T: Decodable>(
         endpoint: APIEndpoint,
-        responseType: T.Type,
-        completion: @escaping (Result<T, NetworkError>) -> Void
-    ) {
+        responseType: T.Type?
+    ) async throws -> T? {
         let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as! String
         let urlString = baseURL + endpoint.path
-        print(urlString)
+        
         guard let url = URL(string: urlString) else {
-            completion(.failure(.invalidURL))
-            return
+            throw NetworkError.invalidURL
         }
         
         let method = endpoint.method
@@ -30,7 +28,7 @@ final class NetworkService {
         let encoding = endpoint.encoding
         let headers = HTTPHeaders(endpoint.headers ?? [:])
         
-        AF.request(
+        let response = await AF.request(
             url,
             method: method,
             parameters: parameters,
@@ -38,17 +36,21 @@ final class NetworkService {
             headers: headers
         )
         .validate()
-        .responseDecodable(of: responseType) { response in
+        .serializingDecodable(T.self)
+        .response
+        
+        
 #if DEBUG
-            print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(parameters) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
+        print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(String(describing: parameters)) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
 #endif
-            switch response.result {
-            case .success(let data):
-                completion(.success(data))
-            case .failure(let error):
-                print("❌ 알 수 없는 오류: \(error.localizedDescription)")
-            }
+        
+        // status code가 200~299가 아닌 경우 정해져 있는 에러를 뱉도록 수정
+        if let urlResponse = response.response, !(200...299).contains(urlResponse.statusCode) {
+            print(response.data ?? "")
+            throw ErrorHandler.handleError(urlResponse, response.data)
         }
+        
+        return response.value
     }
 }
 

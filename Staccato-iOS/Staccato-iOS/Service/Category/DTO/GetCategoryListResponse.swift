@@ -9,11 +9,11 @@ import Foundation
 
 struct GetCategoryListResponse: Decodable {
     
-    let categories: [CategoryDTO]
+    let categories: [CategoryResponse]
     
 }
 
-struct CategoryDTO: Decodable {
+struct CategoryResponse: Decodable {
     
     let categoryId: Int64
     

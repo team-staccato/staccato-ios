@@ -56,25 +56,32 @@ struct ImageSliderWithDot: View {
         .gesture(
             DragGesture()
                 .onChanged { value in
-                    offset = value.translation.width
+                    // NOTE: 가로 스크롤만 핸들
+                    if abs(value.translation.width) > abs(value.translation.height) {
+                        offset = value.translation.width
+                    }
                 }
                 .onEnded { value in
-                    let dragAmount = value.translation.width
-                    // 왼쪽으로 스와이프
-                    if dragAmount < -minimumDragDistance && currentIndex < imageUrls.count - 1 {
-                        withAnimation {
-                            currentIndex += 1
+                    // NOTE: 가로 스크롤만 핸들
+                    if abs(value.translation.width) > abs(value.translation.height) {
+                        let dragAmount = value.translation.width
+                        // 왼쪽으로 스와이프
+                        if dragAmount < -minimumDragDistance && currentIndex < imageUrls.count - 1 {
+                            withAnimation {
+                                currentIndex += 1
+                            }
                         }
-                    }
-                    // 오른쪽으로 스와이프
-                    if dragAmount > minimumDragDistance && currentIndex > 0 {
-                        withAnimation {
-                            currentIndex -= 1
+                        // 오른쪽으로 스와이프
+                        if dragAmount > minimumDragDistance && currentIndex > 0 {
+                            withAnimation {
+                                currentIndex -= 1
+                            }
                         }
-                    }
-                    // 오프셋 초기화
-                    withAnimation {
-                        offset = 0
+                        
+                        // 오프셋 초기화
+                        withAnimation {
+                            offset = 0
+                        }
                     }
                 }
         )

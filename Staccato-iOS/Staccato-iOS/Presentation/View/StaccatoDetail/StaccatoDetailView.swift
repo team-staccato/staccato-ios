@@ -35,7 +35,7 @@ struct StaccatoDetailView: View {
         VStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    imageSlider
+                    imageSlider // TODO: 이미지 슬라이더 위에서 세로스크롤 했을 때 스크롤뷰 스크롤되도록 보완
                     
                     titleLabel
                     

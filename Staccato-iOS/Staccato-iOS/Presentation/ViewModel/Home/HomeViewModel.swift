@@ -19,6 +19,7 @@ class HomeViewModel: ObservableObject {
     
     @Published var isfetchingStaccatoList = false
     
+    @Published var staccatoDetail: StaccatoDetailModel?
     
     let locationManager = CLLocationManager()
     
@@ -80,6 +81,38 @@ extension HomeViewModel {
                 self.staccatoCoordinates = locations
             } catch {
                 print("Error fetching staccatos: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func fetchStaccatoDetail(_ staccatoId: Int64) {
+        Task {
+            do {
+                let response = try await STService.shared.staccatoService.getStaccatoDetail(staccatoId)
+                
+                let staccatoDetail = StaccatoDetailModel(
+                    id: UUID(),
+                    staccatoId: response.staccatoId,
+                    categoryId: response.categoryId,
+                    categoryTitle: response.categoryTitle,
+                    startAt: response.startAt,
+                    endAt: response.endAt,
+                    staccatoTitle: response.staccatoTitle,
+                    staccatoImageUrls: response.staccatoImageUrls,
+                    visitedAt: response.visitedAt,
+                    feeling: response.feeling,
+                    placeName: response.placeName,
+                    address: response.address,
+                    latitude: response.latitude,
+                    longitude: response.longitude
+                )
+                
+                await MainActor.run {
+                    self.staccatoDetail = staccatoDetail
+                }
+                
+            } catch {
+                print("Error fetching staccato detail: \(error.localizedDescription)")
             }
         }
     }

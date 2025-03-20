@@ -87,7 +87,7 @@ private extension StaccatoDetailView {
     }
     
     var titleLabel: some View {
-        Text(homeViewModel.staccatoDetail?.categoryTitle ?? "")
+        Text(homeViewModel.staccatoDetail?.staccatoTitle ?? "")
             .typography(.title1)
             .foregroundStyle(.staccatoBlack)
             .lineLimit(.max)

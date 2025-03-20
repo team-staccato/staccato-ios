@@ -58,7 +58,9 @@ final class CategoryListViewModel: ObservableObject {
                 )
             }
             
-            self.categories = categories
+            await MainActor.run {
+                self.categories = categories
+            }
         }
     }
     

@@ -52,6 +52,7 @@ struct StaccatoDetailView: View {
                     commentSection
                 }
             }
+            .id(UUID())
             .onTapGesture {
                 isCommentFocused = false
             }

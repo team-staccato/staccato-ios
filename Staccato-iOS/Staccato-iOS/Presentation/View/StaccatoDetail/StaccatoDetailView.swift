@@ -110,7 +110,16 @@ private extension StaccatoDetailView {
                 .multilineTextAlignment(.leading)
                 .padding(.top, 8)
             
-            Text("\(String(describing: homeViewModel.staccatoDetail?.visitedAt))에 방문했어요")
+            let visitedAt: String = homeViewModel.staccatoDetail?.visitedAt ?? ""
+            let visitedAtString: String = {
+                guard visitedAt.count >= 10 else { return "" }
+                let year = visitedAt.prefix(4)
+                let month = visitedAt.dropFirst(5).prefix(2)
+                let day = visitedAt.dropFirst(8).prefix(2)
+                
+                return "\(year)년 \(month)월 \(day)일"
+            }()
+            Text("\(visitedAtString)에 방문했어요")
                 .typography(.body2)
                 .foregroundStyle(.staccatoBlack)
                 .padding(.top, 20)

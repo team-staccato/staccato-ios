@@ -11,7 +11,7 @@ struct StaccatoDetailView: View {
     
     // MARK: - State Properties
     
-    @State var staccato: StaccatoDetailModel = StaccatoDetailModel.sample
+    @ObservedObject var homeViewModel: HomeViewModel
     
     @State var selectedFeeling: FeelingType? = nil
     
@@ -21,6 +21,10 @@ struct StaccatoDetailView: View {
     
     @State var commentText: String = ""
     @FocusState private var isCommentFocused: Bool
+    
+    init(_ homeViewModel: HomeViewModel) {
+        self.homeViewModel = homeViewModel
+    }
     
     
     // MARK: - UI Properties
@@ -68,10 +72,6 @@ struct StaccatoDetailView: View {
     }
 }
 
-#Preview("Preview - Empty") {
-    StaccatoDetailView(staccato: StaccatoDetailModel.sample)
-}
-
 
 // MARK: - UI Components
 
@@ -79,7 +79,7 @@ private extension StaccatoDetailView {
     
     var imageSlider: some View {
         ImageSliderWithDot(
-            images: staccato.momentImages,
+            images: homeViewModel.staccatoDetail?.staccatoImageUrls ?? [],
             imageWidth: ScreenUtils.width,
             imageHeight: ScreenUtils.width
         )
@@ -87,7 +87,7 @@ private extension StaccatoDetailView {
     }
     
     var titleLabel: some View {
-        Text(staccato.memoryTitle)
+        Text(homeViewModel.staccatoDetail?.categoryTitle ?? "")
             .typography(.title1)
             .foregroundStyle(.staccatoBlack)
             .lineLimit(.max)
@@ -97,20 +97,20 @@ private extension StaccatoDetailView {
     
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(staccato.placeName)
+            Text(homeViewModel.staccatoDetail?.placeName ?? "")
                 .typography(.body1)
                 .foregroundStyle(.staccatoBlack)
                 .lineLimit(.max)
                 .multilineTextAlignment(.leading)
             
-            Text(staccato.address)
+            Text(homeViewModel.staccatoDetail?.address ?? "")
                 .typography(.body4)
                 .foregroundStyle(.staccatoBlack)
                 .lineLimit(.max)
                 .multilineTextAlignment(.leading)
                 .padding(.top, 8)
             
-            Text("\(staccato.visitedAt)에 방문했어요")
+            Text("\(String(describing: homeViewModel.staccatoDetail?.visitedAt))에 방문했어요")
                 .typography(.body2)
                 .foregroundStyle(.staccatoBlack)
                 .padding(.top, 20)

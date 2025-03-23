@@ -36,6 +36,9 @@ struct MyPageView: View {
             Spacer()
         }
         .staccatoNavigationBar(title: "마이페이지", titlePosition: .center)
+        .onAppear {
+            
+        }
     }
 }
 

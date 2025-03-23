@@ -9,6 +9,9 @@ import SwiftUI
 import PhotosUI
 
 struct MyPageView: View {
+    
+    @StateObject private var viewModel = MyPageViewModel()
+    
     @State var copyButtonPressed = false
     @State var isPhotoInputPresented = false
     @State var showCamera = false
@@ -37,7 +40,7 @@ struct MyPageView: View {
         }
         .staccatoNavigationBar(title: "마이페이지", titlePosition: .center)
         .onAppear {
-            
+            viewModel.fetchProfile()
         }
     }
 }

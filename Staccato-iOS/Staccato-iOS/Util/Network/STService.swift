@@ -20,4 +20,6 @@ class STService {
     
     lazy var staccatoService = StaccatoService()
     
+    lazy var myPageService = MyPageService()
+    
 }

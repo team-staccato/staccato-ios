@@ -19,6 +19,7 @@ struct MyPageView: View {
     
     @State private var photoItem: PhotosPickerItem?
     @State private var selectedPhoto: UIImage?
+    @State private var showToast = false
     
     var body: some View {
         VStack {
@@ -39,6 +40,14 @@ struct MyPageView: View {
             Spacer()
         }
         .staccatoNavigationBar(title: "마이페이지", titlePosition: .center)
+        .overlay(
+            Group {
+                if showToast {
+                    toastMessage
+                }
+            },
+            alignment: .bottom
+        )
         .onAppear {
             viewModel.fetchProfile()
         }
@@ -137,6 +146,12 @@ extension MyPageView {
         Button {
             UIPasteboard.general.string = "복구코드 붙여넣기"
             copyButtonPressed.toggle()
+            UIPasteboard.general.string = viewModel.profile?.code ?? ""
+            showToast = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                showToast = false
+            }
         } label: {
             HStack(spacing: 10) {
                 Text("복구 코드 복사하기")
@@ -150,6 +165,18 @@ extension MyPageView {
         .sensoryFeedback(.success, trigger: copyButtonPressed)
         .typography(.body2)
     }
+    
+    
+    private var toastMessage: some View {
+        Text("복구 코드가 복사되었습니다.")
+            .padding()
+            .background(Color.black.opacity(0.8))
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .padding(.bottom, 50)
+            .transition(.opacity)
+    }
+
     
     private var menuSection: some View {
         VStack {

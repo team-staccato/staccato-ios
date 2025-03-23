@@ -16,26 +16,26 @@ struct MyPageView: View {
     @State var isPhotoInputPresented = false
     @State var showCamera = false
     @State var isPhotoPickerPresented = false
-
+    
     @State private var photoItem: PhotosPickerItem?
     @State private var selectedPhoto: UIImage?
-
+    
     var body: some View {
         VStack {
             profileImageSection
                 .padding(.bottom, 24)
                 .padding(.top, 35)
-
+            
             userNameSection
                 .padding(.bottom, 16)
-
+            
             recoveryCodeCopyButton
                 .padding(.bottom, 40)
-
+            
             Divider()
-
+            
             menuSection
-
+            
             Spacer()
         }
         .staccatoNavigationBar(title: "마이페이지", titlePosition: .center)
@@ -57,16 +57,43 @@ extension MyPageView {
             isPhotoInputPresented = true
         } label: {
             ZStack {
-                Image(.personCircleFill)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.gray2)
+                if let selectedPhoto {
+                    Image(uiImage: selectedPhoto)
+                        .resizable()
+                        .clipShape(Circle())
+                } else if let profileImageUrl = viewModel.profile?.profileImageUrl,
+                          let url = URL(string: profileImageUrl) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .clipShape(Circle())
+                        case .failure:
+                            Image(.personCircleFill)
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundStyle(.gray2)
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                } else {
+                    Image(.personCircleFill)
+                        .resizable()
+                        .foregroundStyle(.gray2)
+                        .scaledToFit()
+                }
+                
                 VStack {
                     Spacer()
-
+                    
                     HStack {
                         Spacer()
-
+                        
                         Image(.pencilCircleFill)
                             .resizable()
                             .scaledToFit()
@@ -77,35 +104,35 @@ extension MyPageView {
             }
         }
         .frame(width: 84, height: 84)
-
+        
         .confirmationDialog("프로필 이미지를 변경해요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
                 showCamera = true
             }
-
+            
             Button("앨범에서 가져오기") {
                 isPhotoPickerPresented = true
             }
         })
-
+        
         .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
-
+        
         .fullScreenCover(isPresented: $showCamera) {
             CameraView(selectedImage: $selectedPhoto)
                 .background(.black)
         }
-
+        
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
         }
     }
-
+    
     private var userNameSection: some View {
-        Text("사용자 이름")
+        Text(viewModel.profile?.nickname ?? "")
             .typography(.body1)
             .foregroundStyle(.staccatoBlack)
     }
-
+    
     private var recoveryCodeCopyButton: some View {
         Button {
             UIPasteboard.general.string = "복구코드 붙여넣기"
@@ -114,7 +141,7 @@ extension MyPageView {
             HStack(spacing: 10) {
                 Text("복구 코드 복사하기")
                     .foregroundStyle(.gray3)
-
+                
                 Image(.squareOnSquare)
                     .scaleEffect(x: -1)
                     .foregroundStyle(.gray4)
@@ -123,7 +150,7 @@ extension MyPageView {
         .sensoryFeedback(.success, trigger: copyButtonPressed)
         .typography(.body2)
     }
-
+    
     private var menuSection: some View {
         VStack {
             NavigationLink {
@@ -133,19 +160,19 @@ extension MyPageView {
                     Text("개인정보처리방침")
                         .typography(.title3)
                         .foregroundStyle(.staccatoBlack)
-
+                    
                     Spacer()
-
+                    
                     Image(.chevronRight)
                         .foregroundStyle(.gray2)
                 }
             }
             .padding(.vertical, 26)
             .padding(.horizontal, 24)
-
-
+            
+            
             Divider()
-
+            
             NavigationLink {
                 EmbedWebView(title: "피드백으로 혼내주기", urlString: WebViewURLs.feedback)
             } label: {
@@ -153,26 +180,26 @@ extension MyPageView {
                     Text("피드백으로 혼내주기")
                         .typography(.title3)
                         .foregroundStyle(.staccatoBlack)
-
+                    
                     Spacer()
-
+                    
                     Image(.chevronRight)
                         .foregroundStyle(.gray2)
                 }
                 .padding(.vertical, 26)
                 .padding(.horizontal, 24)
             }
-
+            
             Divider()
-
+            
             HStack {
                 Text("앱 버전 \(Bundle.main.appVersion)")
                     .typography(.body4)
                     .foregroundStyle(.gray4)
                     .padding(.leading, 24)
-
+                
                 Spacer()
-
+                
                 Button {
                     let instagramUrl = URL(string: WebViewURLs.instagramApp)!
                     if UIApplication.shared.canOpenURL(instagramUrl) {

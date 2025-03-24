@@ -89,14 +89,3 @@ struct ImageSliderWithDot: View {
     }
     
 }
-
-
-// MARK: - Preview
-
-#Preview {
-    ImageSliderWithDot(
-        images: StaccatoDetailModel.sample.momentImages,
-        imageWidth: ScreenUtils.width,
-        imageHeight: ScreenUtils.width
-    )
-}

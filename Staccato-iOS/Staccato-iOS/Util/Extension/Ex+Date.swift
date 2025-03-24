@@ -8,6 +8,12 @@
 import Foundation
 
 extension Date {
+    var formattedAsRequestDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
+    }
+
     var formattedAsFullDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy. MM. dd"

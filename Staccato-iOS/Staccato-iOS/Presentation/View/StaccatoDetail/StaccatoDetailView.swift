@@ -79,7 +79,7 @@ private extension StaccatoDetailView {
     
     var imageSlider: some View {
         ImageSliderWithDot(
-            images: staccato.momentImages,
+            images: [], // TODO: #39번 브랜치 사용
             imageWidth: ScreenUtils.width,
             imageHeight: ScreenUtils.width
         )
@@ -87,7 +87,7 @@ private extension StaccatoDetailView {
     }
     
     var titleLabel: some View {
-        Text(staccato.memoryTitle)
+        Text(staccato.staccatoTitle)
             .typography(.title1)
             .foregroundStyle(.staccatoBlack)
             .lineLimit(.max)
@@ -127,8 +127,19 @@ private extension StaccatoDetailView {
             HStack {
                 ForEach(FeelingType.allCases, id: \.id) { feeling in
                     Button {
+                        let previousFeeling = selectedFeeling
                         selectedFeeling = feeling == selectedFeeling ? nil : feeling
-                        // TODO: 서버 POST
+                        // TODO: 뷰모델로 옮기기 (#39 머지 이후)
+                        Task {
+                            do {
+                                let request = PostStaccatoFeelingRequest(feeling: selectedFeeling?.serverKey ?? FeelingType.nothing)
+                                try await STService.shared.staccatoService.postStaccatoFeeling(494, requestBody: request)
+                                print("✅ Feeling submitted successfully! (\(request)")
+                            } catch {
+                                print("❌ Failed to submit feeling: \(error)")
+                                selectedFeeling = previousFeeling // 네트워킹 실패 시 원래 feeling으로
+                            }
+                        }
                         
                     } label: {
                         feeling.image

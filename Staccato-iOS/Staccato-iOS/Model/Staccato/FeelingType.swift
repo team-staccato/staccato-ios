@@ -11,6 +11,8 @@ enum FeelingType: CaseIterable, Identifiable {
     
     case excited, angry, happy, scared, sad
     
+    static let nothing: String = "nothing"
+    
     var id: Int {
         switch self {
         case .excited: return 0

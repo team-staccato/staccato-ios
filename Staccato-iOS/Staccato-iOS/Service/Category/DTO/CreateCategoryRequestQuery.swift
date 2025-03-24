@@ -8,10 +8,10 @@
 import Foundation
 
 struct CreateCategoryRequestQuery: Encodable {
-    var categoryThumbnailUrl: String?
-    var categoryTitle: String
-    var description: String?
-    var startAt: String?
-    var endAt: String?
+    let categoryThumbnailUrl: String?
+    let categoryTitle: String
+    let description: String?
+    let startAt: String?
+    let endAt: String?
 }
 

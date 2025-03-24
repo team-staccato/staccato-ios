@@ -8,5 +8,5 @@
 import Foundation
 
 struct CreateCategoryResponse: Decodable {
-    var categoryId: Int
+    let categoryId: Int
 }

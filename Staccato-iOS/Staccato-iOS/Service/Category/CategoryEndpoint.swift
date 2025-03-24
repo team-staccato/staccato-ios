@@ -32,7 +32,8 @@ extension CategoryEndpoint: APIEndpoint {
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getCategoryList, .createCategory: return URLEncoding.queryString
+        case .getCategoryList: return URLEncoding.queryString
+        case .createCategory: return JSONEncoding.default
         }
     }
     
@@ -54,9 +55,7 @@ extension CategoryEndpoint: APIEndpoint {
     
     var headers: [String : String]? {
         switch self {
-        case .getCategoryList: return HeaderType.tokenOnly()
-        case .createCategory:
-            return ["Authorization" : "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ODgsIm5pY2tuYW1lIjoi7JWE7JqU7JWE7JqUIiwiY3JlYXRlZEF0IjoiMjAyNS0wMy0yMFQxNDo1NjowMS4xMDU5MTIifQ.6HajjJPg0odR_uJdFPtUvKDp86C3Z5C56ZaEYg9P8qM"]
+        case .getCategoryList, .createCategory: return HeaderType.tokenOnly()
         }
     }
 }

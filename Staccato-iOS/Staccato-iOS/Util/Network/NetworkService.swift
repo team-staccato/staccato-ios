@@ -42,8 +42,9 @@ final class NetworkService {
         
 #if DEBUG
         print("-------------------Response-------------------\n▫️\(method.rawValue) \(url) parameters: \(String(describing: parameters)) \n▫️statusCode: \(response.response?.statusCode ?? 0) \n▫️response: \(response) \n-----------------------------------------------")
+        print(String(data: response.data ?? .empty, encoding: .utf8))
 #endif
-        
+
         // status code가 200~299가 아닌 경우 정해져 있는 에러를 뱉도록 수정
         if let urlResponse = response.response, !(200...299).contains(urlResponse.statusCode) {
             print(response.data ?? "")

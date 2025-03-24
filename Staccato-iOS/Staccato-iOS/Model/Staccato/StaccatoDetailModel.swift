@@ -26,3 +26,24 @@ struct StaccatoDetailModel: Identifiable {
     let longitude: Double
     
 }
+
+extension StaccatoDetailModel {
+    
+    static let sample = StaccatoDetailModel(
+        id: UUID(),
+        staccatoId: 494,
+        categoryId: 1,
+        categoryTitle: "CategoryTitle",
+        startAt: "StartAt",
+        endAt: "EndAt",
+        staccatoTitle: "StaccatoTitle",
+        staccatoImageUrls: [],
+        visitedAt: "visitedAt",
+        feeling: "feeling",
+        placeName: "placeName",
+        address: "address",
+        latitude: 0.0,
+        longitude: 0.0
+    )
+    
+}

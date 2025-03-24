@@ -133,8 +133,7 @@ private extension StaccatoDetailView {
                         Task {
                             do {
                                 let request = PostStaccatoFeelingRequest(feeling: selectedFeeling?.serverKey ?? FeelingType.nothing)
-                                try await STService.shared.staccatoService.postStaccatoFeeling(494, requestBody: request)
-                                print("✅ Feeling submitted successfully! (\(request)")
+                                try await STService.shared.staccatoService.postStaccatoFeeling(staccato.staccatoId, requestBody: request)
                             } catch {
                                 print("❌ Failed to submit feeling: \(error)")
                                 selectedFeeling = previousFeeling // 네트워킹 실패 시 원래 feeling으로

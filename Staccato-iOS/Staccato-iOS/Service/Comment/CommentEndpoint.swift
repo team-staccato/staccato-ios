@@ -12,6 +12,7 @@ enum CommentEndpoint {
     case getComments(_ staccatoId: Int64)
     case postComment(_ requestBody: PostCommentRequest)
     case putComment(_ commentId: Int64, _ requestBody: PutCommentRequest)
+    case deleteComment(_ commentId: Int64)
     
 }
 
@@ -21,6 +22,7 @@ extension CommentEndpoint: APIEndpoint {
     var path: String {
         switch self {
         case .putComment(let commentId, _): return "/comments/\(commentId)"
+        case .deleteComment(let commentId): return "/comments/\(commentId)"
         default: return "/comments/v2"
         }
     }
@@ -30,6 +32,7 @@ extension CommentEndpoint: APIEndpoint {
         case .getComments: return .get
         case .postComment: return .post
         case .putComment: return .put
+        case .deleteComment: return .delete
         }
     }
     
@@ -38,6 +41,7 @@ extension CommentEndpoint: APIEndpoint {
         case .getComments: return URLEncoding.queryString
         case .postComment: return JSONEncoding.default
         case .putComment: return JSONEncoding.default
+        case .deleteComment: return URLEncoding.default
         }
     }
     
@@ -46,6 +50,7 @@ extension CommentEndpoint: APIEndpoint {
         case .getComments(let staccatoId): return ["staccatoId" : staccatoId]
         case .postComment(let requestBody): return requestBody.encode()
         case .putComment(_, let requestBody): return requestBody.encode()
+        case .deleteComment(let commentId): return ["commentId" : commentId]
         }
     }
     

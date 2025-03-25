@@ -11,6 +11,8 @@ protocol CommentServiceProtocol {
     
     func getComments(_ staccatoId: Int64) async throws -> GetCommentsResponse
     
+    func postComment(_ requestBody: PostCommentRequest) async throws -> Void
+    
 }
 
 class CommentService: CommentServiceProtocol {
@@ -24,6 +26,14 @@ class CommentService: CommentServiceProtocol {
         }
         
         return comments
+    }
+    
+    func postComment(_ requestBody: PostCommentRequest) async throws -> Void {
+        
+        try await NetworkService.shared.request(
+            endpoint: CommentEndpoint.postComment(requestBody)
+        )
+        
     }
     
 }

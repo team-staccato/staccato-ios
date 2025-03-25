@@ -15,6 +15,8 @@ protocol CommentServiceProtocol {
     
     func putComment(_ commentId: Int64, _ requestBody: PutCommentRequest) async throws -> Void
     
+    func deleteComment(_ commentId: Int64) async throws -> Void
+    
 }
 
 class CommentService: CommentServiceProtocol {
@@ -39,6 +41,12 @@ class CommentService: CommentServiceProtocol {
     func putComment(_ commentId: Int64, _ requestBody: PutCommentRequest) async throws -> Void {
         try await NetworkService.shared.request(
             endpoint: CommentEndpoint.putComment(commentId, requestBody)
+        )
+    }
+    
+    func deleteComment(_ commentId: Int64) async throws -> Void {
+        try await NetworkService.shared.request(
+            endpoint: CommentEndpoint.deleteComment(commentId)
         )
     }
     

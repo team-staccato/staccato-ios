@@ -81,7 +81,9 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
-            viewModel.fetchStaccatoDetail(userdata.staccatoId)
+            Task {
+                await viewModel.fetchStaccatoDetail(userdata.staccatoId)
+            }
             viewModel.modalNavigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
         } else {
             print("⚠️ No StaccatoData found for this marker.")

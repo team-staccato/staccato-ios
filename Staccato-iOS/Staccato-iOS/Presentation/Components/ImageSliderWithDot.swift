@@ -53,8 +53,8 @@ struct ImageSliderWithDot: View {
         }
         .frame(width: imageWidth, alignment: .leading)
         .offset(x: -CGFloat(currentIndex) * imageWidth + offset)
-        .gesture(
-            DragGesture()
+        .simultaneousGesture( // NOTE: 최상위 스크롤뷰 제스쳐 허용
+            DragGesture(minimumDistance: 10)
                 .onChanged { value in
                     // NOTE: 가로 스크롤만 핸들
                     if abs(value.translation.width) > abs(value.translation.height) {
@@ -65,23 +65,18 @@ struct ImageSliderWithDot: View {
                     // NOTE: 가로 스크롤만 핸들
                     if abs(value.translation.width) > abs(value.translation.height) {
                         let dragAmount = value.translation.width
+                        let maxIndex = imageUrls.count - 1
                         // 왼쪽으로 스와이프
-                        if dragAmount < -minimumDragDistance && currentIndex < imageUrls.count - 1 {
-                            withAnimation {
-                                currentIndex += 1
-                            }
+                        if dragAmount < -minimumDragDistance && currentIndex < maxIndex {
+                            withAnimation { currentIndex += 1 }
                         }
                         // 오른쪽으로 스와이프
                         if dragAmount > minimumDragDistance && currentIndex > 0 {
-                            withAnimation {
-                                currentIndex -= 1
-                            }
+                            withAnimation { currentIndex -= 1 }
                         }
                         
                         // 오프셋 초기화
-                        withAnimation {
-                            offset = 0
-                        }
+                        withAnimation { offset = 0 }
                     }
                 }
         )

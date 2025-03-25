@@ -10,6 +10,7 @@ import Alamofire
 enum CommentEndpoint {
     
     case getComments(_ staccatoId: Int64)
+    case postComment(_ requestBody: PostCommentRequest)
     
 }
 
@@ -25,24 +26,27 @@ extension CommentEndpoint: APIEndpoint {
     var method: HTTPMethod {
         switch self {
         case .getComments: return .get
+        case .postComment: return .post
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
         case .getComments: return URLEncoding.queryString
+        case .postComment: return JSONEncoding.default
         }
     }
     
     var parameters: [String : Any]? {
         switch self {
         case .getComments(let staccatoId): return ["staccatoId" : staccatoId]
+        case .postComment(let requestBody): return requestBody.encode()
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getComments: return HeaderType.tokenOnly()
+        default: return HeaderType.tokenOnly()
         }
     }
     

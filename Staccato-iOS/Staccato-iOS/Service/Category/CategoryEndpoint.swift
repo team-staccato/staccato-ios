@@ -10,8 +10,8 @@ import Alamofire
 enum CategoryEndpoint {
     
     case getCategoryList(_ query: GetCategoryListRequestQuery)
+    
     case createCategory(_ query: CreateCategoryRequestQuery)
-
 }
 
 

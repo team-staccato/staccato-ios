@@ -9,6 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct CategoryEditorView: View {
+    @Environment(\.dismiss) var dismiss
     @Bindable private var vm = CategoryEditorViewModel()
 
     @FocusState private var isTitleFocused: Bool
@@ -36,7 +37,9 @@ struct CategoryEditorView: View {
                 Spacer()
 
                 Button("저장") {
-                    vm.createCategory()
+                    Task {
+                        await vm.createCategory()
+                    }
                 }
                 .buttonStyle(.staccatoFullWidth)
                 .disabled(vm.isSubmitButtonDisabled)
@@ -51,12 +54,31 @@ struct CategoryEditorView: View {
         .sheet(isPresented: $vm.isPeriodSheetPresented) {
             StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
         }
+
+        .alert(vm.errorTitle ?? "", isPresented: $vm.catchError) {
+            Button("확인") {
+                vm.catchError = false
+            }
+        } message: {
+            Text(vm.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+        }
+
+        .alert("카테고리 생성 성공", isPresented: $vm.uploadSuccess) {
+            Button("확인") {
+                dismiss()
+            }
+        } message: {
+            Text("이미지 업로드에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
+        }
+
     }
 }
 
 #Preview {
     NavigationStack {
-        CategoryEditorView()
+        NavigationLink("이동") {
+            CategoryEditorView()
+        }
     }
 }
 
@@ -79,7 +101,10 @@ extension CategoryEditorView {
         .clipShape(.rect(cornerRadius: 8))
         .padding(.top, 12)
         .onChange(of: vm.photoItem) { _, newValue in
-            vm.loadTransferable(from: newValue)
+            Task {
+                await vm.loadTransferable(from: newValue)
+                await vm.uploadImage()
+            }
         }
 
         .confirmationDialog("사진을 첨부해 보세요", isPresented: $vm.isPhotoInputPresented, titleVisibility: .visible, actions: {

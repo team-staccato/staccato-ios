@@ -27,6 +27,7 @@ class CategoryService: CategoryServiceProtocol {
         return categoryList
     }
 
+    @discardableResult
     func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse {
         guard let categoryId = try await NetworkService.shared.request(
             endpoint: CategoryEndpoint.createCategory(query),

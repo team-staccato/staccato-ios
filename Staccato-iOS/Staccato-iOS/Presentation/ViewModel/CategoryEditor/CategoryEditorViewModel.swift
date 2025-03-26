@@ -17,6 +17,7 @@ final class CategoryEditorViewModel {
     var showCamera = false
     var photoItem: PhotosPickerItem?
     var selectedPhoto: UIImage?
+    var imageURL: String?
 
     // MARK: - Title
     var categoryTitle = ""
@@ -30,6 +31,12 @@ final class CategoryEditorViewModel {
     var selectedEndDate: Date?
     var isPeriodSheetPresented = false
 
+    // MARK: - Alert
+    var catchError = false
+    var errorTitle: String?
+    var errorMessage: String?
+    var uploadSuccess = false
+
     var categoryPeriod: String? {
         guard let selectedStartDate, let selectedEndDate else { return nil }
         return "\(selectedStartDate.formattedAsFullDate + " ~ " + selectedEndDate.formattedAsFullDate)"
@@ -40,25 +47,42 @@ final class CategoryEditorViewModel {
     }
 
     // MARK: - Methods
-    func loadTransferable(from imageSelection: PhotosPickerItem?) {
-        Task {
-            if let imageData = try? await imageSelection?.loadTransferable(type: Data.self) {
+    func loadTransferable(from imageSelection: PhotosPickerItem?) async {
+        do {
+            if let imageData = try await imageSelection?.loadTransferable(type: Data.self) {
                 selectedPhoto = UIImage(data: imageData)
             }
+        } catch {
+            errorTitle = "이미지 업로드 실패"
+            errorMessage = error.localizedDescription
+            catchError = true
         }
     }
 
-    func createCategory() {
+    func uploadImage() async {
+        do {
+            let imageURL = try await NetworkService.shared.uploadImage(selectedPhoto)
+            self.imageURL = imageURL.imageUrl
+        } catch {
+            errorMessage = error.localizedDescription
+            catchError = true
+        }
+    }
+
+    func createCategory() async {
         let query = CreateCategoryRequestQuery(
-            categoryThumbnailUrl: "",
+            categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
-            description: self.categoryDescription ?? "",
+            description: self.categoryDescription,
             startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
             endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
         )
-        Task {
-            // 값 리턴 되면, 동작 정의 해야 함
+        do {
             try await STService.shared.categoryServie.createCategory(query)
+            self.uploadSuccess = true
+        } catch {
+            errorMessage = error.localizedDescription
+            catchError = true
         }
     }
 }

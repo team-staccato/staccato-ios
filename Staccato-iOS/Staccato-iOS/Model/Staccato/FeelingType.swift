@@ -11,6 +11,8 @@ enum FeelingType: CaseIterable, Identifiable {
     
     case excited, angry, happy, scared, sad
     
+    static let nothing: String = "nothing"
+    
     var id: Int {
         switch self {
         case .excited: return 0
@@ -39,6 +41,25 @@ enum FeelingType: CaseIterable, Identifiable {
         case .scared: return Image("feeling_scared")
         case .sad: return Image("feeling_sad")
         }
+    }
+    
+}
+
+
+// MARK: - String to FeelingType
+
+extension FeelingType {
+    
+    private static let serverKeyMap: [String : FeelingType] = {
+        var map = [String : FeelingType]()
+        for feeling in FeelingType.allCases {
+            map[feeling.serverKey] = feeling
+        }
+        return map
+    }()
+    
+    static func from(serverKey: String) -> FeelingType? {
+        return serverKeyMap[serverKey]
     }
     
 }

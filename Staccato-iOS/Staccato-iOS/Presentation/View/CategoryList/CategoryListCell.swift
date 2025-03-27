@@ -153,17 +153,14 @@ private struct ThumbnailImageView: View {
             }
     }
     
+    @MainActor
     private func loadImage() async {
         do {
             let result = try await KingfisherManager.shared.retrieveImage(with: url)
-            await MainActor.run {
-                loadingState = .loaded(Image(uiImage: result.image))
-            }
+            loadingState = .loaded(Image(uiImage: result.image))
         } catch {
-            await MainActor.run {
-                loadingState = .failed
+            loadingState = .failed
             print("😢 Failed to load thumbnail: \(error)")
-            }
         }
     }
     

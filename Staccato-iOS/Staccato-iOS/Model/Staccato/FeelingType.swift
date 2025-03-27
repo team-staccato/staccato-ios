@@ -44,3 +44,22 @@ enum FeelingType: CaseIterable, Identifiable {
     }
     
 }
+
+
+// MARK: - String to FeelingType
+
+extension FeelingType {
+    
+    private static let serverKeyMap: [String : FeelingType] = {
+        var map = [String : FeelingType]()
+        for feeling in FeelingType.allCases {
+            map[feeling.serverKey] = feeling
+        }
+        return map
+    }()
+    
+    static func from(serverKey: String) -> FeelingType? {
+        return serverKeyMap[serverKey]
+    }
+    
+}

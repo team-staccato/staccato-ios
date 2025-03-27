@@ -11,7 +11,7 @@ import CoreLocation
 class HomeViewModel: ObservableObject {
     
     // MARK: - Properties
-    
+    // Home, CategoryList
     @Published var modalNavigationState = HomeModalNavigationState()
     
     @Published var staccatoCoordinates: [StaccatoCoordinateModel] = []
@@ -19,7 +19,9 @@ class HomeViewModel: ObservableObject {
     
     @Published var isfetchingStaccatoList = false
     
+    // Staccato Detail View
     @Published var staccatoDetail: StaccatoDetailModel?
+    @Published var selectedFeeling: FeelingType?
     
     let locationManager = CLLocationManager()
     
@@ -111,6 +113,7 @@ extension HomeViewModel {
                 )
                 
                 self.staccatoDetail = staccatoDetail
+                self.selectedFeeling = FeelingType.from(serverKey: staccatoDetail.feeling)
                 
             } catch {
                 print("Error fetching staccato detail: \(error.localizedDescription)")

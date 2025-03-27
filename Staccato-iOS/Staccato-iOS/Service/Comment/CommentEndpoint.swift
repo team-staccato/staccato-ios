@@ -48,8 +48,8 @@ extension CommentEndpoint: APIEndpoint {
     var parameters: [String : Any]? {
         switch self {
         case .getComments(let staccatoId): return ["staccatoId" : staccatoId]
-        case .postComment(let requestBody): return requestBody.encode()
-        case .putComment(_, let requestBody): return requestBody.encode()
+        case .postComment(let requestBody): return requestBody.toDictionary()
+        case .putComment(_, let requestBody): return requestBody.toDictionary()
         case .deleteComment(let commentId): return ["commentId" : commentId]
         }
     }

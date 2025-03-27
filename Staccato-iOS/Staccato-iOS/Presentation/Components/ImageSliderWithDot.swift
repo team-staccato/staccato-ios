@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct ImageSliderWithDot: View {
     
     // MARK: - Properties
@@ -15,13 +17,13 @@ struct ImageSliderWithDot: View {
     @State private var offset: CGFloat = 0
     @State private var isDragging: Bool = false
     
-    private let images: [Image]
+    private let imageUrls: [String]
     private let imageWidth: CGFloat
     private let imageHeight: CGFloat
     private let minimumDragDistance: CGFloat = 50
     
-    init(images: [Image], imageWidth: CGFloat, imageHeight: CGFloat) {
-        self.images = images
+    init(images: [String], imageWidth: CGFloat, imageHeight: CGFloat) {
+        self.imageUrls = images
         self.imageWidth = imageWidth
         self.imageHeight = imageHeight
     }
@@ -41,8 +43,8 @@ struct ImageSliderWithDot: View {
     
     var imageSlider: some View {
         HStack(spacing: 0) {
-            ForEach(images.indices, id: \.self) { index in
-                images[index]
+            ForEach(imageUrls.indices, id: \.self) { index in
+                KFImage(URL(string: imageUrls[index]))
                     .resizable()
                     .scaledToFill()
                     .frame(width: imageWidth, height: imageHeight)
@@ -51,28 +53,30 @@ struct ImageSliderWithDot: View {
         }
         .frame(width: imageWidth, alignment: .leading)
         .offset(x: -CGFloat(currentIndex) * imageWidth + offset)
-        .gesture(
-            DragGesture()
+        .simultaneousGesture( // NOTE: 최상위 스크롤뷰 제스쳐 허용
+            DragGesture(minimumDistance: 10)
                 .onChanged { value in
-                    offset = value.translation.width
+                    // NOTE: 가로 스크롤만 핸들
+                    if abs(value.translation.width) > abs(value.translation.height) {
+                        offset = value.translation.width
+                    }
                 }
                 .onEnded { value in
-                    let dragAmount = value.translation.width
-                    // 왼쪽으로 스와이프
-                    if dragAmount < -minimumDragDistance && currentIndex < images.count - 1 {
-                        withAnimation {
-                            currentIndex += 1
+                    // NOTE: 가로 스크롤만 핸들
+                    if abs(value.translation.width) > abs(value.translation.height) {
+                        let dragAmount = value.translation.width
+                        let maxIndex = imageUrls.count - 1
+                        // 왼쪽으로 스와이프
+                        if dragAmount < -minimumDragDistance && currentIndex < maxIndex {
+                            withAnimation { currentIndex += 1 }
                         }
-                    }
-                    // 오른쪽으로 스와이프
-                    if dragAmount > minimumDragDistance && currentIndex > 0 {
-                        withAnimation {
-                            currentIndex -= 1
+                        // 오른쪽으로 스와이프
+                        if dragAmount > minimumDragDistance && currentIndex > 0 {
+                            withAnimation { currentIndex -= 1 }
                         }
-                    }
-                    // 오프셋 초기화
-                    withAnimation {
-                        offset = 0
+                        
+                        // 오프셋 초기화
+                        withAnimation { offset = 0 }
                     }
                 }
         )
@@ -80,7 +84,7 @@ struct ImageSliderWithDot: View {
     
     var dotCarousel: some View {
         HStack(spacing: 5) {
-            ForEach(0..<images.count, id: \.self) { index in
+            ForEach(0..<imageUrls.count, id: \.self) { index in
                 Circle()
                     .fill(currentIndex == index ? .gray3 : .gray2)
                     .frame(width: 6, height: 6)

@@ -1,15 +1,13 @@
 //
-//  StaccatoModel.swift
+//  GetStaccatoDetailResponse.swift
 //  Staccato-iOS
 //
-//  Created by 김유림 on 2/25/25.
+//  Created by 김유림 on 3/20/25.
 //
 
-import SwiftUI
+import Foundation
 
-struct StaccatoDetailModel: Identifiable {
-    
-    let id: UUID
+struct GetStaccatoDetailResponse: Decodable {
     
     let staccatoId: Int64
     let categoryId: Int64

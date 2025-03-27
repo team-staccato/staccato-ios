@@ -12,6 +12,7 @@ final class NetworkService {
     static let shared = NetworkService()
     private init() {}
     
+    
     // MARK: - Response 있는 경우
     
     func request<T: Decodable>(

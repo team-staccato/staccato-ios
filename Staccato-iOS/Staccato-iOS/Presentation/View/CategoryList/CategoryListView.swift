@@ -40,7 +40,7 @@ struct CategoryListView: View {
                 .padding(.horizontal, 18)
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
-                    case .staccatoDetail: StaccatoDetailView(homeViewModel)
+                    case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
                     case .staccatoAdd: StaccatoCreateView()
                     case .categoryDetail: CategoryDetailView()
                     case .categoryAdd: CategoryEditorView()

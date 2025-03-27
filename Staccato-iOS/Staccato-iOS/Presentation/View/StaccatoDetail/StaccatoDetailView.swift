@@ -11,17 +11,20 @@ struct StaccatoDetailView: View {
     
     // MARK: - State Properties
     
-    @ObservedObject var homeViewModel: HomeViewModel
+    let staccatoId: Int64
+    
+    @ObservedObject var viewModel: StaccatoDetailViewModel
     
     // TODO: 수정
-    @State var userId: Int64 = 1
     @State var comments: [CommentModel] = CommentModel.dummy
     
     @State var commentText: String = ""
     @FocusState private var isCommentFocused: Bool
     
-    init(_ homeViewModel: HomeViewModel) {
-        self.homeViewModel = homeViewModel
+    init(_ staccatoId: Int64) {
+        self.staccatoId = staccatoId
+        self.viewModel = StaccatoDetailViewModel()
+        viewModel.fetchStaccatoDetail(staccatoId)
     }
     
     
@@ -50,7 +53,6 @@ struct StaccatoDetailView: View {
                     commentSection
                 }
             }
-            .id(homeViewModel.staccatoDetail?.id)
             .onTapGesture {
                 isCommentFocused = false
             }
@@ -78,7 +80,7 @@ private extension StaccatoDetailView {
     
     var imageSlider: some View {
         ImageSliderWithDot(
-            images: homeViewModel.staccatoDetail?.staccatoImageUrls ?? [],
+            images: viewModel.staccatoDetail?.staccatoImageUrls ?? [],
             imageWidth: ScreenUtils.width,
             imageHeight: ScreenUtils.width
         )
@@ -86,7 +88,7 @@ private extension StaccatoDetailView {
     }
     
     var titleLabel: some View {
-        Text(homeViewModel.staccatoDetail?.staccatoTitle ?? "")
+        Text(viewModel.staccatoDetail?.staccatoTitle ?? "")
             .typography(.title1)
             .foregroundStyle(.staccatoBlack)
             .lineLimit(.max)
@@ -96,20 +98,20 @@ private extension StaccatoDetailView {
     
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(homeViewModel.staccatoDetail?.placeName ?? "")
+            Text(viewModel.staccatoDetail?.placeName ?? "")
                 .typography(.body1)
                 .foregroundStyle(.staccatoBlack)
                 .lineLimit(.max)
                 .multilineTextAlignment(.leading)
             
-            Text(homeViewModel.staccatoDetail?.address ?? "")
+            Text(viewModel.staccatoDetail?.address ?? "")
                 .typography(.body4)
                 .foregroundStyle(.staccatoBlack)
                 .lineLimit(.max)
                 .multilineTextAlignment(.leading)
                 .padding(.top, 8)
             
-            let visitedAt: String = homeViewModel.staccatoDetail?.visitedAt ?? ""
+            let visitedAt: String = viewModel.staccatoDetail?.visitedAt ?? ""
             let visitedAtString: String = {
                 guard visitedAt.count >= 10 else { return "" }
                 let year = visitedAt.prefix(4)
@@ -135,11 +137,11 @@ private extension StaccatoDetailView {
             HStack {
                 ForEach(FeelingType.allCases, id: \.id) { feeling in
                     Button {
-                        let previousFeeling = homeViewModel.selectedFeeling
-                        homeViewModel.selectedFeeling = feeling == homeViewModel.selectedFeeling ? nil : feeling
-                        homeViewModel.postStaccatoFeeling(homeViewModel.selectedFeeling) { isSuccess in
+                        let previousFeeling = viewModel.selectedFeeling
+                        viewModel.selectedFeeling = feeling == viewModel.selectedFeeling ? nil : feeling
+                        viewModel.postStaccatoFeeling(viewModel.selectedFeeling) { isSuccess in
                             if !isSuccess {
-                                homeViewModel.selectedFeeling = previousFeeling
+                                viewModel.selectedFeeling = previousFeeling
                             }
                         }
                         
@@ -147,7 +149,7 @@ private extension StaccatoDetailView {
                         feeling.image
                             .resizable()
                             .frame(width: 60, height: 60)
-                            .opacity(homeViewModel.selectedFeeling == feeling ? 1 : 0.3)
+                            .opacity(viewModel.selectedFeeling == feeling ? 1 : 0.3)
                     }
                 }
             }
@@ -178,7 +180,7 @@ private extension StaccatoDetailView {
                 } else {
                     VStack(spacing: 12) {
                         ForEach(comments, id: \.commentId) { comment in
-                            makeCommentView(userId: userId, comment: comment)
+                            makeCommentView(userId: viewModel.userId, comment: comment)
                         }
                     }
                     .padding(.top, 16)

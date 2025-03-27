@@ -13,8 +13,6 @@ struct StaccatoDetailView: View {
     
     @ObservedObject var homeViewModel: HomeViewModel
     
-    @State var selectedFeeling: FeelingType? = nil
-    
     // TODO: 수정
     @State var userId: Int64 = 1
     @State var comments: [CommentModel] = CommentModel.dummy
@@ -137,11 +135,11 @@ private extension StaccatoDetailView {
             HStack {
                 ForEach(FeelingType.allCases, id: \.id) { feeling in
                     Button {
-                        let previousFeeling = selectedFeeling
-                        selectedFeeling = feeling == selectedFeeling ? nil : feeling
-                        homeViewModel.postStaccatoFeeling(selectedFeeling) { isSuccess in
+                        let previousFeeling = homeViewModel.selectedFeeling
+                        homeViewModel.selectedFeeling = feeling == homeViewModel.selectedFeeling ? nil : feeling
+                        homeViewModel.postStaccatoFeeling(homeViewModel.selectedFeeling) { isSuccess in
                             if !isSuccess {
-                                selectedFeeling = previousFeeling
+                                homeViewModel.selectedFeeling = previousFeeling
                             }
                         }
                         
@@ -149,7 +147,7 @@ private extension StaccatoDetailView {
                         feeling.image
                             .resizable()
                             .frame(width: 60, height: 60)
-                            .opacity(selectedFeeling == feeling ? 1 : 0.3)
+                            .opacity(homeViewModel.selectedFeeling == feeling ? 1 : 0.3)
                     }
                 }
             }

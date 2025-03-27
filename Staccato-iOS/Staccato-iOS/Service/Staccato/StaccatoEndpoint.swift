@@ -41,7 +41,7 @@ extension StaccatoEndpoint: APIEndpoint {
     
     var parameters: [String : Any]? {
         switch self {
-        case .postStaccatoFeeling(_, let requestBody): return requestBody.encode()
+        case .postStaccatoFeeling(_, let requestBody): return requestBody.toDictionary()
         default: return nil
         }
     }

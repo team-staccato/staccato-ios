@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Properties
@@ -20,8 +21,7 @@ final class CategoryListViewModel: ObservableObject {
             do {
                 try getCategoryList()
             } catch {
-                // 여기서 에러 처리
-                print(error.localizedDescription)
+                print("❌ error: \(error.localizedDescription)")
             }
         }
     }
@@ -31,7 +31,7 @@ final class CategoryListViewModel: ObservableObject {
             do {
                 try getCategoryList()
             } catch {
-                print(error.localizedDescription)
+                print("❌ error: \(error.localizedDescription)")
             }
         }
     }
@@ -39,6 +39,7 @@ final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Networking
     
+    @MainActor
     func getCategoryList() throws {
         Task {
             let categoryList = try await STService.shared.categoryServie.getCategoryList(

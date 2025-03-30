@@ -14,7 +14,7 @@ enum HomeModalSize: CaseIterable {
     var height: CGFloat {
         switch self {
         case .small: return 73 / 640 * ScreenUtils.height
-        case .medium: return ScreenUtils.height / 2
+        case .medium: return ScreenUtils.height * 0.6
         case .large: return ScreenUtils.height - ScreenUtils.safeAreaInsets.top
         }
     }

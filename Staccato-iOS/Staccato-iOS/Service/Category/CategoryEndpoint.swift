@@ -11,6 +11,7 @@ enum CategoryEndpoint {
     
     case getCategoryList(_ query: GetCategoryListRequestQuery)
     
+    case createCategory(_ query: CreateCategoryRequestQuery)
 }
 
 
@@ -18,19 +19,21 @@ extension CategoryEndpoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .getCategoryList: return "/categories"
+        case .getCategoryList, .createCategory: return "/categories"
         }
     }
     
     var method: HTTPMethod {
         switch self {
         case .getCategoryList: return .get
+        case .createCategory: return .post
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
         case .getCategoryList: return URLEncoding.queryString
+        case .createCategory: return JSONEncoding.default
         }
     }
     
@@ -45,13 +48,14 @@ extension CategoryEndpoint: APIEndpoint {
                 params["sort"] = sort
             }
             return params.isEmpty ? nil : params
+        case .createCategory(let query):
+            return query.toDictionary()
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getCategoryList: return HeaderType.tokenOnly()
+        case .getCategoryList, .createCategory: return HeaderType.tokenOnly()
         }
     }
-    
 }

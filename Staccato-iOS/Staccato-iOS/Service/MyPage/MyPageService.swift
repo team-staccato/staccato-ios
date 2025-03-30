@@ -11,6 +11,8 @@ protocol MyPageServiceProtocol {
     
     func getProfile() async throws -> GetProfileResponse
     
+    func uploadProfileImage(_ requestBody: PostProfileImageRequest) async throws -> ImageURL
+    
 }
 
 class MyPageService: MyPageServiceProtocol {
@@ -25,4 +27,10 @@ class MyPageService: MyPageServiceProtocol {
         
         return profile
     }
+    
+    func uploadProfileImage(_ requestBody: PostProfileImageRequest) async throws -> ImageURL {
+        let response = try await NetworkService.shared.uploadImage(requestBody.image)
+        return response
+    }
+
 }

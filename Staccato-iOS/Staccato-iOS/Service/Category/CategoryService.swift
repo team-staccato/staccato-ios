@@ -10,7 +10,8 @@ import Foundation
 protocol CategoryServiceProtocol {
     
     func getCategoryList(_ query: GetCategoryListRequestQuery) async throws -> GetCategoryListResponse
-    
+
+    func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse
 }
 
 class CategoryService: CategoryServiceProtocol {
@@ -25,5 +26,17 @@ class CategoryService: CategoryServiceProtocol {
         
         return categoryList
     }
-    
+
+    @discardableResult
+    func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse {
+        guard let categoryId = try await NetworkService.shared.request(
+            endpoint: CategoryEndpoint.createCategory(query),
+            responseType: CreateCategoryResponse.self
+        ) else {
+            throw StaccatoError.optionalBindingFailed
+        }
+
+        return categoryId
+    }
+
 }

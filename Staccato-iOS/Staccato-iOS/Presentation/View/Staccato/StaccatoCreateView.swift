@@ -15,6 +15,10 @@ struct StaccatoCreateView: View {
     @State var selectedDate: Date?
     @FocusState var isTitleFocused: Bool
 
+    @State var catchError: Bool = false
+    @State var errorTitle: String?
+    @State var errorMessage: String?
+
     // MARK: Photo Input
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
     @State var photos: [UIImage] = []
@@ -47,6 +51,15 @@ struct StaccatoCreateView: View {
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
+
+        .alert(errorTitle ?? "", isPresented: $catchError) {
+            Button("확인") {
+                catchError = false
+            }
+        } message: {
+            Text(errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+        }
+        
     }
 }
 
@@ -55,7 +68,7 @@ struct StaccatoCreateView: View {
 }
 
 extension StaccatoCreateView {
-    // MARK: - Photo Related
+    // MARK: - Photo
     private var photoInputSection: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 3) {
@@ -284,6 +297,7 @@ extension StaccatoCreateView {
                 guard let transferedImage = UIImage(data: imageData) else { throw StaccatoError.imageParsingFailed }
 
                 self.photos.append(transferedImage)
+                self.photoItem = nil
             }
         } catch {
             print(error.localizedDescription)

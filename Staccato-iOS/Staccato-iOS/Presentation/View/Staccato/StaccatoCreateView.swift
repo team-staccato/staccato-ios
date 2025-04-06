@@ -17,7 +17,7 @@ struct StaccatoCreateView: View {
 
     // MARK: Photo Input
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-    @State var photos: [UIImage] = [UIImage(systemName: "circle")!, UIImage(systemName: "circle")!, UIImage(systemName: "circle.fill")!, UIImage(systemName: "circle")!]
+    @State var photos: [UIImage] = []
     @State var isPhotoInputPresented = false
     @State var showCamera = false
     @State var isPhotoPickerPresented = false
@@ -55,6 +55,7 @@ struct StaccatoCreateView: View {
 }
 
 extension StaccatoCreateView {
+    // MARK: - Photo Related
     private var photoInputSection: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 3) {
@@ -62,7 +63,7 @@ extension StaccatoCreateView {
                     .foregroundStyle(.staccatoBlack)
                     .typography(.title2)
 
-                Text("(0/5)")
+                Text("(\(photos.count)/5)")
                     .foregroundStyle(.gray3)
                     .typography(.body4)
 
@@ -121,7 +122,7 @@ extension StaccatoCreateView {
                         .typography(.body3)
                 }
                 .foregroundStyle(.gray3)
-                .frame(width: geometry.size.width, height: geometry.size.width)
+                .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
                 .background(.gray1, in: .rect(cornerRadius: 5))
             }
             .aspectRatio(1, contentMode: .fit)
@@ -134,12 +135,31 @@ extension StaccatoCreateView {
             Image(uiImage: photo)
                 .resizable()
                 .scaledToFill()
-                .frame(width: geometry.size.width, height: geometry.size.width)
+                .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
                 .clipShape(.rect(cornerRadius: 5))
+                .overlay(alignment: .topTrailing) {
+                    Button {
+                        if let index = photos.firstIndex(of: photo) {
+                            withAnimation {
+                                _ = photos.remove(at: index)
+                            }
+                        }
+                    } label: {
+                        Image(.minusCircle)
+                            .resizable()
+                            .scaledToFit()
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(.red, .gray3)
+                            .background(Circle().fill(.white))
+                            .frame(width: 25, height: 25)
+                            .offset(x: 5, y: -5)
+                    }
+                }
         }
         .aspectRatio(1, contentMode: .fit)
     }
 
+    // MARK: - Title
     private var titleInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "스타카토 제목")
@@ -154,6 +174,7 @@ extension StaccatoCreateView {
         }
     }
 
+    // MARK: - Location
     private var locationInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
@@ -205,6 +226,7 @@ extension StaccatoCreateView {
         }
     }
 
+    // MARK: - Date
     private var dateInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
@@ -221,6 +243,7 @@ extension StaccatoCreateView {
         }
     }
 
+    // MARK: - Category
     private var categorySelectSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
@@ -232,6 +255,7 @@ extension StaccatoCreateView {
         }
     }
 
+    // MARK: - Save
     private var saveButton: some View {
         Button("저장") {
 
@@ -240,6 +264,7 @@ extension StaccatoCreateView {
         .disabled(true)
     }
 
+    // MARK: - Components
     private func sectionTitle(title: String) -> some View {
         return Group {
             Text(title)

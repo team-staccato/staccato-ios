@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct StaccatoCreateView: View {
     @State var title: String = ""
@@ -13,6 +14,14 @@ struct StaccatoCreateView: View {
     @State var showDatePickerSheet = false
     @State var selectedDate: Date?
     @FocusState var isTitleFocused: Bool
+
+    // MARK: Photo Input
+    let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    @State var photos: [UIImage] = [UIImage(systemName: "circle")!, UIImage(systemName: "circle")!, UIImage(systemName: "circle.fill")!, UIImage(systemName: "circle")!]
+    @State var isPhotoInputPresented = false
+    @State var showCamera = false
+    @State var isPhotoPickerPresented = false
+    @State var photoItem: PhotosPickerItem?
 
     var body: some View {
         ScrollView {
@@ -61,22 +70,74 @@ extension StaccatoCreateView {
             }
             .padding(.bottom, 16)
 
-            photoInputPlaceholder
+            photoInputGrid
 
+        }
+        .confirmationDialog("사진을 첨부해 보세요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
+            Button("카메라 열기") {
+                showCamera = true
+            }
+
+            Button("앨범에서 가져오기") {
+                isPhotoPickerPresented = true
+            }
+        })
+
+        .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
+
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraView(cameraMode: .multiple, imageList: self.$photos)
+                .background(.black)
+        }
+
+        .onChange(of: photoItem) { _, newValue in
+            Task {
+                await loadTransferable(from: newValue)
+            }
         }
     }
 
-    private var photoInputPlaceholder: some View {
-        VStack(spacing: 8) {
-            Image(.camera)
-                .frame(width: 28)
+    private var photoInputGrid: some View {
+        LazyVGrid(columns: columns, spacing: 12) {
+            photoInputPlaceholder
 
-            Text("사진을 첨부해 보세요")
-                .typography(.body3)
+            ForEach(photos, id: \.self) { photo in
+                photoPreview(photo: photo)
+            }
         }
-        .foregroundStyle(.gray3)
-        .frame(width: 150, height: 150)
-        .background(.gray1, in: .rect(cornerRadius: 5))
+        .padding(0)
+    }
+
+    private var photoInputPlaceholder: some View {
+        Button {
+            isPhotoInputPresented = true
+        } label: {
+            GeometryReader { geometry in
+                VStack(spacing: 8) {
+                    Image(.camera)
+                        .frame(width: 28)
+
+                    Text("사진을 첨부해 보세요")
+                        .typography(.body3)
+                }
+                .foregroundStyle(.gray3)
+                .frame(width: geometry.size.width, height: geometry.size.width)
+                .background(.gray1, in: .rect(cornerRadius: 5))
+            }
+            .aspectRatio(1, contentMode: .fit)
+        }
+
+    }
+
+    private func photoPreview(photo: UIImage) -> some View {
+        GeometryReader { geometry in
+            Image(uiImage: photo)
+                .resizable()
+                .scaledToFill()
+                .frame(width: geometry.size.width, height: geometry.size.width)
+                .clipShape(.rect(cornerRadius: 5))
+        }
+        .aspectRatio(1, contentMode: .fit)
     }
 
     private var titleInputSection: some View {
@@ -188,5 +249,22 @@ extension StaccatoCreateView {
         }
         .typography(.title2)
         .padding(.bottom, 8)
+    }
+}
+
+extension StaccatoCreateView {
+    func loadTransferable(from imageSelection: PhotosPickerItem?) async {
+        do {
+            if let imageData = try await imageSelection?.loadTransferable(type: Data.self) {
+                guard let transferedImage = UIImage(data: imageData) else { throw StaccatoError.imageParsingFailed }
+
+                self.photos.append(transferedImage)
+            }
+        } catch {
+            print(error.localizedDescription)
+//            errorTitle = "이미지 업로드 실패"
+//            errorMessage = error.localizedDescription
+//            catchError = true
+        }
     }
 }

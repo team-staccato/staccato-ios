@@ -33,27 +33,38 @@ struct StaccatoDetailView: View {
 
     var body: some View {
         VStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    imageSlider
-                    
-                    titleLabel
-                    
-                    Divider()
-                    
-                    locationSection
-                    
-                    Divider()
-                    
-                    feelingSection
-                    
-                    Divider()
-                    
-                    commentSection
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        imageSlider
+                        
+                        titleLabel
+                        
+                        Divider()
+                        
+                        locationSection
+                        
+                        Divider()
+                        
+                        feelingSection
+                        
+                        Divider()
+                        
+                        commentSection
+                            .id("commentSection")
+                    }
                 }
-            }
-            .onTapGesture {
-                isCommentFocused = false
+                .onChange(of: viewModel.comments) { _,_ in
+                    if viewModel.shouldScrollToBottom {
+                        withAnimation {
+                            proxy.scrollTo("commentSection", anchor: .bottom)
+                            viewModel.shouldScrollToBottom = false
+                        }
+                    }
+                }
+                .onTapGesture {
+                    isCommentFocused = false
+                }
             }
             
             Spacer()

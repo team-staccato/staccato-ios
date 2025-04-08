@@ -20,6 +20,7 @@ class StaccatoDetailViewModel: ObservableObject {
     }
     @Published var selectedFeeling: FeelingType?
     @Published var comments: [CommentModel] = []
+    @Published var shouldScrollToBottom: Bool = false
     
     let userId: Int64 = AuthTokenManager.shared.getUserId() ?? -1
     
@@ -102,6 +103,7 @@ extension StaccatoDetailViewModel {
         }
     }
     
+    @MainActor
     func postComment(_ content: String) {
         guard let staccatoDetail else { return }
         
@@ -110,7 +112,8 @@ extension StaccatoDetailViewModel {
                 try await STService.shared.commentService.postComment(
                     PostCommentRequest(staccatoId: staccatoDetail.staccatoId, content: content)
                 )
-                await self.getComments()
+                getComments()
+                shouldScrollToBottom = true
             } catch {
                 print("Error on postComment: \(error.localizedDescription)")
             }

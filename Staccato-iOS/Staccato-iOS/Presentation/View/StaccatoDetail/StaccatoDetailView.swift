@@ -207,8 +207,7 @@ private extension StaccatoDetailView {
                 .focused($isCommentFocused)
             
             Button {
-                print("버튼 클릭됨!")
-                // TODO: 서버 통신
+                viewModel.postComment(commentText)
                 commentText.removeAll()
             } label: {
                 Image(StaccatoIcon.arrowRightCircleFill)

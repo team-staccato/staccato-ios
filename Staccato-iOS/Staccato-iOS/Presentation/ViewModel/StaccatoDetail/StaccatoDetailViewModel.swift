@@ -102,4 +102,19 @@ extension StaccatoDetailViewModel {
         }
     }
     
+    func postComment(_ content: String) {
+        guard let staccatoDetail else { return }
+        
+        Task {
+            do {
+                try await STService.shared.commentService.postComment(
+                    PostCommentRequest(staccatoId: staccatoDetail.staccatoId, content: content)
+                )
+                await self.getComments()
+            } catch {
+                print("Error on postComment: \(error.localizedDescription)")
+            }
+        }
+    }
+    
 }

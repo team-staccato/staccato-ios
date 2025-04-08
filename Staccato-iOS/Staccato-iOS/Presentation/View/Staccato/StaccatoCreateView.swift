@@ -8,6 +8,45 @@
 import SwiftUI
 import PhotosUI
 
+import Lottie
+
+@MainActor
+@Observable
+class UploadablePhoto: Identifiable, Equatable {
+    let id: UUID = UUID()
+    let photo: UIImage
+
+    var isUploading = false
+    var isFailed = false
+    var imageURL: String?
+
+    init(photo: UIImage) {
+        self.photo = photo
+    }
+
+    nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    func uploadImage() async throws {
+        isUploading = true
+        print("여기임")
+        defer {
+            isUploading = false
+        }
+
+        do {
+            let imageURL = try await NetworkService.shared.uploadImage(self.photo)
+            self.imageURL = imageURL.imageUrl
+            print("성공")
+        } catch {
+            isFailed = true
+            print("실패")
+            throw error
+        }
+    }
+}
+
 struct StaccatoCreateView: View {
     @State var title: String = ""
     @State var locationManager = LocationManager()
@@ -21,11 +60,13 @@ struct StaccatoCreateView: View {
 
     // MARK: Photo Input
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-    @State var photos: [UIImage] = []
+    @State var photos: [UploadablePhoto] = []
     @State var isPhotoInputPresented = false
     @State var showCamera = false
     @State var isPhotoPickerPresented = false
     @State var photoItem: PhotosPickerItem?
+
+    @State var isUploading = false
 
     var body: some View {
         ScrollView {
@@ -59,7 +100,6 @@ struct StaccatoCreateView: View {
         } message: {
             Text(errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
-        
     }
 }
 
@@ -109,13 +149,28 @@ extension StaccatoCreateView {
                 await loadTransferable(from: newValue)
             }
         }
+
+        .onChange(of: photos) { oldValue, newValue in
+            Task {
+                if oldValue.count < newValue.count {
+                    if let lastIndex = newValue.indices.last {
+                        do {
+                            try await photos[lastIndex].uploadImage()
+                        } catch {
+                            self.errorTitle = "이미지 업로드 실패"
+                            self.errorMessage = error.localizedDescription
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private var photoInputGrid: some View {
         LazyVGrid(columns: columns, spacing: 12) {
             photoInputPlaceholder
 
-            ForEach(photos, id: \.self) { photo in
+            ForEach(photos, id: \.id) { photo in
                 photoPreview(photo: photo)
             }
         }
@@ -143,31 +198,51 @@ extension StaccatoCreateView {
 
     }
 
-    private func photoPreview(photo: UIImage) -> some View {
+    private func photoPreview(photo: UploadablePhoto) -> some View {
         GeometryReader { geometry in
-            Image(uiImage: photo)
-                .resizable()
-                .scaledToFill()
-                .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
-                .clipShape(.rect(cornerRadius: 5))
-                .overlay(alignment: .topTrailing) {
-                    Button {
-                        if let index = photos.firstIndex(of: photo) {
-                            withAnimation {
-                                _ = photos.remove(at: index)
-                            }
-                        }
-                    } label: {
-                        Image(.minusCircle)
-                            .resizable()
-                            .scaledToFit()
-                            .symbolRenderingMode(.palette)
-                            .foregroundStyle(.red, .gray3)
-                            .background(Circle().fill(.white))
-                            .frame(width: 25, height: 25)
-                            .offset(x: 5, y: -5)
+            ZStack {
+                Image(uiImage: photo.photo)
+                    .resizable()
+                    .scaledToFill()
+
+                if photo.isUploading {
+                    ZStack {
+                        Color.white.opacity(0.8)
+                        LottieView(animation: .named("UploadImage"))
+                            .playing(loopMode: .loop)
                     }
                 }
+
+                if photo.isFailed {
+                    ZStack {
+                        Color.white.opacity(0.8)
+                        Image(.photoBadgeExclamationmark)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 78)
+                    }
+                }
+            }
+            .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
+            .clipShape(.rect(cornerRadius: 5))
+            .overlay(alignment: .topTrailing) {
+                Button {
+                    if let index = photos.firstIndex(of: photo) {
+                        withAnimation {
+                            _ = photos.remove(at: index)
+                        }
+                    }
+                } label: {
+                    Image(.minusCircle)
+                        .resizable()
+                        .scaledToFit()
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(.red, .gray3)
+                        .background(Circle().fill(.white))
+                        .frame(width: 25, height: 25)
+                        .offset(x: 5, y: -5)
+                }
+            }
         }
         .aspectRatio(1, contentMode: .fit)
     }
@@ -296,14 +371,14 @@ extension StaccatoCreateView {
             if let imageData = try await imageSelection?.loadTransferable(type: Data.self) {
                 guard let transferedImage = UIImage(data: imageData) else { throw StaccatoError.imageParsingFailed }
 
-                self.photos.append(transferedImage)
+                self.photos.append(UploadablePhoto(photo: transferedImage))
                 self.photoItem = nil
             }
         } catch {
             print(error.localizedDescription)
-//            errorTitle = "이미지 업로드 실패"
-//            errorMessage = error.localizedDescription
-//            catchError = true
+            errorTitle = "이미지 업로드 실패"
+            errorMessage = error.localizedDescription
+            catchError = true
         }
     }
 }

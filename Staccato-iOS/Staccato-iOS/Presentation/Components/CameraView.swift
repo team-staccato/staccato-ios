@@ -10,13 +10,13 @@ import SwiftUI
 struct CameraView: UIViewControllerRepresentable {
     let cameraMode: CameraMode
     @Binding var selectedImage: UIImage?
-    @Binding var imageList: [UIImage]
+    @Binding var imageList: [UploadablePhoto]
     @Environment(\.presentationMode) var isPresented
 
     init(
         cameraMode: CameraMode = .single,
         selectedImage: Binding<UIImage?> = .constant(nil),
-        imageList: Binding<[UIImage]> = .constant([])
+        imageList: Binding<[UploadablePhoto]> = .constant([])
     ) {
         self.cameraMode = cameraMode
         self._selectedImage = selectedImage
@@ -53,7 +53,7 @@ struct CameraView: UIViewControllerRepresentable {
             case .single:
                 self.picker.selectedImage = selectedImage
             case .multiple:
-                self.picker.imageList.append(selectedImage)
+                self.picker.imageList.append(UploadablePhoto(photo: selectedImage))
             }
             self.picker.isPresented.wrappedValue.dismiss()
         }

@@ -11,8 +11,16 @@ class StaccatoDetailViewModel: ObservableObject {
     
     // MARK: - Properties
     
-    @Published var staccatoDetail: StaccatoDetailModel?
+    @Published var staccatoDetail: StaccatoDetailModel? {
+        didSet {
+            Task { @MainActor in
+                getComments()
+            }
+        }
+    }
     @Published var selectedFeeling: FeelingType?
+    @Published var comments: [CommentModel] = []
+    
     let userId: Int64 = AuthTokenManager.shared.getUserId() ?? -1
     
 }
@@ -23,7 +31,7 @@ class StaccatoDetailViewModel: ObservableObject {
 extension StaccatoDetailViewModel {
     
     @MainActor
-    func fetchStaccatoDetail(_ staccatoId: Int64) {
+    func getStaccatoDetail(_ staccatoId: Int64) {
         Task {
             do {
                 let response = try await STService.shared.staccatoService.getStaccatoDetail(staccatoId)
@@ -44,12 +52,8 @@ extension StaccatoDetailViewModel {
                     latitude: response.latitude,
                     longitude: response.longitude
                 )
-                
                 self.staccatoDetail = staccatoDetail
                 self.selectedFeeling = FeelingType.from(serverKey: staccatoDetail.feeling)
-                
-                print("🥑 staccatoDetail.id: \(staccatoDetail.id)")
-                
             } catch {
                 print("Error fetching staccato detail: \(error.localizedDescription)")
             }
@@ -69,6 +73,31 @@ extension StaccatoDetailViewModel {
             } catch {
                 print("❌ Failed to submit feeling: \(error)")
                 isSuccess(false)
+            }
+        }
+    }
+    
+    @MainActor
+    func getComments() {
+        guard let staccatoDetail else {
+            print("😢getComments - \(StaccatoError.optionalBindingFailed)")
+            return
+        }
+        
+        Task {
+            do {
+                let comment: [CommentModel] = try await STService.shared.commentService.getComments(staccatoDetail.staccatoId).comments.map {
+                    CommentModel(
+                        commentId: $0.commentId,
+                        memberId: $0.memberId,
+                        nickname: $0.nickname,
+                        memberImageUrl: $0.memberImageUrl,
+                        content: $0.content
+                    )
+                }
+                self.comments = comment
+            } catch {
+                print("Error on getComments: \(error.localizedDescription)")
             }
         }
     }

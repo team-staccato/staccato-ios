@@ -48,6 +48,7 @@ enum StaccatoIcon: String {
     
     // MARK: - Staccato Detail
     case arrowRightCircleFill = "arrow.right.circle.fill"
+    case trash = "trash"
     
     // MARK: - Home
     case plus = "plus"

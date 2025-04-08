@@ -316,6 +316,23 @@ private extension StaccatoDetailView {
                 .padding(.trailing, 24)
             }
         }
+        .contextMenu {
+            Button {
+                // TODO: 댓글 수정 UI 요청
+            } label: {
+                Text("수정")
+                Image(StaccatoIcon.pencilLine)
+            }
+            
+            Button {
+                // TODO: 댓글 삭제 경고 Alert 커스텀
+                viewModel.deleteComment(comment.commentId)
+            } label: {
+                Text("삭제")
+                Image(StaccatoIcon.trash)
+            }
+            .foregroundStyle(.red)
+        }
     }
     
 }

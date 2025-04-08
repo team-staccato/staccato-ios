@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CommentModel {
+struct CommentModel: Equatable {
     
     let commentId: Int64
     

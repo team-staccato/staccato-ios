@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct StaccatoDetailView: View {
     
     // MARK: - State Properties
@@ -15,16 +17,13 @@ struct StaccatoDetailView: View {
     
     @ObservedObject var viewModel: StaccatoDetailViewModel
     
-    // TODO: 수정
-    @State var comments: [CommentModel] = CommentModel.dummy
-    
     @State var commentText: String = ""
     @FocusState private var isCommentFocused: Bool
     
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
         self.viewModel = StaccatoDetailViewModel()
-        viewModel.fetchStaccatoDetail(staccatoId)
+        viewModel.getStaccatoDetail(staccatoId)
     }
     
     
@@ -166,7 +165,7 @@ private extension StaccatoDetailView {
                 .foregroundStyle(.staccatoBlack)
             
             Group {
-                if comments.isEmpty {
+                if viewModel.comments.isEmpty {
                     VStack(spacing: 10) {
                         Image(.staccatoCharacter)
                         
@@ -179,7 +178,7 @@ private extension StaccatoDetailView {
                     .padding(.bottom, 28)
                 } else {
                     VStack(spacing: 12) {
-                        ForEach(comments, id: \.commentId) { comment in
+                        ForEach(viewModel.comments, id: \.commentId) { comment in
                             makeCommentView(userId: viewModel.userId, comment: comment)
                         }
                     }
@@ -243,12 +242,22 @@ private extension StaccatoDetailView {
         }
         
         var profileImage: some View {
-            let image = comment.memberImage ?? Image(.staccatoLoginLogo)
-            return image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipShape(.circle)
-                .frame(width: 38, height: 38)
+            if let imageUrl = comment.memberImageUrl {
+                let image = KFImage(URL(string: imageUrl))
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(.circle)
+                    .frame(width: 38, height: 38)
+                return AnyView(image)
+            } else {
+                let image = Image(.personCircleFill)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .foregroundStyle(.gray2)
+                    .clipShape(.circle)
+                    .frame(width: 38, height: 38)
+                return AnyView(image)
+            }
         }
         
         var commentView: some View {

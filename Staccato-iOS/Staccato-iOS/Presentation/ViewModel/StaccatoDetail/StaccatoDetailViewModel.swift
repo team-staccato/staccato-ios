@@ -120,4 +120,30 @@ extension StaccatoDetailViewModel {
         }
     }
     
+    @MainActor
+    func updateComment(commentId: Int64, comment: String) {
+        Task {
+            do {
+                try await STService.shared.commentService.putComment(
+                    commentId,
+                    PutCommentRequest(content: comment)
+                )
+                getComments()
+            } catch {
+                print("Error on putComment: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func deleteComment(_ commentId: Int64) {
+        Task {
+            do {
+                try await STService.shared.commentService.deleteComment(commentId)
+                await getComments()
+            } catch {
+                print("Error on deleteComment: \(error.localizedDescription)")
+            }
+        }
+    }
+    
 }

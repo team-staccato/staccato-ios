@@ -36,23 +36,7 @@ extension StaccatoDetailViewModel {
         Task {
             do {
                 let response = try await STService.shared.staccatoService.getStaccatoDetail(staccatoId)
-                
-                let staccatoDetail = StaccatoDetailModel(
-                    id: UUID(),
-                    staccatoId: response.staccatoId,
-                    categoryId: response.categoryId,
-                    categoryTitle: response.categoryTitle,
-                    startAt: response.startAt,
-                    endAt: response.endAt,
-                    staccatoTitle: response.staccatoTitle,
-                    staccatoImageUrls: response.staccatoImageUrls,
-                    visitedAt: response.visitedAt,
-                    feeling: response.feeling,
-                    placeName: response.placeName,
-                    address: response.address,
-                    latitude: response.latitude,
-                    longitude: response.longitude
-                )
+                let staccatoDetail = StaccatoDetailModel(from: response)
                 self.staccatoDetail = staccatoDetail
                 self.selectedFeeling = FeelingType.from(serverKey: staccatoDetail.feeling)
             } catch {

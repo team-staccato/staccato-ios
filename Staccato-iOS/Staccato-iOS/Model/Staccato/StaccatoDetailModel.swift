@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Model
+
 struct StaccatoDetailModel: Identifiable {
     
     let id: UUID
@@ -24,5 +26,29 @@ struct StaccatoDetailModel: Identifiable {
     let address: String
     let latitude: Double
     let longitude: Double
+    
+}
+
+
+// MARK: - Initializer
+
+extension StaccatoDetailModel {
+    
+    init(from dto: GetStaccatoDetailResponse) {
+        self.id = UUID()
+        self.staccatoId = dto.staccatoId
+        self.categoryId = dto.categoryId
+        self.categoryTitle = dto.categoryTitle
+        self.startAt = dto.startAt
+        self.endAt = dto.endAt
+        self.staccatoTitle = dto.staccatoTitle
+        self.staccatoImageUrls = dto.staccatoImageUrls
+        self.visitedAt = dto.visitedAt
+        self.feeling = dto.feeling
+        self.placeName = dto.placeName
+        self.address = dto.address
+        self.latitude = dto.latitude
+        self.longitude = dto.longitude
+    }
     
 }

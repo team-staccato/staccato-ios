@@ -71,16 +71,9 @@ extension StaccatoDetailViewModel {
         
         Task {
             do {
-                let comment: [CommentModel] = try await STService.shared.commentService.getComments(staccatoDetail.staccatoId).comments.map {
-                    CommentModel(
-                        commentId: $0.commentId,
-                        memberId: $0.memberId,
-                        nickname: $0.nickname,
-                        memberImageUrl: $0.memberImageUrl,
-                        content: $0.content
-                    )
-                }
-                self.comments = comment
+                let response: GetCommentsResponse = try await STService.shared.commentService.getComments(staccatoDetail.staccatoId)
+                let comments: [CommentModel] = response.comments.map { CommentModel(from: $0) }
+                self.comments = comments
             } catch {
                 print("Error on getComments: \(error.localizedDescription)")
             }

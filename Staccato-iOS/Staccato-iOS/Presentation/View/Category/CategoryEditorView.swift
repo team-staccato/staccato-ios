@@ -9,33 +9,12 @@ import SwiftUI
 import PhotosUI
 
 struct CategoryEditorView: View {
-    @State private var isPhotoInputPresented = false
-    @State private var isPhotoPickerPresented = false
-    @State private var showCamera = false
+    @Environment(\.dismiss) var dismiss
+    @Bindable private var vm = CategoryEditorViewModel()
 
-    @State private var photoItem: PhotosPickerItem?
-    @State private var selectedPhoto: UIImage?
-
-    @State private var categoryTitle = ""
     @FocusState private var isTitleFocused: Bool
 
-    @State private var categoryDescription = ""
     @FocusState private var isDescriptionFocused: Bool
-
-    @State private var isPeriodSettingActive = false
-    @State private var selectedStartDate: Date?
-    @State private var selectedEndDate: Date?
-    
-    private var categoryPeriod: String? {
-        guard let selectedStartDate, let selectedEndDate else { return nil }
-        return "\(selectedStartDate.formattedAsFullDate + " ~ " + selectedEndDate.formattedAsFullDate)" 
-    }
-
-    @State private var isPeriodSheetPresented = false
-
-    private var isSubmitButtonDisabled: Bool {
-        return categoryTitle.isEmpty || (isPeriodSettingActive && categoryPeriod == nil)
-    }
 
     var body: some View {
         ScrollView {
@@ -58,26 +37,48 @@ struct CategoryEditorView: View {
                 Spacer()
 
                 Button("저장") {
-
+                    Task {
+                        await vm.createCategory()
+                    }
                 }
                 .buttonStyle(.staccatoFullWidth)
-                .disabled(isSubmitButtonDisabled)
+                .disabled(vm.isSubmitButtonDisabled)
             }
-            .animation(.easeIn(duration: 0.15), value: isPeriodSettingActive)
+            .animation(.easeIn(duration: 0.15), value: vm.isPeriodSettingActive)
         }
+        .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
         .staccatoNavigationBar(title: "카테고리 만들기", subtitle: "스타카토를 담을 카테고리를 만들어 보세요!")
         .ignoresSafeArea(.all, edges: .bottom)
 
-        .sheet(isPresented: $isPeriodSheetPresented) {
-            StaccatoDatePicker(isDatePickerPresented: $isPeriodSheetPresented, selectedStartDate: $selectedStartDate, selectedEndDate: $selectedEndDate)
+        .sheet(isPresented: $vm.isPeriodSheetPresented) {
+            StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
         }
+
+        .alert(vm.errorTitle ?? "", isPresented: $vm.catchError) {
+            Button("확인") {
+                vm.catchError = false
+            }
+        } message: {
+            Text(vm.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+        }
+
+        .alert("카테고리 생성 성공", isPresented: $vm.uploadSuccess) {
+            Button("확인") {
+                dismiss()
+            }
+        } message: {
+            Text("이미지 업로드에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
+        }
+
     }
 }
 
 #Preview {
     NavigationStack {
-        CategoryEditorView()
+        NavigationLink("이동") {
+            CategoryEditorView()
+        }
     }
 }
 
@@ -86,10 +87,10 @@ extension CategoryEditorView {
     // MARK: Photo Section
     private var photoSection: some View {
         Button {
-            isPhotoInputPresented = true
+            vm.isPhotoInputPresented = true
         } label: {
-            if let selectedPhoto {
-                Image(uiImage: selectedPhoto)
+            if let photo = vm.selectedPhoto {
+                Image(uiImage: photo)
                     .resizable()
                     .scaledToFill()
             } else {
@@ -99,24 +100,27 @@ extension CategoryEditorView {
         .frame(height: 200)
         .clipShape(.rect(cornerRadius: 8))
         .padding(.top, 12)
-        .onChange(of: photoItem) { _, newValue in
-            loadTransferable(from: newValue)
+        .onChange(of: vm.photoItem) { _, newValue in
+            Task {
+                await vm.loadTransferable(from: newValue)
+                await vm.uploadImage()
+            }
         }
 
-        .confirmationDialog("사진을 첨부해 보세요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
+        .confirmationDialog("사진을 첨부해 보세요", isPresented: $vm.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                showCamera = true
+                vm.showCamera = true
             }
 
             Button("앨범에서 가져오기") {
-                isPhotoPickerPresented = true
+                vm.isPhotoPickerPresented = true
             }
         })
 
-        .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
+        .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem)
 
-        .fullScreenCover(isPresented: $showCamera) {
-            CameraView(selectedImage: $selectedPhoto)
+        .fullScreenCover(isPresented: $vm.showCamera) {
+            CameraView(selectedImage: $vm.selectedPhoto)
                 .background(.black)
         }
     }
@@ -153,7 +157,7 @@ extension CategoryEditorView {
             .padding(.bottom, 8)
 
             StaccatoTextField(
-                text: $categoryTitle,
+                text: $vm.categoryTitle,
                 isFocused: $isTitleFocused,
                 placeholder: "카테고리 제목을 입력해주세요(최대 30자)",
                 maximumTextLength: 30
@@ -169,10 +173,10 @@ extension CategoryEditorView {
                 .foregroundStyle(.staccatoBlack)
                 .typography(.title2)
 
-            TextEditor(text: $categoryDescription)
+            TextEditor(text: $vm.categoryDescription)
                 .staccatoTextEditorStyle(
                     placeholder: "카테고리 소개를 입력해주세요(최대 500자)",
-                    text: $categoryDescription,
+                    text: $vm.categoryDescription,
                     maximumTextLength: 500,
                     isFocused: $isDescriptionFocused
                 )
@@ -190,7 +194,7 @@ extension CategoryEditorView {
 
                 Spacer()
 
-                Toggle("", isOn: $isPeriodSettingActive)
+                Toggle("", isOn: $vm.isPeriodSettingActive)
                     .toggleStyle(StaccatoToggleStyle())
             }
 
@@ -199,12 +203,12 @@ extension CategoryEditorView {
                 .foregroundStyle(.gray3)
                 .padding(.bottom, 12)
 
-            if isPeriodSettingActive {
+            if vm.isPeriodSettingActive {
                 Button {
-                    isPeriodSheetPresented = true
+                    vm.isPeriodSheetPresented = true
                 } label: {
-                    Text(categoryPeriod ?? "카테고리 기간을 선택해주세요")
-                        .foregroundStyle(categoryPeriod == nil ? .gray3 : .staccatoBlack)
+                    Text(vm.categoryPeriod ?? "카테고리 기간을 선택해주세요")
+                        .foregroundStyle(vm.categoryPeriod == nil ? .gray3 : .staccatoBlack)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -213,17 +217,6 @@ extension CategoryEditorView {
                                 .foregroundStyle(.gray1)
                         }
                 }
-            }
-        }
-    }
-}
-
-// MARK: - Method
-extension CategoryEditorView {
-    private func loadTransferable(from imageSelection: PhotosPickerItem?) {
-        Task {
-            if let imageData = try? await imageSelection?.loadTransferable(type: Data.self) {
-                selectedPhoto = UIImage(data: imageData)
             }
         }
     }

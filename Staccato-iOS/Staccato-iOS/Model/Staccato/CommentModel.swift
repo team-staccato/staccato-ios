@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Model
+
 struct CommentModel: Equatable {
     
     let commentId: Int64
@@ -18,5 +20,20 @@ struct CommentModel: Equatable {
     let memberImageUrl: String?
     
     let content: String
+    
+}
+
+
+// MARK: - Initializer
+
+extension CommentModel {
+    
+    init(from dto: CommentResponse) {
+        self.commentId = dto.commentId
+        self.memberId = dto.memberId
+        self.nickname = dto.nickname
+        self.memberImageUrl = dto.memberImageUrl
+        self.content = dto.content
+    }
     
 }

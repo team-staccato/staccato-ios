@@ -41,7 +41,7 @@ final class CategoryListViewModel: ObservableObject {
     
     func getCategoryList() throws {
         Task {
-            let categoryList = try await STService.shared.categoryServie.getCategoryList(
+            let categoryList = try await STService.shared.categoryService.getCategoryList(
                 GetCategoryListRequestQuery(
                     filters: filterSelection.serverKey,
                     sort: sortSelection.serverKey

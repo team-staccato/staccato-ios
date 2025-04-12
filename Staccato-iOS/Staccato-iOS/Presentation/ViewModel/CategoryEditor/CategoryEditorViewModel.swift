@@ -78,7 +78,7 @@ final class CategoryEditorViewModel {
             endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
         )
         do {
-            try await STService.shared.categoryServie.createCategory(query)
+            try await STService.shared.categoryService.createCategory(query)
             self.uploadSuccess = true
         } catch {
             errorMessage = error.localizedDescription

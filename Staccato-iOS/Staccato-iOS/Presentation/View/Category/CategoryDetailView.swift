@@ -19,8 +19,6 @@ struct CategoryDetailView: View {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
         self.homeViewModel = homeViewModel
-
-        viewModel.getCategoryDetail(categoryId)
     }
     
     var body: some View {
@@ -41,11 +39,13 @@ struct CategoryDetailView: View {
             }
 
             Button("삭제") {
-                // TODO: 삭제 기능 구현
+                // TODO: 커스텀 Alert 연결
                 viewModel.deleteCategory()
                 homeViewModel.modalNavigationState.path.removeLast()
-                print("🥑deleteButton tapped")
             }
+        }
+        .onAppear {
+            viewModel.getCategoryDetail(categoryId)
         }
     }
 }
@@ -75,7 +75,7 @@ extension CategoryDetailView {
                 
                 if let startAt = viewModel.categoryDetail?.startAt,
                    let endAt = viewModel.categoryDetail?.endAt {
-                    Text("\(String(describing: startAt)) ~ \(String(describing: endAt))")
+                    Text("\(startAt) ~ \(endAt)")
                         .typography(.body4)
                         .foregroundStyle(.white)
                 }

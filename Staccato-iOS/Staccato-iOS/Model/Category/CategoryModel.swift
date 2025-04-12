@@ -9,7 +9,9 @@ import SwiftUI
 
 struct CategoryModel: Identifiable {
     
-    let id: Int64
+    let id: UUID
+    
+    let categoryId: Int64
     
     let thumbNailURL: String?
     
@@ -18,5 +20,21 @@ struct CategoryModel: Identifiable {
     let startAt: String?
     
     let endAt: String?
+    
+}
+
+
+// MARK: - Initializer
+
+extension CategoryModel {
+    
+    init(from dto: CategoryResponse) {
+        self.id = UUID()
+        self.categoryId = dto.categoryId
+        self.thumbNailURL = dto.categoryThumbnailUrl
+        self.title = dto.categoryTitle
+        self.startAt = dto.startAt
+        self.endAt = dto.endAt
+    }
     
 }

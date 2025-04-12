@@ -30,8 +30,6 @@ struct CategoryDetailView: View {
 
                 descriptionSection
 
-                Divider()
-
                 staccatoCollectionSection
 
                 Spacer()
@@ -99,11 +97,18 @@ extension CategoryDetailView {
         )
     }
 
+    @ViewBuilder
     private var descriptionSection: some View {
-        Text(viewModel.categoryDetail?.description ?? "")
-            .typography(.body2)
-            .foregroundStyle(.staccatoBlack)
-            .multilineTextAlignment(.leading)
+        if let description = viewModel.categoryDetail?.description {
+            VStack(spacing: 16) {
+                Text(description)
+                    .typography(.body2)
+                    .foregroundStyle(.staccatoBlack)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+            }
+            Divider()
+        }
     }
 
     private var staccatoCollectionSection: some View {

@@ -14,13 +14,11 @@ struct CategoryDetailView: View {
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
     @ObservedObject var homeViewModel: HomeViewModel
-    @State var categoryDetail: CategoryDetailModel?
 
-    init(_ categoryId: Int64, homeViewModel: HomeViewModel) {
+    init(_ categoryId: Int64, homeViewModel: HomeViewModel, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
-        self.viewModel = CategoryDetailViewModel()
+        self.viewModel = CategoryDetailViewModel(categoryListViewModel)
         self.homeViewModel = homeViewModel
-        self.categoryDetail = viewModel.categoryDetail
 
         viewModel.getCategoryDetail(categoryId)
     }
@@ -46,6 +44,9 @@ struct CategoryDetailView: View {
 
             Button("삭제") {
                 // TODO: 삭제 기능 구현
+                viewModel.deleteCategory()
+                homeViewModel.modalNavigationState.path.removeLast()
+                print("🥑deleteButton tapped")
             }
         }
     }

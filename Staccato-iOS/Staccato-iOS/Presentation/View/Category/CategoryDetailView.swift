@@ -13,11 +13,13 @@ struct CategoryDetailView: View {
 
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
+    @ObservedObject var homeViewModel: HomeViewModel
     @State var categoryDetail: CategoryDetailModel?
 
-    init(_ categoryId: Int64) {
+    init(_ categoryId: Int64, homeViewModel: HomeViewModel) {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel()
+        self.homeViewModel = homeViewModel
         self.categoryDetail = viewModel.categoryDetail
 
         viewModel.getCategoryDetail(categoryId)
@@ -121,10 +123,10 @@ extension CategoryDetailView {
 
                 Spacer()
 
-                Button("수정하기") {
-
+                Button("기록하기") {
+                    homeViewModel.modalNavigationState.navigate(to: .staccatoAdd)
                 }
-                .buttonStyle(.staccatoCapsule(icon: .chevronLeft))
+                .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }
 
             if staccatos.isEmpty {

@@ -42,7 +42,7 @@ struct CategoryListView: View {
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
                     case .staccatoAdd: StaccatoCreateView()
-                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId)
+                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, homeViewModel: homeViewModel)
                     case .categoryAdd: CategoryEditorView()
                     }
                 }

@@ -136,6 +136,9 @@ extension CategoryDetailView {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(staccatos) { staccato in
                         StaccatoCollectionCell(staccato, width: columnWidth)
+                            .onTapGesture {
+                                homeViewModel.modalNavigationState.navigate(to: .staccatoDetail(staccato.staccatoId))
+                            }
                     }
                 }
             }

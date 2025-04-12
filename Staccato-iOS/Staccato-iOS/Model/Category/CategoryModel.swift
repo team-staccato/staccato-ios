@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import Kingfisher
-
 struct CategoryModel: Identifiable {
     
     let id: Int64

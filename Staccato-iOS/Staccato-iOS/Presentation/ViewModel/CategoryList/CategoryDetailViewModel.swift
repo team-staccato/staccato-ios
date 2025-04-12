@@ -28,7 +28,7 @@ extension CategoryDetailViewModel {
     func getCategoryDetail(_ categoryId: Int64) {
         Task {
             do {
-                let response = try await STService.shared.categoryServie.getCategoryDetail(categoryId)
+                let response = try await STService.shared.categoryService.getCategoryDetail(categoryId)
                 let categoryDetail = CategoryDetailModel(from: response)
                 self.categoryDetail = categoryDetail
             } catch {
@@ -44,7 +44,7 @@ extension CategoryDetailViewModel {
         }
         Task {
             do {
-                try await STService.shared.categoryServie.deleteCategory(categoryDetail.categoryId)
+                try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
                 try await categoryListViewModel.getCategoryList()
             } catch {
                 print("⚠️ \(error.localizedDescription) - delete category")

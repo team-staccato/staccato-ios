@@ -39,7 +39,6 @@ final class CategoryListViewModel: ObservableObject {
     
     // MARK: - Networking
     
-    @MainActor
     func getCategoryList() throws {
         Task {
             let categoryList = try await STService.shared.categoryServie.getCategoryList(
@@ -49,18 +48,9 @@ final class CategoryListViewModel: ObservableObject {
                 )
             )
             
-            let categories = categoryList.categories.map {
-                CategoryModel(
-                    id: $0.categoryId,
-                    thumbNailURL: $0.categoryThumbnailUrl,
-                    title: $0.categoryTitle,
-                    startAt: $0.startAt,
-                    endAt: $0.endAt
-                )
-            }
-            
+            let categories = categoryList.categories.map { CategoryModel(from: $0) }
             self.categories = categories
         }
     }
-    
+
 }

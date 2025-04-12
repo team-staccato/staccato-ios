@@ -143,7 +143,7 @@ private extension CategoryListView {
                 ForEach(viewModel.categories, id: \.id) { categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
-                        homeViewModel.modalNavigationState.navigate(to: .categoryDetail(categoryInfo.id))
+                        homeViewModel.modalNavigationState.navigate(to: .categoryDetail(categoryInfo.categoryId))
                     } label: {
                         CategoryListCell(categoryInfo)
                     }

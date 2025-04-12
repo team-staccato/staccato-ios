@@ -15,6 +15,8 @@ enum CategoryEndpoint {
     
     case createCategory(_ query: CreateCategoryRequestQuery)
     
+    case deleteCategory(_ categoryId: Int64)
+    
 }
 
 
@@ -22,8 +24,10 @@ extension CategoryEndpoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .getCategoryDetail(let categoryId): return "/categories/\(categoryId)"
-        default: return "/categories"
+        case .getCategoryDetail(let categoryId), .deleteCategory(let categoryId): 
+            return "/categories/\(categoryId)"
+        default: 
+            return "/categories"
         }
     }
     
@@ -32,6 +36,7 @@ extension CategoryEndpoint: APIEndpoint {
         case .getCategoryList: return .get
         case .getCategoryDetail: return .get
         case .createCategory: return .post
+        case .deleteCategory: return .delete
         }
     }
     
@@ -40,6 +45,7 @@ extension CategoryEndpoint: APIEndpoint {
         case .getCategoryList: return URLEncoding.queryString
         case .getCategoryDetail: return URLEncoding.queryString
         case .createCategory: return JSONEncoding.default
+        case .deleteCategory: return URLEncoding.queryString
         }
     }
     

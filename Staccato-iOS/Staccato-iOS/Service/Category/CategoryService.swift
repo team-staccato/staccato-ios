@@ -15,6 +15,8 @@ protocol CategoryServiceProtocol {
 
     func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse
 
+    func deleteCategory(_ categoryId: Int64) async throws
+
 }
 
 class CategoryService: CategoryServiceProtocol {
@@ -49,6 +51,12 @@ class CategoryService: CategoryServiceProtocol {
         }
 
         return categoryId
+    }
+
+    func deleteCategory(_ categoryId: Int64) async throws {
+        try await NetworkService.shared.request(
+            endpoint: CategoryEndpoint.deleteCategory(categoryId)
+        )
     }
 
 }

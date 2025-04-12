@@ -10,7 +10,8 @@ import SwiftUI
 struct CategoryListView: View {
     
     @StateObject private var viewModel = CategoryListViewModel()
-    @ObservedObject var homeViewModel: HomeViewModel
+    @ObservedObject private var homeViewModel: HomeViewModel
+
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
@@ -42,7 +43,7 @@ struct CategoryListView: View {
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
                     case .staccatoAdd: StaccatoCreateView()
-                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, homeViewModel: homeViewModel)
+                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, homeViewModel: homeViewModel, categoryListViewModel: viewModel)
                     case .categoryAdd: CategoryEditorView()
                     }
                 }

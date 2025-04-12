@@ -9,7 +9,13 @@ import Foundation
 
 final class CategoryDetailViewModel: ObservableObject {
 
+    var categoryListViewModel: CategoryListViewModel
+    
     @Published var categoryDetail: CategoryDetailModel?
+
+    init(_ categoryListViewModel: CategoryListViewModel) {
+        self.categoryListViewModel = categoryListViewModel
+    }
 
 }
 
@@ -26,7 +32,22 @@ extension CategoryDetailViewModel {
                 let categoryDetail = CategoryDetailModel(from: response)
                 self.categoryDetail = categoryDetail
             } catch {
-                print("⚠️ \(error.localizedDescription) - fetching category detail:")
+                print("⚠️ \(error.localizedDescription) - fetching category detail")
+            }
+        }
+    }
+
+    func deleteCategory() {
+        guard let categoryDetail else {
+            print("⚠️ \(StaccatoError.optionalBindingFailed) - delete category")
+            return
+        }
+        Task {
+            do {
+                try await STService.shared.categoryServie.deleteCategory(categoryDetail.categoryId)
+                try await categoryListViewModel.getCategoryList()
+            } catch {
+                print("⚠️ \(error.localizedDescription) - delete category")
             }
         }
     }

@@ -23,7 +23,7 @@ struct CategoryDetailModel {
 
 struct StaccatoModel: Identifiable {
     
-    let id: Int64
+    let id: UUID
     
     let staccatoId: Int64
     let staccatoTitle: String
@@ -47,7 +47,7 @@ extension CategoryDetailModel {
         self.mates = dto.mates
         self.staccatos = dto.staccatos.map {
             StaccatoModel(
-                id: $0.staccatoId,
+                id: UUID(),
                 staccatoId: $0.staccatoId,
                 staccatoTitle: $0.staccatoTitle,
                 staccatoImageUrl: $0.staccatoImageUrl,

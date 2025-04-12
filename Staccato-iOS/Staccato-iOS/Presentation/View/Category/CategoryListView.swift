@@ -42,7 +42,7 @@ struct CategoryListView: View {
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
                     case .staccatoAdd: StaccatoCreateView()
-                    case .categoryDetail: CategoryDetailView()
+                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId)
                     case .categoryAdd: CategoryEditorView()
                     }
                 }
@@ -143,7 +143,7 @@ private extension CategoryListView {
                 ForEach(viewModel.categories, id: \.id) { categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
-                        homeViewModel.modalNavigationState.navigate(to: .categoryDetail)
+                        homeViewModel.modalNavigationState.navigate(to: .categoryDetail(categoryInfo.id))
                     } label: {
                         CategoryListCell(categoryInfo)
                     }

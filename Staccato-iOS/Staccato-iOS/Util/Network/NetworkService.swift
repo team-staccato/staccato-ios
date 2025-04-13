@@ -94,11 +94,15 @@ final class NetworkService {
         }
     }
 
-    func uploadImage(_ image: UIImage?) async throws -> ImageURL {
+    func uploadImage<T: Decodable>(
+        _ image: UIImage?,
+        imageType: imageType,
+        responseType: T.Type?
+    ) async throws -> T? {
         guard let imageData = image?.jpegData(compressionQuality: 0.8) else { throw StaccatoError.optionalBindingFailed }
 
         let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as! String
-        let urlString = baseURL + "/images"
+        let urlString = baseURL + imageType.path
         guard let url = URL(string: urlString) else { throw NetworkError.invalidURL }
 
         let imageName = "\(UUID().uuidString).jpg"
@@ -115,7 +119,7 @@ final class NetworkService {
             headers: HTTPHeaders(HeaderType.tokenOnly())
         )
             .validate()
-            .serializingDecodable(ImageURL.self)
+            .serializingDecodable(T.self)
             .response
 
         if let urlResponse = response.response, !(200...299).contains(urlResponse.statusCode) {

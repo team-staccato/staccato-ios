@@ -42,7 +42,6 @@ extension MyPageViewModel {
                     fetchProfile()
                 } catch {
                     print(error)
-                    let error = error as! NetworkError
                 }
             }
         }

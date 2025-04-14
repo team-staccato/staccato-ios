@@ -13,7 +13,6 @@ struct CategoryListView: View {
     @Bindable var bindableNavigationState: NavigationState
     
     @StateObject private var viewModel = CategoryListViewModel()
-    @ObservedObject var homeViewModel: HomeViewModel
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
@@ -21,8 +20,7 @@ struct CategoryListView: View {
     
     // MARK: - Initializer
     
-    init(_ homeViewModel: HomeViewModel, navigationState: NavigationState) {
-        self.homeViewModel = homeViewModel
+    init(_ navigationState: NavigationState) {
         self.bindableNavigationState = navigationState
     }
     

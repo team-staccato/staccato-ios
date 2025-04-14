@@ -49,17 +49,15 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 extension GMSMapViewRepresentable {
     
     func makeCoordinator() -> Coordinator {
-        return Coordinator(self, viewModel, navigationState)
+        return Coordinator(self, navigationState)
     }
     
     final class Coordinator: NSObject {
         let parent: GMSMapViewRepresentable
-        let viewModel: HomeViewModel
         let navigationState: NavigationState
         
-        init(_ parent: GMSMapViewRepresentable, _ viewModel: HomeViewModel, _ navigationState: NavigationState) {
+        init(_ parent: GMSMapViewRepresentable, _ navigationState: NavigationState) {
             self.parent = parent
-            self.viewModel = parent.viewModel
             self.navigationState = parent.navigationState
         }
     }

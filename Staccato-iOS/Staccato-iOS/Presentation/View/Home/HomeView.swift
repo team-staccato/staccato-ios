@@ -130,7 +130,7 @@ extension HomeView {
         VStack {
             Spacer()
 
-            CategoryListView(viewModel, navigationState: navigationState)
+            CategoryListView(navigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))

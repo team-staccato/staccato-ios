@@ -12,6 +12,7 @@ import SwiftUI
 struct GMSMapViewRepresentable: UIViewRepresentable {
     
     @ObservedObject var viewModel: HomeViewModel
+    @Environment(NavigationState.self) var navigationState
     
     private let mapView = GMSMapView()
     
@@ -48,16 +49,18 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 extension GMSMapViewRepresentable {
     
     func makeCoordinator() -> Coordinator {
-        return Coordinator(self, viewModel)
+        return Coordinator(self, viewModel, navigationState)
     }
     
     final class Coordinator: NSObject {
         let parent: GMSMapViewRepresentable
         let viewModel: HomeViewModel
+        let navigationState: NavigationState
         
-        init(_ parent: GMSMapViewRepresentable, _ viewModel: HomeViewModel) {
+        init(_ parent: GMSMapViewRepresentable, _ viewModel: HomeViewModel, _ navigationState: NavigationState) {
             self.parent = parent
             self.viewModel = parent.viewModel
+            self.navigationState = parent.navigationState
         }
     }
     
@@ -69,7 +72,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
         let location: CLLocation = locations.last!
         print("📍Location: \(location)")
         
-        let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 15)
+        let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 5)
         
         parent.mapView.animate(to: camera)
     }
@@ -81,7 +84,7 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
     
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
-            viewModel.modalNavigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
+            navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
         } else {
             print("⚠️ No StaccatoData found for this marker.")
         }

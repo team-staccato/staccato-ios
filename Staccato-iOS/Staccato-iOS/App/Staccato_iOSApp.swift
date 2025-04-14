@@ -11,13 +11,16 @@ import GoogleMaps
 
 @main
 struct Staccato_iOSApp: App {
-    
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+
+    private let navigationState = NavigationState()
+
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .environment(navigationState)
         }
     }
-    
+
 }

@@ -9,6 +9,9 @@ import SwiftUI
 
 struct CategoryListView: View {
     
+    @Environment(NavigationState.self) var navigationState
+    @Bindable var bindableNavigationState: NavigationState
+    
     @StateObject private var viewModel = CategoryListViewModel()
     @ObservedObject var homeViewModel: HomeViewModel
     @State private var selectedCategory: CategoryModel?
@@ -18,8 +21,9 @@ struct CategoryListView: View {
     
     // MARK: - Initializer
     
-    init(_ homeViewModel: HomeViewModel) {
+    init(_ homeViewModel: HomeViewModel, navigationState: NavigationState) {
         self.homeViewModel = homeViewModel
+        self.bindableNavigationState = navigationState
     }
     
     
@@ -28,8 +32,7 @@ struct CategoryListView: View {
     var body: some View {
         VStack {
             modalTop
-            
-            NavigationStack(path: $homeViewModel.modalNavigationState.path) {
+            NavigationStack(path: $bindableNavigationState.path) {
                 VStack(spacing: 0) {
                     titleHStack
                         .padding(.top, 22)
@@ -124,7 +127,7 @@ private extension CategoryListView {
     
     var categoryAddButton: some View {
         Button("추가") {
-            homeViewModel.modalNavigationState.navigate(to: .categoryAdd)
+            navigationState.navigate(to: .categoryAdd)
             // TODO: modal fullScreen mode
         }
         .buttonStyle(.staccatoCapsule(
@@ -143,7 +146,7 @@ private extension CategoryListView {
                 ForEach(viewModel.categories, id: \.id) { categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
-                        homeViewModel.modalNavigationState.navigate(to: .categoryDetail)
+                        navigationState.navigate(to: .categoryDetail)
                     } label: {
                         CategoryListCell(categoryInfo)
                     }
@@ -151,5 +154,5 @@ private extension CategoryListView {
             }
         }
     }
-    
+
 }

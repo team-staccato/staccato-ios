@@ -7,23 +7,41 @@
 
 import SwiftUI
 
+// MARK: - Enums
+
+enum STNavigationBarType {
+    case navigation, modal
+}
+
+enum TitlePosition {
+    case center, leading
+}
+
+
+// MARK: - ViewModifier
+
 struct StaccatoNavigationBar<T: View>: ViewModifier {
+    
+    @Environment(NavigationState.self) var navigationState
     @Environment(\.dismiss) var dismiss
 
     let title: String?
     let subtitle: String?
     let trailingButtons: T
     let titlePosition: TitlePosition
+    let barType: STNavigationBarType
 
     init(
         title: String?,
         subtitle: String?,
         titlePosition: TitlePosition = .leading,
+        barType: STNavigationBarType,
         @ViewBuilder trailingButtons: () -> T
     ) {
         self.title = title
         self.subtitle = subtitle
         self.titlePosition = titlePosition
+        self.barType = barType
         self.trailingButtons = trailingButtons()
     }
 
@@ -32,7 +50,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
             ZStack {
                 HStack(spacing: 16) {
                     Button  {
-                        dismiss()
+                        barType == .navigation ? navigationState.dismiss() : dismiss()
                     } label: {
                         Image(.chevronLeft)
                             .resizable()
@@ -96,9 +114,6 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
     }
 }
 
-enum TitlePosition {
-    case center, leading
-}
 
 #Preview("Position - Leading") {
     NavigationStack {
@@ -138,7 +153,11 @@ enum TitlePosition {
     }
 }
 
+
+// MARK: - Ex+View
+
 extension View {
+
     func staccatoNavigationBar<T: View>(
         title: String? = nil,
         subtitle: String? = nil,
@@ -146,7 +165,7 @@ extension View {
         @ViewBuilder trailingButtons: () -> T
     ) -> some View {
         self
-            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, trailingButtons: trailingButtons))
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, trailingButtons: trailingButtons))
     }
 
     func staccatoNavigationBar(
@@ -155,6 +174,26 @@ extension View {
         titlePosition: TitlePosition = .leading
     ) -> some View {
         self
-            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, trailingButtons: { }))
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, trailingButtons: { }))
     }
+
+    func staccatoModalBar<T: View>(
+        title: String? = nil,
+        subtitle: String? = nil,
+        titlePosition: TitlePosition = .leading,
+        @ViewBuilder trailingButtons: () -> T
+    ) -> some View {
+        self
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .modal, trailingButtons: trailingButtons))
+    }
+
+    func staccatoModalBar(
+        title: String? = nil,
+        subtitle: String? = nil,
+        titlePosition: TitlePosition = .leading
+    ) -> some View {
+        self
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .modal, trailingButtons: { }))
+    }
+
 }

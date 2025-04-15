@@ -30,7 +30,8 @@ struct StaccatoAlertView<T: View>: View {
 
     var body: some View {
         ZStack {
-            Color.dim30
+            Color(red: 0.133, green: 0.133, blue: 0.133)
+                .opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
                 .onTapGesture {
                     isPresented = false

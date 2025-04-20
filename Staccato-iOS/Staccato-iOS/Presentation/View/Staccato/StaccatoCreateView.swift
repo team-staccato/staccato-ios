@@ -295,7 +295,9 @@ extension StaccatoCreateView {
     // MARK: - Save
     private var saveButton: some View {
         Button("저장") {
-
+            Task {
+                await viewModel.createStaccato()
+            }
         }
         .buttonStyle(.staccatoFullWidth)
         .disabled(true)

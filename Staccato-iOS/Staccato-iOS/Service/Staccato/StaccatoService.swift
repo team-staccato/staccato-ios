@@ -15,7 +15,9 @@ protocol StaccatoServiceProtocol {
     
     func postStaccatoFeeling(_ staccatoId: Int64,
                              requestBody: PostStaccatoFeelingRequest) async throws -> Void
-    
+
+    func createStaccato(_ requestBody: CreateStaccatoRequest) async throws -> Void
+
 }
 
 class StaccatoService: StaccatoServiceProtocol {
@@ -48,5 +50,10 @@ class StaccatoService: StaccatoServiceProtocol {
             endpoint: StaccatoEndpoint.postStaccatoFeeling(staccatoId, requestBody: requestBody)
         )
     }
-    
+
+    func createStaccato(_ requestBody: CreateStaccatoRequest) async throws {
+        try await NetworkService.shared.request(
+            endpoint: StaccatoEndpoint.createStaccato(requestBody: requestBody)
+        )
+    }
 }

@@ -13,7 +13,8 @@ enum StaccatoEndpoint {
     case postStaccatoFeeling(_ staccatoId: Int64, requestBody: PostStaccatoFeelingRequest)
     
     case getStaccatoDetail(_ staccatoId: Int64)
-    
+
+    case createStaccato(requestBody: CreateStaccatoRequest)
 }
 
 
@@ -32,6 +33,7 @@ extension StaccatoEndpoint: APIEndpoint {
         case .getStaccatoList: return .get
         case .getStaccatoDetail: return .get
         case .postStaccatoFeeling: return .post
+        case .createStaccato: return .post
         }
     }
     
@@ -40,12 +42,14 @@ extension StaccatoEndpoint: APIEndpoint {
         case .getStaccatoList: return URLEncoding.default
         case .getStaccatoDetail: return URLEncoding.queryString
         case .postStaccatoFeeling(_, let requestBody): return JSONEncoding.default
+        case .createStaccato: return JSONEncoding.default
         }
     }
     
     var parameters: [String : Any]? {
         switch self {
         case .postStaccatoFeeling(_, let requestBody): return requestBody.toDictionary()
+        case .createStaccato(requestBody: let requestBody): return requestBody.toDictionary()
         default: return nil
         }
     }

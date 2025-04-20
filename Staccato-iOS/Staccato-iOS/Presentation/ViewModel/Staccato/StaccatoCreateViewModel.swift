@@ -25,8 +25,6 @@ class StaccatoCreateViewModel {
     var isPhotoPickerPresented = false
     var photoItem: PhotosPickerItem? = nil
 
-    var isUploading = false
-
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {
         do {
             if let imageData = try await imageSelection?.loadTransferable(type: Data.self),
@@ -39,6 +37,27 @@ class StaccatoCreateViewModel {
             errorTitle = "이미지 업로드 실패"
             errorMessage = error.localizedDescription
             catchError = true
+        }
+    }
+
+    @MainActor
+    func createStaccato() async {
+        let request = CreateStaccatoRequest(
+            staccatoTitle: self.title,
+            placeName: "", // TODO: 로케이션 관련 구현 후 수정
+            address: "", // TODO: 로케이션 관련 구현 후 수정
+            latitude: 0.0, // TODO: 로케이션 관련 구현 후 수정
+            longitude: 0.0, // TODO: 로케이션 관련 구현 후 수정
+            visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
+            categoryID: 0, // TODO: CategoryId와 연결
+            staccatoImageUrls: photos.compactMap { return $0.imageURL }
+        )
+
+        do {
+            try await STService.shared.staccatoService.createStaccato(request)
+        } catch {
+            self.catchError = true
+            self.errorMessage = error.localizedDescription
         }
     }
 }

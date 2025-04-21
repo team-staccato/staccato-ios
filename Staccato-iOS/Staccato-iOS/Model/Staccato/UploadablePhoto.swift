@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@MainActor
 @Observable
 class UploadablePhoto: Identifiable, Equatable {
     let id: UUID = UUID()

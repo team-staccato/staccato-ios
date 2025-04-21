@@ -132,11 +132,11 @@ extension SignInView {
 extension SignInView {
     private func debounceValidation(text: String) {
         isChanging = true
-        validationTask?.cancel() // 기존 Task 취소
+        validationTask?.cancel()
         
         validationTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3초 대기
-            if Task.isCancelled { return } // Task가 취소되었으면 종료
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            if Task.isCancelled { return }
             
             await MainActor.run {
                 viewModel.validateText(nickName: text)

@@ -47,6 +47,7 @@ final class ErrorHandler {
         guard let statusCode = response?.statusCode else { return .unknownError }
         switch statusCode {
         case 400:
+            print(data)
             guard let data = data,
                   let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data)
             else {

@@ -38,7 +38,9 @@ struct CategoryDetailView: View {
 }
 
 #Preview("Preview - Empty") {
-    CategoryDetailView()
+    NavigationStack {
+        CategoryDetailView()
+    }
 }
 
 #Preview("Preview - with Mock Data") {
@@ -107,10 +109,10 @@ extension CategoryDetailView {
 
                 Spacer()
 
-                Button("수정하기") {
-
+                NavigationLink("기록하기") {
+                    StaccatoCreateView(categoryId: 1)
                 }
-                .buttonStyle(.staccatoCapsule(icon: .chevronLeft))
+                .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }
 
             if staccatoList.isEmpty {

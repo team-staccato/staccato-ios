@@ -11,10 +11,14 @@ import PhotosUI
 import Lottie
 
 struct StaccatoCreateView: View {
-    @State private var viewModel = StaccatoCreateViewModel()
+    @State private var viewModel: StaccatoCreateViewModel
     @FocusState var isTitleFocused: Bool
 
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+
+    init(categoryId: Int?) {
+        self.viewModel = StaccatoCreateViewModel(categoryId: categoryId)
+    }
 
     var body: some View {
         ScrollView {
@@ -52,7 +56,7 @@ struct StaccatoCreateView: View {
 }
 
 #Preview {
-    StaccatoCreateView()
+    StaccatoCreateView(categoryId: 0)
 }
 
 extension StaccatoCreateView {

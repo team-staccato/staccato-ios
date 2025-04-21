@@ -41,7 +41,7 @@ struct CategoryListView: View {
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail: StaccatoDetailView(homeViewModel)
-                    case .staccatoAdd: StaccatoCreateView()
+                    case .staccatoAdd: StaccatoCreateView(categoryId: nil)
                     case .categoryDetail: CategoryDetailView()
                     case .categoryAdd: CategoryEditorView()
                     }

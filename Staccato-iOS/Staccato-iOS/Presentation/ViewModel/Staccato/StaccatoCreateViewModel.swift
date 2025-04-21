@@ -10,6 +10,7 @@ import PhotosUI
 
 @Observable
 class StaccatoCreateViewModel {
+    var categoryId: Int?
     var title: String = ""
     var locationManager = LocationManager()
     var showDatePickerSheet = false
@@ -25,11 +26,27 @@ class StaccatoCreateViewModel {
     var isPhotoPickerPresented = false
     var photoItem: PhotosPickerItem? = nil
 
+    init(categoryId: Int? = nil) {
+        self.categoryId = categoryId
+        self.title = ""
+        self.locationManager = LocationManager()
+        self.showDatePickerSheet = false
+        self.selectedDate = nil
+        self.catchError = false
+        self.errorTitle = nil
+        self.errorMessage = nil
+        self.photos = []
+        self.isPhotoInputPresented = false
+        self.showCamera = false
+        self.isPhotoPickerPresented = false
+        self.photoItem = nil
+    }
+
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {
         do {
             if let imageData = try await imageSelection?.loadTransferable(type: Data.self),
                let transferedImage = UIImage(data: imageData) {
-                await self.photos.append(UploadablePhoto(photo: transferedImage))
+                self.photos.append(UploadablePhoto(photo: transferedImage))
                 self.photoItem = nil
             }
         } catch {
@@ -40,7 +57,6 @@ class StaccatoCreateViewModel {
         }
     }
 
-    @MainActor
     func createStaccato() async {
         let request = CreateStaccatoRequest(
             staccatoTitle: self.title,
@@ -49,7 +65,7 @@ class StaccatoCreateViewModel {
             latitude: 0.0, // TODO: 로케이션 관련 구현 후 수정
             longitude: 0.0, // TODO: 로케이션 관련 구현 후 수정
             visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
-            categoryID: 0, // TODO: CategoryId와 연결
+            categoryID: self.categoryId ?? 0,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
 

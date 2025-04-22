@@ -12,8 +12,9 @@ import SwiftUI
 struct HomeView: View {
     
     // MARK: - Properties
-    //NOTE: 뷰모델
+    //NOTE: ViewModel, AlertManager
     @StateObject private var viewModel = HomeViewModel()
+    @Environment(STAlertManager.self) var alertManager
     
     // NOTE: 뷰
     private var mapView: GMSMapViewRepresentable {
@@ -53,6 +54,10 @@ struct HomeView: View {
             
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
+
+            if alertManager.isPresented {
+                StaccatoAlertView()
+            }
         }
         .onAppear() {
             locationAuthorizationManager.checkLocationAuthorization()

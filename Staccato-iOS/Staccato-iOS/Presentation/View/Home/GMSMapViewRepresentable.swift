@@ -68,10 +68,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location: CLLocation = locations.last!
-        print("📍Location: \(location)")
-        
-        let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 5)
-        
+        let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 13)
         parent.mapView.animate(to: camera)
     }
 
@@ -79,7 +76,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         if parent.viewModel.isInitialCameraMove {
             let seoulCityhall = CLLocationCoordinate2D(37.5664056, 126.9778222)
-            let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 50)
+            let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 13)
             parent.mapView.animate(to: camera)
             parent.viewModel.isInitialCameraMove = false
         } else {

@@ -11,14 +11,14 @@ import Kingfisher
 
 struct CategoryDetailView: View {
 
+    @Environment(NavigationState.self) var navigationState
+
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
-    @ObservedObject var homeViewModel: HomeViewModel
 
-    init(_ categoryId: Int64, homeViewModel: HomeViewModel, categoryListViewModel: CategoryListViewModel) {
+    init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
-        self.homeViewModel = homeViewModel
     }
     
     var body: some View {
@@ -41,7 +41,7 @@ struct CategoryDetailView: View {
             Button("삭제") {
                 // TODO: 커스텀 Alert 연결
                 viewModel.deleteCategory()
-                homeViewModel.modalNavigationState.path.removeLast()
+                navigationState.dismiss()
             }
         }
         .onAppear {
@@ -130,7 +130,7 @@ extension CategoryDetailView {
                 Spacer()
 
                 Button("기록하기") {
-                    homeViewModel.modalNavigationState.navigate(to: .staccatoAdd)
+                    navigationState.navigate(to: .staccatoAdd)
                 }
                 .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }
@@ -143,7 +143,7 @@ extension CategoryDetailView {
                     ForEach(staccatos) { staccato in
                         StaccatoCollectionCell(staccato, width: columnWidth)
                             .onTapGesture {
-                                homeViewModel.modalNavigationState.navigate(to: .staccatoDetail(staccato.staccatoId))
+                                navigationState.navigate(to: .staccatoDetail(staccato.staccatoId))
                             }
                     }
                 }

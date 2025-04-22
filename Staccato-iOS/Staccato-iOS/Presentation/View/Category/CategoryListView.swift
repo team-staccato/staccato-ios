@@ -9,9 +9,10 @@ import SwiftUI
 
 struct CategoryListView: View {
     
+    @Environment(NavigationState.self) var navigationState
+    @Bindable var bindableNavigationState: NavigationState
+    
     @StateObject private var viewModel = CategoryListViewModel()
-    @ObservedObject private var homeViewModel: HomeViewModel
-
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
@@ -19,8 +20,8 @@ struct CategoryListView: View {
     
     // MARK: - Initializer
     
-    init(_ homeViewModel: HomeViewModel) {
-        self.homeViewModel = homeViewModel
+    init(_ navigationState: NavigationState) {
+        self.bindableNavigationState = navigationState
     }
     
     
@@ -29,8 +30,7 @@ struct CategoryListView: View {
     var body: some View {
         VStack {
             modalTop
-            
-            NavigationStack(path: $homeViewModel.modalNavigationState.path) {
+            NavigationStack(path: $bindableNavigationState.path) {
                 VStack(spacing: 0) {
                     titleHStack
                         .padding(.top, 22)
@@ -43,7 +43,7 @@ struct CategoryListView: View {
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
                     case .staccatoAdd: StaccatoCreateView()
-                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, homeViewModel: homeViewModel, categoryListViewModel: viewModel)
+                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, categoryListViewModel: viewModel)
                     case .categoryAdd: CategoryEditorView()
                     }
                 }
@@ -125,7 +125,7 @@ private extension CategoryListView {
     
     var categoryAddButton: some View {
         Button("추가") {
-            homeViewModel.modalNavigationState.navigate(to: .categoryAdd)
+            navigationState.navigate(to: .categoryAdd)
             // TODO: modal fullScreen mode
         }
         .buttonStyle(.staccatoCapsule(
@@ -144,7 +144,7 @@ private extension CategoryListView {
                 ForEach(viewModel.categories, id: \.id) { categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
-                        homeViewModel.modalNavigationState.navigate(to: .categoryDetail(categoryInfo.categoryId))
+                        navigationState.navigate(to: .categoryDetail(categoryInfo.categoryId))
                     } label: {
                         CategoryListCell(categoryInfo)
                     }
@@ -152,5 +152,5 @@ private extension CategoryListView {
             }
         }
     }
-    
+
 }

@@ -11,9 +11,9 @@ import Observation
 // MARK: - Destinations
 
 enum HomeModalNavigationDestination: Hashable {
-    case staccatoDetail(_ staccatoID: Int64)
+    case staccatoDetail(_ staccatoId: Int64)
     case staccatoAdd
-    case categoryDetail
+    case categoryDetail(_ categoryId: Int64)
     case categoryAdd
 }
 

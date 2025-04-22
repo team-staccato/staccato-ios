@@ -94,4 +94,8 @@ extension AlertConfiguration {
         )
     }
 
+    static func loginFailAlert(message: String?) -> AlertConfiguration {
+        .alert(title: "로그인 실패", message: message, primaryButton: .button("확인"))
+    }
+
 }

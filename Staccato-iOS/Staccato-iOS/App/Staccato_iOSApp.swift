@@ -13,10 +13,13 @@ import GoogleMaps
 struct Staccato_iOSApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    private let alertManager = STAlertManager()
     
     var body: some Scene {
         WindowGroup {
             HomeView()
+                .environment(alertManager)
         }
     }
     

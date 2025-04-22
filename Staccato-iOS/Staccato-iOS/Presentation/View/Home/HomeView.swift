@@ -14,7 +14,7 @@ struct HomeView: View {
     // MARK: - Properties
     //NOTE: ViewModel, AlertManager
     @StateObject private var viewModel = HomeViewModel()
-    @Environment(STAlertManager.self) var alertManager
+    @Environment(StaccatoAlertManager.self) var alertManager
     
     // NOTE: 뷰
     private var mapView: GMSMapViewRepresentable {

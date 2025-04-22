@@ -14,7 +14,7 @@ struct Staccato_iOSApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    private let alertManager = STAlertManager()
+    private let alertManager = StaccatoAlertManager()
     
     var body: some Scene {
         WindowGroup {

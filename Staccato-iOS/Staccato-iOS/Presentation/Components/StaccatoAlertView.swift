@@ -10,7 +10,7 @@ import Observation
 
 struct StaccatoAlertView: View {
 
-    @Environment(STAlertManager.self) var alertManager
+    @Environment(StaccatoAlertManager.self) var alertManager
 
     var body: some View {
         ZStack {
@@ -29,7 +29,7 @@ struct StaccatoAlertView: View {
     // MARK: - UI Components
 
     var alertView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             titleView
                 .padding(.top, 20)
                 .padding(.bottom, 36)

@@ -12,8 +12,6 @@ class HomeViewModel: ObservableObject {
 
     // MARK: - Properties
     
-    @Published var modalNavigationState = HomeModalNavigationState()
-    
     @Published var staccatoCoordinates: [StaccatoCoordinateModel] = []
     var presentedStaccatos: [StaccatoCoordinateModel] = []
     

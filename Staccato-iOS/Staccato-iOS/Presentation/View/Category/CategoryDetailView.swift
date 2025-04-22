@@ -7,10 +7,20 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct CategoryDetailView: View {
-    // TODO: Staccato Model 생성 후 수정
-    @State var staccatoList: [String] = []
+
+    @Environment(NavigationState.self) var navigationState
     @Environment(StaccatoAlertManager.self) var alertManager
+
+    let categoryId: Int64
+    @ObservedObject var viewModel: CategoryDetailViewModel
+
+    init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
+        self.categoryId = categoryId
+        self.viewModel = CategoryDetailViewModel(categoryListViewModel)
+    }
 
     var body: some View {
         ScrollView {
@@ -18,8 +28,6 @@ struct CategoryDetailView: View {
                 headerSection
 
                 descriptionSection
-
-                Divider()
 
                 staccatoCollectionSection
 
@@ -37,51 +45,53 @@ struct CategoryDetailView: View {
                         .confirmCancelAlert(
                             title: "삭제하시겠습니까?",
                             message: "삭제를 누르면 복구할 수 없습니다.") {
-                                //TODO: DELETE API 호출
-                                print("확인 Clicked")
+                                viewModel.deleteCategory()
+                                navigationState.dismiss()
                             }
                     )
                 }
             }
         }
+        .onAppear {
+            viewModel.getCategoryDetail(categoryId)
+        }
     }
 
 }
 
-#Preview("Preview - Empty") {
-    CategoryDetailView()
-}
 
-#Preview("Preview - with Mock Data") {
-    CategoryDetailView(staccatoList: ["광안리", "페스티벌", "공연", "축제"])
-}
+// MARK: - UI Comonents
 
 extension CategoryDetailView {
+
     private var headerSection: some View {
         ZStack(alignment: .bottomLeading) {
-            // TODO: 여기에 이미지로 대체...
-            Rectangle()
-                .foregroundStyle(.red)
+            KFImage(URL(string: viewModel.categoryDetail?.categoryThumbnailUrl ?? ""))
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 240, alignment: .center)
+                .clipped()
+
             Rectangle()
                 .foregroundStyle(linearGradient)
 
             VStack(alignment: .leading, spacing: 10) {
-                // TODO: 날짜 제목 동적으로
-                Text("빙글빙글 돌아가는 일상 🍃 (maxline 설정 X, 제목 내용 30글자 다 보여야 함)")
+                Text(viewModel.categoryDetail?.categoryTitle ?? "")
                     .typography(.title1)
                     .foregroundStyle(.white)
                     .lineLimit(.max)
                     .multilineTextAlignment(.leading)
-
-                Text("2024. 11. 13 ~ 2024. 11. 21")
-                    .typography(.body4)
-                    .foregroundStyle(.white)
+                
+                if let startAt = viewModel.categoryDetail?.startAt,
+                   let endAt = viewModel.categoryDetail?.endAt {
+                    Text("\(startAt) ~ \(endAt)")
+                        .typography(.body4)
+                        .foregroundStyle(.white)
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 14)
-
         }
-        .frame(height: 240)
     }
 
     private var linearGradient: LinearGradient {
@@ -96,17 +106,27 @@ extension CategoryDetailView {
         )
     }
 
+    @ViewBuilder
     private var descriptionSection: some View {
-        Text("Lorem Ipsum is simply dummy text of the printing and typesetting industry.  (description)")
-            .typography(.body2)
-            .foregroundStyle(.staccatoBlack)
-            .multilineTextAlignment(.leading)
+        if let description = viewModel.categoryDetail?.description {
+            VStack(spacing: 16) {
+                Text(description)
+                    .typography(.body2)
+                    .foregroundStyle(.staccatoBlack)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+            }
+            Divider()
+        }
     }
 
     private var staccatoCollectionSection: some View {
+        let staccatos = viewModel.categoryDetail?.staccatos ?? []
+        let horizontalInset: CGFloat = 16
+        let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset - 8) / 2
         let columns = [
-            GridItem(.flexible(), spacing: 8),
-            GridItem(.flexible())
+            GridItem(.fixed(columnWidth), spacing: 8),
+            GridItem(.fixed(columnWidth))
         ]
 
         return VStack {
@@ -118,24 +138,27 @@ extension CategoryDetailView {
 
                 Spacer()
 
-                Button("수정하기") {
-
+                Button("기록하기") {
+                    navigationState.navigate(to: .staccatoAdd)
                 }
-                .buttonStyle(.staccatoCapsule(icon: .chevronLeft))
+                .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }
 
-            if staccatoList.isEmpty {
+            if staccatos.isEmpty {
                 emptyCollection
                     .padding(.top, 40)
             } else {
                 LazyVGrid(columns: columns, spacing: 8) {
-                    ForEach(staccatoList, id: \.self) { staccato in
-                        StaccatoCollectionCell(title: staccato, date: .now)
+                    ForEach(staccatos) { staccato in
+                        StaccatoCollectionCell(staccato, width: columnWidth)
+                            .onTapGesture {
+                                navigationState.navigate(to: .staccatoDetail(staccato.staccatoId))
+                            }
                     }
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, horizontalInset)
     }
 
     private var emptyCollection: some View {

@@ -8,21 +8,20 @@
 import Foundation
 
 class STService {
-    
+
     static let shared = STService()
-    
+
     init() { }
-    
-    
+
+
     // MARK: - Services
-    
-    lazy var categoryServie = CategoryService()
-    
+
+    lazy var categoryService = CategoryService()
+
     lazy var staccatoService = StaccatoService()
-    
 
     lazy var myPageService = MyPageService()
 
     lazy var commentService = CommentService()
-    
+
 }

@@ -65,7 +65,7 @@ extension GMSMapViewRepresentable {
 }
 
 extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
-    
+
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location: CLLocation = locations.last!
         print("📍Location: \(location)")
@@ -74,7 +74,19 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
         
         parent.mapView.animate(to: camera)
     }
-    
+
+    // NOTE: 위치 접근권한이 없을 때 초기 위치를 서울시청으로 함
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        if parent.viewModel.isInitialCameraMove {
+            let seoulCityhall = CLLocationCoordinate2D(37.5664056, 126.9778222)
+            let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 50)
+            parent.mapView.animate(to: camera)
+            parent.viewModel.isInitialCameraMove = false
+        } else {
+            LocationAuthorizationManager.shared.checkLocationAuthorization()
+        }
+    }
+
 }
 
 

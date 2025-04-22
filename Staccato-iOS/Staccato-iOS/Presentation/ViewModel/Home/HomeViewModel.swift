@@ -18,6 +18,7 @@ class HomeViewModel: ObservableObject {
     @Published var isfetchingStaccatoList = false
     
     let locationManager = CLLocationManager()
+    var isInitialCameraMove: Bool = true
     
     
     // MARK: - Initialize

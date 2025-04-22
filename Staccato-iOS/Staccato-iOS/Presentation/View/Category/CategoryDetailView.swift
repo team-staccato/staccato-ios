@@ -10,6 +10,7 @@ import SwiftUI
 struct CategoryDetailView: View {
     // TODO: Staccato Model 생성 후 수정
     @State var staccatoList: [String] = []
+    @Environment(StaccatoAlertManager.self) var alertManager
 
     var body: some View {
         ScrollView {
@@ -31,10 +32,20 @@ struct CategoryDetailView: View {
             }
 
             Button("삭제") {
-                // TODO: 삭제 기능 구현
+                withAnimation {
+                    alertManager.show(
+                        .confirmCancelAlert(
+                            title: "삭제하시겠습니까?",
+                            message: "삭제를 누르면 복구할 수 없습니다.") {
+                                //TODO: DELETE API 호출
+                                print("확인 Clicked")
+                            }
+                    )
+                }
             }
         }
     }
+
 }
 
 #Preview("Preview - Empty") {

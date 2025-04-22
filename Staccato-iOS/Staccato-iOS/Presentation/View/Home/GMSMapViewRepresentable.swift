@@ -86,6 +86,15 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
             LocationAuthorizationManager.shared.checkLocationAuthorization()
         }
     }
+    
+    // 위치 접근 권한 바뀔 때 파란 점 표시 여부 업데이트
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
+            parent.mapView.isMyLocationEnabled = true
+        } else {
+            parent.mapView.isMyLocationEnabled = false
+        }
+    }
 
 }
 

@@ -2,8 +2,8 @@ import SwiftUI
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
+    @Environment(StaccatoAlertManager.self) var alertManager
     @State private var nickName: String = ""
-    @State private var errorMessage: String?
     @State private var validationMessage: String?
     @State private var isChanging: Bool = false
     @State private var shakeOffset: CGFloat = 0
@@ -15,77 +15,73 @@ struct SignInView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Image("staccato_login_logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 176)
-                    .foregroundStyle(.tint)
-                    .padding(.bottom, 100)
-                
-                TextField("닉네임을 입력해주세요", text: $nickName)
-                    .padding()
-                    .typography(.body4)
-                    .background(.gray1)
-                    .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(viewModel.isValid ? Color.clear : Color.red, lineWidth: 2)
-                    )
-                    .offset(x: viewModel.isValid ? 0 : shakeOffset)
-                    .onChange(of: nickName) {
-                        if nickName.count > 20 {
-                            nickName = String(nickName.prefix(20))
-                        } else {
-                            isChanging = true
-                            debounceValidation(text: nickName)
+            ZStack {
+                VStack {
+                    Image("staccato_login_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 176)
+                        .foregroundStyle(.tint)
+                        .padding(.bottom, 100)
+                    
+                    TextField("닉네임을 입력해주세요", text: $nickName)
+                        .padding()
+                        .typography(.body4)
+                        .background(.gray1)
+                        .cornerRadius(4)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4)
+                                .stroke(viewModel.isValid ? Color.clear : Color.red, lineWidth: 2)
+                        )
+                        .offset(x: viewModel.isValid ? 0 : shakeOffset)
+                        .onChange(of: nickName) {
+                            if nickName.count > 20 {
+                                nickName = String(nickName.prefix(20))
+                            } else {
+                                isChanging = true
+                                debounceValidation(text: nickName)
+                            }
                         }
+                    
+                    HStack {
+                        Text(validationMessage ?? "")
+                            .typography(.body4)
+                            .foregroundColor(.red)
+                            .opacity(viewModel.isValid ? 0 : 1)
+                        
+                        Spacer()
+                        
+                        Text("\(nickName.count)/20")
+                            .typography(.body4)
+                            .foregroundStyle(.gray3)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.bottom)
                     }
-                
-                HStack {
-                    Text(validationMessage ?? "")
-                        .typography(.body4)
-                        .foregroundColor(.red)
-                        .opacity(viewModel.isValid ? 0 : 1)
                     
-                    Spacer()
+                    Button("시작하기") {
+                        login()
+                    }
+                    .buttonStyle(.staccatoFullWidth)
+                    .padding(.vertical)
+                    .disabled(isButtonDisabled || !viewModel.isValid)
                     
-                    Text("\(nickName.count)/20")
-                        .typography(.body4)
-                        .foregroundStyle(.gray3)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.bottom)
+                    NavigationLink(destination: RecoverAccountView()) {
+                        Text("이전 기록을 불러오려면 여기를 눌러주세요")
+                            .typography(.body4)
+                            .foregroundColor(.gray4)
+                            .underline()
+                    }
+                    .padding(.vertical)
+                }
+                .padding(.horizontal, 24)
+                .navigationDestination(isPresented: $viewModel.isLoggedIn) {
+                    HomeView()
                 }
                 
-                Button("시작하기") {
-                    login()
+                if alertManager.isPresented {
+                    StaccatoAlertView()
                 }
-                .buttonStyle(.staccatoFullWidth)
-                .padding(.vertical)
-                .disabled(isButtonDisabled || !viewModel.isValid)
-                
-                NavigationLink(destination: RecoverAccountView()) {
-                    Text("이전 기록을 불러오려면 여기를 눌러주세요")
-                        .typography(.body4)
-                        .foregroundColor(.gray4)
-                        .underline()
-                }
-                .padding(.vertical)
             }
-            .padding(.horizontal, 24)
-            .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                HomeView()
-            }
-        }
-        .alert(isPresented: Binding<Bool>(
-            get: { errorMessage != nil },
-            set: { _ in errorMessage = nil }
-        )) {
-            Alert(
-                title: Text("로그인 실패"),
-                message: Text(errorMessage ?? "알 수 없는 오류"),
-                dismissButton: .default(Text("확인"))
-            )
         }
     }
 }
@@ -96,22 +92,31 @@ struct SignInView: View {
 
 //MARK: Login
 extension SignInView {
+
     private func login() {
         Task {
             do {
                 let _ = try await viewModel.login(nickName: nickName)
             } catch let error as NetworkError {
+                let message: String
                 switch error {
-                case .badRequest(let message):
-                    errorMessage = message
+                case .badRequest(let errorMessage):
+                    message = errorMessage
                 default:
-                    errorMessage = error.localizedDescription
+                    message = error.localizedDescription
+                }
+                
+                await MainActor.run {
+                    alertManager.show(.loginFailAlert(message: message))
                 }
             } catch {
-                errorMessage = "알 수 없는 오류"
+                await MainActor.run {
+                    alertManager.show(.loginFailAlert(message: "알 수 없는 오류"))
+                }
             }
         }
     }
+
 }
 
 //MARK: Animation

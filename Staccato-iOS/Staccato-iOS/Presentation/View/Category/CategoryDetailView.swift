@@ -12,6 +12,7 @@ import Kingfisher
 struct CategoryDetailView: View {
 
     @Environment(NavigationState.self) var navigationState
+    @Environment(StaccatoAlertManager.self) var alertManager
 
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
@@ -20,7 +21,7 @@ struct CategoryDetailView: View {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
     }
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -39,15 +40,23 @@ struct CategoryDetailView: View {
             }
 
             Button("삭제") {
-                // TODO: 커스텀 Alert 연결
-                viewModel.deleteCategory()
-                navigationState.dismiss()
+                withAnimation {
+                    alertManager.show(
+                        .confirmCancelAlert(
+                            title: "삭제하시겠습니까?",
+                            message: "삭제를 누르면 복구할 수 없습니다.") {
+                                viewModel.deleteCategory()
+                                navigationState.dismiss()
+                            }
+                    )
+                }
             }
         }
         .onAppear {
             viewModel.getCategoryDetail(categoryId)
         }
     }
+
 }
 
 

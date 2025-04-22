@@ -10,12 +10,12 @@ import Foundation
 // MARK: - Alert Manager
 
 @Observable
-class STAlertManager {
+class StaccatoAlertManager {
 
     var isPresented = false
-    private(set) var configuration: AlertConfiguration?
+    private(set) var configuration: StaccatoAlertConfiguration?
 
-    func show(_ configuration: AlertConfiguration) {
+    func show(_ configuration: StaccatoAlertConfiguration) {
         self.configuration = configuration
         self.isPresented = true
     }
@@ -33,7 +33,7 @@ class STAlertManager {
 /// - `primaryButton`: accent 컬러
 /// - `secondaryButton`: 회색
 /// - 두 버튼 모두 `dismiss 액션이 내장되어있습니다` (STAlertView - from line 70)
-struct AlertConfiguration {
+struct StaccatoAlertConfiguration {
     let title: String?
     let message: String?
     let primaryButton: AlertButton?
@@ -53,8 +53,8 @@ struct AlertConfiguration {
         message: String?,
         primaryButton: AlertButton?,
         secondaryButton: AlertButton? = nil
-    ) -> AlertConfiguration {
-        AlertConfiguration(
+    ) -> StaccatoAlertConfiguration {
+        StaccatoAlertConfiguration(
             title: title,
             message: message,
             primaryButton: primaryButton,
@@ -67,13 +67,13 @@ struct AlertConfiguration {
 
 // MARK: - Alert Configuration Factory
 
-extension AlertConfiguration {
+extension StaccatoAlertConfiguration {
 
     static func confirmCancelAlert(
         title: String?,
         message: String?,
         _ onConfirm: @escaping () -> Void
-    ) -> AlertConfiguration {
+    ) -> StaccatoAlertConfiguration {
         .alert(
             title: title,
             message: message,
@@ -86,7 +86,7 @@ extension AlertConfiguration {
         title: String?,
         message: String?,
         onConfirm: @escaping () -> Void
-    ) -> AlertConfiguration {
+    ) -> StaccatoAlertConfiguration {
         .alert(
             title: title,
             message: message,
@@ -94,7 +94,7 @@ extension AlertConfiguration {
         )
     }
 
-    static func loginFailAlert(message: String?) -> AlertConfiguration {
+    static func loginFailAlert(message: String?) -> StaccatoAlertConfiguration {
         .alert(title: "로그인 실패", message: message, primaryButton: .button("확인"))
     }
 

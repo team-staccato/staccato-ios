@@ -10,7 +10,7 @@ import SwiftUI
 struct CategoryDetailView: View {
     // TODO: Staccato Model 생성 후 수정
     @State var staccatoList: [String] = []
-    @Environment(STAlertManager.self) var alertManager
+    @Environment(StaccatoAlertManager.self) var alertManager
 
     var body: some View {
         ScrollView {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
-    @Environment(STAlertManager.self) var alertManager
+    @Environment(StaccatoAlertManager.self) var alertManager
     @State private var nickName: String = ""
     @State private var validationMessage: String?
     @State private var isChanging: Bool = false

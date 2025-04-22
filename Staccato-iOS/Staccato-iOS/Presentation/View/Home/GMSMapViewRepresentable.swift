@@ -67,7 +67,10 @@ extension GMSMapViewRepresentable {
 extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        let location: CLLocation = locations.last!
+        guard let location: CLLocation = locations.last else {
+            print("❌ \(String(describing: StaccatoError.optionalBindingFailed.errorDescription)) - GMSMapView location")
+            return
+        }
         let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 13)
         parent.mapView.animate(to: camera)
     }

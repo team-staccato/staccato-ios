@@ -50,6 +50,8 @@ class UploadablePhoto: Identifiable, Equatable {
 struct StaccatoCreateView: View {
     @State var title: String = ""
     @State var locationManager = LocationManager()
+    @State private var showPlaceSearchSheet = false
+    @State private var selectedPlace: StaccatoPlaceModel?
     @State var showDatePickerSheet = false
     @State var selectedDate: Date?
     @FocusState var isTitleFocused: Bool
@@ -93,6 +95,11 @@ struct StaccatoCreateView: View {
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
 
+        .sheet(isPresented: $showPlaceSearchSheet) {
+            GMSPlaceSearchViewController { place in
+                self.selectedPlace = place
+            }
+        }
         .alert(errorTitle ?? "", isPresented: $catchError) {
             Button("확인") {
                 catchError = false
@@ -267,11 +274,11 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
 
-            // - TODO: 검색 시트 띄우기
-            Button("장소명, 주소, 위치로 검색해보세요") {
-
+            Button(selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
+                showPlaceSearchSheet = true
             }
-            .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass))
+            .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass,
+                                                     isActive: selectedPlace != nil))
             .padding(.bottom, 10)
 
             Text("상세 주소")

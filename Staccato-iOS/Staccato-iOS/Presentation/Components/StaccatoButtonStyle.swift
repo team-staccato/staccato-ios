@@ -70,7 +70,7 @@ struct StaccatoCapsuleButtonStyle: ButtonStyle {
 
 struct StaticTextFieldButtonStyle: ButtonStyle {
     let icon: StaccatoIcon?
-    @Binding var isActive: Bool
+    var isActive: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 0) {

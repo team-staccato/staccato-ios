@@ -44,7 +44,7 @@ extension ButtonStyle where Self == StaccatoFilledButtonStyle {
 extension ButtonStyle where Self == StaticTextFieldButtonStyle {
     static func staticTextFieldButtonStyle(
         icon: StaccatoIcon? = nil,
-        isActive: Binding<Bool> = .constant(false)
+        isActive: Bool = false
     ) -> StaticTextFieldButtonStyle {
         .init(
             icon: icon,

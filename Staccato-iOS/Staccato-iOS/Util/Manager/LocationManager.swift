@@ -33,3 +33,21 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 
 }
+
+
+extension LocationManager {
+
+    /// 입력한 좌표의 주소를 반환합니다(역지오코딩)
+    func getAddress(_ location: CLLocation, completion: @escaping (String?) -> Void) {
+        let geocoder = CLGeocoder()
+
+        geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
+            guard let placemark = placemarks?.first else {
+                print("📍ReverseGeocode Fail: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            completion(placemark.name)
+        }
+    }
+
+}

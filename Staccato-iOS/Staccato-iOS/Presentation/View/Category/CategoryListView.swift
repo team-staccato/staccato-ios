@@ -131,7 +131,7 @@ private extension CategoryListView {
         .buttonStyle(.staccatoCapsule(
             icon: .folderFillBadgePlus,
             font: .body3,
-            spacing: 4)
+            iconSpacing: 4)
         )
     }
     

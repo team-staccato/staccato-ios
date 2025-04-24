@@ -49,7 +49,6 @@ class UploadablePhoto: Identifiable, Equatable {
 
 struct StaccatoCreateView: View {
     @State var title: String = ""
-    @State var locationManager = LocationManager()
     @State private var showPlaceSearchSheet = false
     @State private var selectedPlace: StaccatoPlaceModel?
     @State var showDatePickerSheet = false
@@ -300,7 +299,7 @@ extension StaccatoCreateView {
                 .padding(.bottom, 10)
 
             Button("현재 위치의 주소 불러오기") {
-                LocationAuthorizationManager.shared.getCurrentPlaceInfo { place in
+                STLocationManager.shared.getCurrentPlaceInfo { place in
                     self.selectedPlace = place
                 }
                 

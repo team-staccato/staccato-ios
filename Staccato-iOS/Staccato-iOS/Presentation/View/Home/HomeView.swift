@@ -30,7 +30,7 @@ struct HomeView: View {
     @State private var isMyPagePresented = false
 
     // NOTE: 위치 접근 권한
-    @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
+    @State private var locationAuthorizationManager = STLocationManager.shared
 
 
     // MARK: - Body

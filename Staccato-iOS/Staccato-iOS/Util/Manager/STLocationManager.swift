@@ -11,30 +11,40 @@ import SwiftUI
 import Observation
 
 @Observable
-class LocationAuthorizationManager: NSObject {
-    
-    // MARK: - Properties
-    
-    static let shared = LocationAuthorizationManager()
-    
+class STLocationManager: NSObject {
+
+    static let shared = STLocationManager()
+
     private var locationManager = CLLocationManager()
-    
+
     var hasLocationAuthorization: Bool = false
-    
-    
-    // MARK: - Methods
-    
+
     override init() {
         super.init()
         locationManager.delegate = self
         updateAuthorizationStatus()
     }
+
+}
+
+
+// MARK: - CLLocationManager Delegate
+
+extension STLocationManager: CLLocationManagerDelegate {
     
-    private func updateAuthorizationStatus() {
-        let status = locationManager.authorizationStatus
-        hasLocationAuthorization = (status == .authorizedAlways || status == .authorizedWhenInUse)
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        // 권한 상태 변경 시 처리
+        checkLocationAuthorization()
+        updateAuthorizationStatus()
     }
-    
+
+}
+
+
+// MARK: - Authorization Methods
+
+extension STLocationManager {
+
     func checkLocationAuthorization() {
         let status = locationManager.authorizationStatus
         
@@ -57,8 +67,11 @@ class LocationAuthorizationManager: NSObject {
             break
         }
     }
-    
 
+    private func updateAuthorizationStatus() {
+        let status = locationManager.authorizationStatus
+        hasLocationAuthorization = (status == .authorizedAlways || status == .authorizedWhenInUse)
+    }
 
     private func showAlertToOpenSettings() {
         // 설정 앱으로 유도하는 Alert
@@ -79,14 +92,15 @@ class LocationAuthorizationManager: NSObject {
             }
         }
     }
-    
+
 }
 
 
-// MARK: - CLLocationManagerDelegate
+// MARK: - Location Methods
 
-extension LocationAuthorizationManager: CLLocationManagerDelegate {
-    
+extension STLocationManager {
+
+    /// 현재 위치를 업데이트합니다.
     func updateLocationForOneSec() {
         locationManager.startUpdatingLocation()
         
@@ -94,21 +108,16 @@ extension LocationAuthorizationManager: CLLocationManagerDelegate {
             self?.locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 0.1초 뒤 업데이트 멈춤
         }
     }
-    
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        // 권한 상태 변경 시 처리
-        checkLocationAuthorization()
-        updateAuthorizationStatus()
-    }
-    
+
     /// 현재 좌표의 장소 정보를 반환합니다 (역지오코딩)
     func getCurrentPlaceInfo(completion: @escaping (StaccatoPlaceModel) -> Void) {
         updateLocationForOneSec()
+
         guard let coordinate = locationManager.location?.coordinate else {
             print("❌ 옵셔널 바인딩 해제 실패 - getCurrentAddressAndCoordinate")
             return
         }
-        
+
         let geocoder = CLGeocoder()
         let location = CLLocation(coordinate.latitude, coordinate.longitude)
         
@@ -133,9 +142,9 @@ extension LocationAuthorizationManager: CLLocationManagerDelegate {
 
 // MARK: - Helper
 
-extension LocationAuthorizationManager {
+extension STLocationManager {
 
-    /// 동양, 서양 스타일로 주소를 포매팅하는 메소드입니다.
+    /// 동양 또는 서양 스타일로 주소를 포매팅합니다.
     ///
     /// ## 국가별 주소 포맷
     /// 한국, 중국, 일본

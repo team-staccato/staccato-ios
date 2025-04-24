@@ -299,28 +299,17 @@ extension StaccatoCreateView {
                 }
                 .padding(.bottom, 10)
 
-            Button {
+            Button("현재 위치의 주소 불러오기") {
                 LocationAuthorizationManager.shared.getCurrentPlaceInfo { place in
                     self.selectedPlace = place
                 }
                 
-            } label: {
-                Label {
-                    Text("현재 위치의 주소 불러오기")
-                } icon: {
-                    Image(.location)
-                }
-                .foregroundStyle(.gray4)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity)
-                .background {
-                    Capsule()
-                        .stroke(lineWidth: 1)
-                        .foregroundStyle(.gray3)
-                }
-
             }
-        }
+            .buttonStyle(.staccatoCapsule(icon: .location,
+                                          font: .body4,
+                                          verticalPadding: 12,
+                                          fullWidth: true))
+            }
     }
 
     // MARK: - Date

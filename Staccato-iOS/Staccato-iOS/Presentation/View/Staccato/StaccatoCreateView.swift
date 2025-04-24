@@ -286,8 +286,7 @@ extension StaccatoCreateView {
                 .foregroundStyle(.staccatoBlack)
                 .padding(.bottom, 6)
 
-            // - TODO: 주소 값으로 불러오기
-            Text((locationManager.currentCoordinate != nil) ? locationManager.currentCoordinate.debugDescription : "상세주소는 여기에 표시됩니다.")
+            Text(selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
                 .foregroundStyle(.gray3)
                 .typography(.body1)
                 .padding(.vertical, 12)
@@ -301,7 +300,10 @@ extension StaccatoCreateView {
                 .padding(.bottom, 10)
 
             Button {
-                locationManager.requestLocation()
+                LocationAuthorizationManager.shared.getCurrentPlaceInfo { place in
+                    self.selectedPlace = place
+                }
+                
             } label: {
                 Label {
                     Text("현재 위치의 주소 불러오기")

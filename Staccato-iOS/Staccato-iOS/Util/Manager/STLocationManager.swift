@@ -6,7 +6,6 @@
 //
 
 import CoreLocation
-import Contacts
 import SwiftUI
 import Observation
 
@@ -31,7 +30,7 @@ class STLocationManager: NSObject {
 // MARK: - CLLocationManager Delegate
 
 extension STLocationManager: CLLocationManagerDelegate {
-    
+
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         // 권한 상태 변경 시 처리
         checkLocationAuthorization()
@@ -47,22 +46,22 @@ extension STLocationManager {
 
     func checkLocationAuthorization() {
         let status = locationManager.authorizationStatus
-        
+
         switch status {
         case .notDetermined:
             // 처음 실행 시 권한 요청
             print("🗺️Location authorization: NotDetermined")
             locationManager.requestWhenInUseAuthorization()
-            
+
         case .restricted, .denied:
             // 권한 거부 상태: 설정 앱으로 유도
             print("🗺️Location authorization: Restricted or Denied")
             showAlertToOpenSettings()
-            
+
         case .authorizedWhenInUse, .authorizedAlways:
             // "앱 사용 중 허용" 상태: 앱 플로우 진입
             print("🗺️Location authorization: AuthorizedWhenInUse or AuthorizedAlways")
-            
+
         @unknown default:
             break
         }
@@ -103,7 +102,7 @@ extension STLocationManager {
     /// 현재 위치를 업데이트합니다.
     func updateLocationForOneSec() {
         locationManager.startUpdatingLocation()
-        
+
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 0.1초 뒤 업데이트 멈춤
         }
@@ -158,7 +157,7 @@ extension STLocationManager {
     func localizedFormattedAddress(from placemark: CLPlacemark) -> String {
         let countryCode = placemark.isoCountryCode ?? ""
         var parts: [String] = []
-        
+
         // Common fields
         let subThoroughfare = placemark.subThoroughfare ?? ""
         let thoroughfare = placemark.thoroughfare ?? ""

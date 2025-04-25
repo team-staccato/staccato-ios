@@ -10,3 +10,7 @@ import Foundation
 struct ImageURL: Codable {
     let imageUrl: String            // 이미지 URL
 }
+
+struct ProfileImageURL: Codable {
+    let profileImageUrl: String
+}

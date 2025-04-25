@@ -9,6 +9,7 @@ import Alamofire
 
 enum MyPageEndpoint {
     case getProfile
+    case uploadImage
 }
 
 extension MyPageEndpoint: APIEndpoint {
@@ -16,30 +17,32 @@ extension MyPageEndpoint: APIEndpoint {
     var path: String {
         switch self {
         case .getProfile: return "/mypage"
+        case .uploadImage: return "/mypage/images"
         }
     }
     
     var method: HTTPMethod {
         switch self {
         case .getProfile: return .get
+        case .uploadImage: return .post
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getProfile: return URLEncoding.default
+        case .getProfile, .uploadImage: return URLEncoding.default
         }
     }
     
     var parameters: [String : Any]? {
         switch self {
-        case .getProfile: return nil
+        case .getProfile, .uploadImage: return nil
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .getProfile: return HeaderType.tokenOnly()
+        case .getProfile, .uploadImage: return HeaderType.tokenOnly()
         }
     }
 }

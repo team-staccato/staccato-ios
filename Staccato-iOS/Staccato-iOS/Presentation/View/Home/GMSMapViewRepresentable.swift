@@ -10,16 +10,16 @@ import GoogleMaps
 import SwiftUI
 
 struct GMSMapViewRepresentable: UIViewRepresentable {
-    
+
     @ObservedObject var viewModel: HomeViewModel
     @Environment(NavigationState.self) var navigationState
-    
+
     private let mapView = GMSMapView()
-    
+
     init(_ viewModel: HomeViewModel) {
         self.viewModel = viewModel
     }
-    
+
     func makeUIView(context: Context) -> GMSMapView {
         // locationManager delegate
         viewModel.locationManager.delegate = context.coordinator
@@ -31,21 +31,21 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         
         return mapView
     }
-    
+
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        markStaccatos(to: uiView)
+        updateMarkers(to: uiView)
 #if DEBUG
         print("GMSMapViewRepresentable updated")
 #endif
     }
-    
+
 }
 
 
 // MARK: - Coordinator
 
 extension GMSMapViewRepresentable {
-    
+
     func makeCoordinator() -> Coordinator {
         return Coordinator(self, navigationState)
     }
@@ -59,7 +59,7 @@ extension GMSMapViewRepresentable {
             self.navigationState = parent.navigationState
         }
     }
-    
+
 }
 
 extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
@@ -84,7 +84,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
             LocationAuthorizationManager.shared.checkLocationAuthorization()
         }
     }
-    
+
     // 위치 접근 권한 바뀔 때 파란 점 표시 여부 업데이트
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
@@ -98,7 +98,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 
 
 extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
-    
+
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
             navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
@@ -107,7 +107,7 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
         }
         return false
     }
-    
+
 }
 
 
@@ -115,13 +115,18 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 
 private extension GMSMapViewRepresentable {
 
+    private func updateMarkers(to mapView: GMSMapView) {
+        markStaccatos(to: mapView)
+        removeMarkers(from: mapView)
+    }
+
     /// 지도에 스타카토 마커를 추가합니다.
     private func markStaccatos(to mapView: GMSMapView) {
-        let notMarkedStaccatos = viewModel.notMarkedStaccatos
+        let staccatosToAdd = viewModel.staccatosToAdd
 
-        guard !notMarkedStaccatos.isEmpty else { return }
+        guard !staccatosToAdd.isEmpty else { return }
 
-        for staccato in notMarkedStaccatos {
+        for staccato in staccatosToAdd {
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2D(
                 latitude: staccato.latitude,
@@ -133,12 +138,25 @@ private extension GMSMapViewRepresentable {
             if marker.map == nil {
                 print("⚠️ Marker(staccatoID: \(staccato.staccatoId)) was not added to the map!")
             } else {
-                viewModel.markedStaccatos.append(staccato)
+                viewModel.displayedStaccatos.insert(staccato)
+                viewModel.displayedMarkers[staccato.id] = marker
             }
         }
 #if DEBUG
         print("✅ All staccato markers are added successfully!")
 #endif
+    }
+
+    /// 스타카토 마커를 제거합니다.
+    private func removeMarkers(from mapView: GMSMapView) {
+        let staccatosToRemove = viewModel.staccatosToRemove
+
+        guard !staccatosToRemove.isEmpty else { return }
+
+        for staccato in staccatosToRemove {
+            viewModel.displayedMarkers[staccato.id]?.map = nil
+            viewModel.displayedMarkers.removeValue(forKey: staccato.id)
+        }
     }
 
 }

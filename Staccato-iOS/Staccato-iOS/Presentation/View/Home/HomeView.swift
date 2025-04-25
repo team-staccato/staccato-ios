@@ -12,25 +12,27 @@ import SwiftUI
 struct HomeView: View {
 
     // MARK: - Properties
-    //NOTE: ViewModel, AlertManager
-    @StateObject private var viewModel = HomeViewModel()
-    @Environment(StaccatoAlertManager.self) var alertManager
-
-    // NOTE: 뷰
-    private var mapView: GMSMapViewRepresentable {
-        GMSMapViewRepresentable(viewModel)
-    }
+    //NOTE: View, ViewModel
+    @StateObject private var viewModel: HomeViewModel
+    private let mapView: GMSMapViewRepresentable
 
     // NOTE: 모달 크기
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
 
-    // NOTE: 화면 전환
+    // NOTE: 화면 전환, Alert 매니저
     @Environment(NavigationState.self) var navigationState
+    @Environment(StaccatoAlertManager.self) var alertManager
     @State private var isMyPagePresented = false
 
     // NOTE: 위치 접근 권한
     @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
+
+    init() {
+        let viewModel = HomeViewModel()
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.mapView = GMSMapViewRepresentable(viewModel)
+    }
 
 
     // MARK: - Body
@@ -39,7 +41,7 @@ struct HomeView: View {
         ZStack(alignment: .topLeading) {
             mapView
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40) // TODO: 리팩토링 - 모달 크기 바뀔 때마다 updateUIView 호출됨
+                .padding(.bottom, modalHeight - 40)
 
             myPageButton
                 .padding(10)

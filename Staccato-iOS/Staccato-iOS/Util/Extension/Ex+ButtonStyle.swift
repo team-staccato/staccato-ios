@@ -21,10 +21,24 @@ extension ButtonStyle where Self == StaccatoCapsuleButtonStyle {
     }
 }
 
-extension ButtonStyle where Self == StaccatoFullWidthButtonStyle {
-    static var staccatoFullWidth: StaccatoFullWidthButtonStyle {
+extension ButtonStyle where Self == StaccatoFilledButtonStyle {
+
+    static var staccatoFullWidth: StaccatoFilledButtonStyle {
         .init()
     }
+
+    static func staccatoFilled(
+        verticalPadding: CGFloat = 14,
+        foregroundColor: Color = .white,
+        backgroundColor: Color = .accent
+    ) -> StaccatoFilledButtonStyle {
+        .init(
+            verticalPadding: verticalPadding,
+            foregroundColor: foregroundColor,
+            backgroundColor: backgroundColor
+        )
+    }
+
 }
 
 extension ButtonStyle where Self == StaticTextFieldButtonStyle {

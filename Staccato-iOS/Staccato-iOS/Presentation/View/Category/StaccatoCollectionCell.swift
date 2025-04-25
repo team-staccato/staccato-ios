@@ -7,26 +7,36 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct StaccatoCollectionCell: View {
-    let title: String
-    let date: Date
+
+    private let staccato: StaccatoModel
+
+    let width: CGFloat = (ScreenUtils.width - 16 - 8) / 2
+
+    init(_ staccato: StaccatoModel, width: CGFloat) {
+        self.staccato = staccato
+    }
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            // TODO: 이미지로 변경
-            Rectangle()
-                .foregroundStyle(.red)
+            KFImage(URL(string: staccato.staccatoImageUrl ?? ""))
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: width, height: width * 1.25, alignment: .center)
+                .clipped()
 
             linearGradient
 
             VStack(alignment: .leading, spacing: 7) {
-                Text(title)
+                Text(staccato.staccatoTitle)
                     .typography(.title3)
 
                 HStack(spacing: 4) {
                     Image(.calendar)
 
-                    Text(date.formattedAsFullDate)
+                    Text(staccato.visitedAt)
                 }
                 .typography(.body4)
             }
@@ -34,13 +44,8 @@ struct StaccatoCollectionCell: View {
             .padding(.leading, 12)
             .foregroundStyle(.white)
         }
-        .frame(height: 200)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
-}
-
-#Preview {
-    StaccatoCollectionCell(title: "광안리", date: .now)
 }
 
 extension StaccatoCollectionCell {

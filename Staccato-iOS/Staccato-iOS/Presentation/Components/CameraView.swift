@@ -8,8 +8,20 @@
 import SwiftUI
 
 struct CameraView: UIViewControllerRepresentable {
+    let cameraMode: CameraMode
     @Binding var selectedImage: UIImage?
+    @Binding var imageList: [UploadablePhoto]
     @Environment(\.presentationMode) var isPresented
+
+    init(
+        cameraMode: CameraMode = .single,
+        selectedImage: Binding<UIImage?> = .constant(nil),
+        imageList: Binding<[UploadablePhoto]> = .constant([])
+    ) {
+        self.cameraMode = cameraMode
+        self._selectedImage = selectedImage
+        self._imageList = imageList
+    }
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let imagePicker = UIImagePickerController()
@@ -36,8 +48,19 @@ struct CameraView: UIViewControllerRepresentable {
 
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             guard let selectedImage = info[.originalImage] as? UIImage else { return }
-            self.picker.selectedImage = selectedImage
+
+            switch self.picker.cameraMode {
+            case .single:
+                self.picker.selectedImage = selectedImage
+            case .multiple:
+                self.picker.imageList.append(UploadablePhoto(photo: selectedImage))
+            }
             self.picker.isPresented.wrappedValue.dismiss()
         }
+    }
+
+    enum CameraMode {
+        case single
+        case multiple
     }
 }

@@ -13,7 +13,15 @@ class HomeViewModel: ObservableObject {
     // MARK: - Properties
     
     @Published var staccatoCoordinates: [StaccatoCoordinateModel] = []
-    var presentedStaccatos: [StaccatoCoordinateModel] = []
+    var markedStaccatos: [StaccatoCoordinateModel] = []
+    var notMarkedStaccatos: [StaccatoCoordinateModel] {
+        let newStaccatos = staccatoCoordinates.filter { newStaccato in
+            !markedStaccatos.contains { presentedStaccato in
+                presentedStaccato.id == newStaccato.id
+            }
+        }
+        return newStaccatos
+    }
     
     @Published var isfetchingStaccatoList = false
     

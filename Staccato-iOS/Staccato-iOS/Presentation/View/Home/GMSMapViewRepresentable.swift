@@ -33,9 +33,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        if viewModel.presentedStaccatos.isEmpty { // NOTE: 마커 없는 경우만 실행
-            addAllStaccatoMarkers(to: uiView)
-        }
+        markStaccatos(to: uiView)
 #if DEBUG
         print("GMSMapViewRepresentable updated")
 #endif
@@ -116,14 +114,14 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 // MARK: - Private Methods
 
 private extension GMSMapViewRepresentable {
-    
-    private func addAllStaccatoMarkers(to mapView: GMSMapView) {
-        let staccatos = viewModel.staccatoCoordinates
-        guard !staccatos.isEmpty else { return }
-        
-        mapView.clear()
-        
-        for staccato in staccatos {
+
+    /// 지도에 스타카토 마커를 추가합니다.
+    private func markStaccatos(to mapView: GMSMapView) {
+        let notMarkedStaccatos = viewModel.notMarkedStaccatos
+
+        guard !notMarkedStaccatos.isEmpty else { return }
+
+        for staccato in notMarkedStaccatos {
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2D(
                 latitude: staccato.latitude,
@@ -131,16 +129,16 @@ private extension GMSMapViewRepresentable {
             )
             marker.userData = staccato
             marker.map = mapView
-            
-#if DEBUG
+
             if marker.map == nil {
                 print("⚠️ Marker(staccatoID: \(staccato.staccatoId)) was not added to the map!")
             } else {
-                print("✅ Marker(staccatoID: \(staccato.staccatoId)) added successfully!")
-                viewModel.presentedStaccatos.append(staccato)
+                viewModel.markedStaccatos.append(staccato)
             }
-#endif
         }
+#if DEBUG
+        print("✅ All staccato markers are added successfully!")
+#endif
     }
-    
+
 }

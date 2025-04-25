@@ -15,8 +15,8 @@ class SignInViewModel: ObservableObject {
 extension SignInViewModel {
     func login(nickName: String) async throws -> LoginResponse {
         guard let loginResponse = try await NetworkService.shared.request(
-                endpoint: AuthorizationAPI.login(nickname: nickName),
-                responseType: LoginResponse.self
+            endpoint: AuthorizationAPI.login(nickname: nickName),
+            responseType: LoginResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed
         }
@@ -25,6 +25,13 @@ extension SignInViewModel {
         self.isLoggedIn = true
         
         return loginResponse
+    }
+    
+    func checkAutoLogin() {
+        if let token = AuthTokenManager.shared.getToken(),
+           !token.isEmpty {
+            isLoggedIn = true
+        }
     }
     
     // 한글, 영어, 마침표, 언더바(_)만 허용

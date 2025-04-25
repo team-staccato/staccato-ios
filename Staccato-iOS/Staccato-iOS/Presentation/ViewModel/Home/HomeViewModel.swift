@@ -72,6 +72,7 @@ extension HomeViewModel {
                 
                 let locations: [StaccatoCoordinateModel] = staccatoList.staccatoLocationResponses.map {
                     StaccatoCoordinateModel(
+                        id: UUID(),
                         staccatoId: $0.staccatoId,
                         latitude: $0.latitude,
                         longitude: $0.longitude

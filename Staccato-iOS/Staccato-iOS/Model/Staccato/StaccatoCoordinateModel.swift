@@ -7,12 +7,14 @@
 
 import Foundation
 
-struct StaccatoCoordinateModel {
-    
+struct StaccatoCoordinateModel: Equatable {
+
+    let id: UUID
+
     let staccatoId: Int64
-    
+
     let latitude: Double
-    
+
     let longitude: Double
-    
+
 }

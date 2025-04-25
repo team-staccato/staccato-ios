@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct StaccatoCoordinateModel: Equatable {
+struct StaccatoCoordinateModel: Hashable {
 
     let id: UUID
 

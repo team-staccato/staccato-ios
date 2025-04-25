@@ -8,21 +8,23 @@
 import SwiftUI
 import CoreLocation
 
+import GoogleMaps
+
 class HomeViewModel: ObservableObject {
 
     // MARK: - Properties
-    
-    @Published var staccatoCoordinates: [StaccatoCoordinateModel] = []
-    var markedStaccatos: [StaccatoCoordinateModel] = []
-    var notMarkedStaccatos: [StaccatoCoordinateModel] {
-        let newStaccatos = staccatoCoordinates.filter { newStaccato in
-            !markedStaccatos.contains { presentedStaccato in
-                presentedStaccato.id == newStaccato.id
-            }
-        }
-        return newStaccatos
+
+    @Published var staccatos: Set<StaccatoCoordinateModel> = []
+    var displayedStaccatos: Set<StaccatoCoordinateModel> = []
+    var displayedMarkers: [UUID : GMSMarker] = [:] // == [staccato.id : GMSMarker]
+
+    var staccatosToAdd: Set<StaccatoCoordinateModel> {
+    staccatos.subtracting(displayedStaccatos)
     }
-    
+    var staccatosToRemove: Set<StaccatoCoordinateModel> {
+    displayedStaccatos.subtracting(staccatos)
+    }
+
     @Published var isfetchingStaccatoList = false
     
     let locationManager = CLLocationManager()
@@ -86,8 +88,7 @@ extension HomeViewModel {
                         longitude: $0.longitude
                     )
                 }
-                
-                self.staccatoCoordinates = locations
+                self.staccatos = Set(locations)
             } catch {
                 print("Error fetching staccatos: \(error.localizedDescription)")
             }

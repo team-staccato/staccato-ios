@@ -11,8 +11,6 @@ protocol MyPageServiceProtocol {
     
     func getProfile() async throws -> GetProfileResponse
     
-    func uploadProfileImage(_ requestBody: PostProfileImageRequest) async throws -> ProfileImageResponse
-    
 }
 
 class MyPageService: MyPageServiceProtocol {
@@ -27,17 +25,4 @@ class MyPageService: MyPageServiceProtocol {
         
         return profile
     }
-    
-    func uploadProfileImage(_ requestBody: PostProfileImageRequest) async throws -> ProfileImageResponse {
-        guard let imageURL = try await NetworkService.shared.uploadImage(
-            requestBody.image,
-            endpoint: MyPageEndpoint.uploadImage,
-            responseType: ProfileImageResponse.self
-        )
-        else {
-            throw StaccatoError.optionalBindingFailed
-        }
-        return imageURL
-    }
-
 }

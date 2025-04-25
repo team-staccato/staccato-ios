@@ -23,5 +23,7 @@ class STService {
     lazy var myPageService = MyPageService()
 
     lazy var commentService = CommentService()
+    
+    lazy var imageService = ImageService()
 
 }

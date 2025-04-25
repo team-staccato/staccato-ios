@@ -12,7 +12,6 @@ enum CategoryEndpoint {
     case getCategoryDetail(_ categoryId: Int64)
     case createCategory(_ query: CreateCategoryRequestQuery)
     case deleteCategory(_ categoryId: Int64)
-    case uploadImage
 }
 
 extension CategoryEndpoint: APIEndpoint {
@@ -24,8 +23,6 @@ extension CategoryEndpoint: APIEndpoint {
         case .getCategoryDetail(let categoryId),
              .deleteCategory(let categoryId):
             return "/categories/\(categoryId)"
-        case .uploadImage:
-            return "/categories/images"
         }
     }
     
@@ -33,7 +30,7 @@ extension CategoryEndpoint: APIEndpoint {
         switch self {
         case .getCategoryList, .getCategoryDetail:
             return .get
-        case .createCategory, .uploadImage:
+        case .createCategory:
             return .post
         case .deleteCategory:
             return .delete
@@ -46,8 +43,6 @@ extension CategoryEndpoint: APIEndpoint {
             return URLEncoding.queryString
         case .createCategory:
             return JSONEncoding.default
-        case .uploadImage:
-            return URLEncoding.default // multipart 용도일 경우 따로 처리 필요
         }
     }
     
@@ -64,8 +59,6 @@ extension CategoryEndpoint: APIEndpoint {
             return params.isEmpty ? nil : params
         case .createCategory(let query):
             return query.toDictionary()
-        case .uploadImage:
-            return nil
         default:
             return nil
         }

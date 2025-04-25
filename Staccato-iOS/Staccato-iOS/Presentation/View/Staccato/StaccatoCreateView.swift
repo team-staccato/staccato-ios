@@ -36,7 +36,7 @@ class UploadablePhoto: Identifiable, Equatable {
         }
 
         do {
-            let imageURL = try await NetworkService.shared.uploadImage(self.photo)
+            let imageURL = try await STService.shared.imageService.uploadImage(PostImageRequest(image: self.photo))
             self.imageURL = imageURL.imageUrl
             print("성공")
         } catch {

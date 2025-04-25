@@ -14,12 +14,18 @@ class STLocationManager: NSObject {
 
     static let shared = STLocationManager()
 
-    private var locationManager = CLLocationManager()
+    private let locationManager = CLLocationManager()
+    
+    var delegate: CLLocationManagerDelegate? {
+        get { locationManager.delegate }
+        set { locationManager.delegate = newValue }
+    }
 
     var hasLocationAuthorization: Bool = false
 
     override init() {
         super.init()
+        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         locationManager.delegate = self
         updateAuthorizationStatus()
     }

@@ -62,12 +62,12 @@ struct HomeView: View {
         }
         .onAppear() {
             locationAuthorizationManager.checkLocationAuthorization()
-            viewModel.updateLocationForOneSec()
+            STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
         }
         .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
-                viewModel.updateLocationForOneSec()
+                STLocationManager.shared.updateLocationForOneSec()
             }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
@@ -101,7 +101,7 @@ extension HomeView {
 
     private var myLocationButton: some View {
         Button {
-            viewModel.updateLocationForOneSec()
+            STLocationManager.shared.updateLocationForOneSec()
         } label: {
             Image(.dotScope)
                 .resizable()

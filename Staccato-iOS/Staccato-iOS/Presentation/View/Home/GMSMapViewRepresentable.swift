@@ -21,8 +21,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
     
     func makeUIView(context: Context) -> GMSMapView {
-        // locationManager delegate
-        viewModel.locationManager.delegate = context.coordinator
+        STLocationManager.shared.delegate = context.coordinator
         
         // mapView 설정
         mapView.settings.myLocationButton = false // 우측아래 내위치 버튼 숨김

@@ -74,6 +74,9 @@ struct SignInView: View {
                     .padding(.vertical)
                 }
                 .padding(.horizontal, 24)
+                .onAppear {
+                    viewModel.checkAutoLogin()
+                }
                 .navigationDestination(isPresented: $viewModel.isLoggedIn) {
                     HomeView()
                 }

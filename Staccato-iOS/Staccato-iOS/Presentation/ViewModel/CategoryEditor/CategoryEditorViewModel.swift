@@ -63,7 +63,7 @@ final class CategoryEditorViewModel {
         do {
             guard let imageURL = try await NetworkService.shared.uploadImage(
                 selectedPhoto,
-                imageType: .default,
+                endpoint: CategoryEndpoint.uploadImage,
                 responseType: ImageURL.self
             ) else {
                 throw StaccatoError.optionalBindingFailed

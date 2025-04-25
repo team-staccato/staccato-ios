@@ -16,7 +16,7 @@ class HomeViewModel: ObservableObject {
 
     @Published var staccatos: Set<StaccatoCoordinateModel> = []
     var displayedStaccatos: Set<StaccatoCoordinateModel> = []
-    var displayedMarkers: [UUID : GMSMarker] = [:] // == [staccato.id : GMSMarker]
+    var displayedMarkers: [Int64 : GMSMarker] = [:] // == [staccato.id : GMSMarker]
 
     var staccatosToAdd: Set<StaccatoCoordinateModel> {
     staccatos.subtracting(displayedStaccatos)
@@ -82,7 +82,7 @@ extension HomeViewModel {
                 
                 let locations: [StaccatoCoordinateModel] = staccatoList.staccatoLocationResponses.map {
                     StaccatoCoordinateModel(
-                        id: UUID(),
+                        id: $0.staccatoId,
                         staccatoId: $0.staccatoId,
                         latitude: $0.latitude,
                         longitude: $0.longitude

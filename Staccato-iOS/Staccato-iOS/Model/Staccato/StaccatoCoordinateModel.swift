@@ -9,7 +9,7 @@ import Foundation
 
 struct StaccatoCoordinateModel: Hashable {
 
-    let id: UUID
+    let id: Int64
 
     let staccatoId: Int64
 

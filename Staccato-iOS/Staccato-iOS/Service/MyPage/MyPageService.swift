@@ -31,7 +31,7 @@ class MyPageService: MyPageServiceProtocol {
     func uploadProfileImage(_ requestBody: PostProfileImageRequest) async throws -> ProfileImageResponse {
         guard let imageURL = try await NetworkService.shared.uploadImage(
             requestBody.image,
-            imageType: .myProfile,
+            endpoint: MyPageEndpoint.uploadImage,
             responseType: ProfileImageResponse.self
         )
         else {

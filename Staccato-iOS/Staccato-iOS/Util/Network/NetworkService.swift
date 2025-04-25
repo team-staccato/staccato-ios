@@ -96,17 +96,18 @@ final class NetworkService {
 
     func uploadImage<T: Decodable>(
         _ image: UIImage?,
-        imageType: imageType,
+        endpoint: APIEndpoint,
         responseType: T.Type?
     ) async throws -> T? {
         guard let imageData = image?.jpegData(compressionQuality: 0.8) else { throw StaccatoError.optionalBindingFailed }
 
         let baseURL = Bundle.main.infoDictionary?["BASE_URL"] as! String
-        let urlString = baseURL + imageType.path
+        let urlString = baseURL + endpoint.path
         guard let url = URL(string: urlString) else { throw NetworkError.invalidURL }
 
         let imageName = "\(UUID().uuidString).jpg"
-
+        let headers = HTTPHeaders(endpoint.headers ?? [:])
+        
         let response = await AF.upload(
             multipartFormData: {
                 $0.append(imageData,
@@ -116,7 +117,7 @@ final class NetworkService {
                 )
             },
             to: url,
-            headers: HTTPHeaders(HeaderType.tokenOnly())
+            headers: headers
         )
             .validate()
             .serializingDecodable(T.self)

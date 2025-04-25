@@ -59,9 +59,15 @@ final class CategoryEditorViewModel {
         }
     }
 
-    func uploadImage() async {
+    func uploadImage() async throws {
         do {
-            let imageURL = try await NetworkService.shared.uploadImage(selectedPhoto)
+            guard let imageURL = try await NetworkService.shared.uploadImage(
+                selectedPhoto,
+                endpoint: CategoryEndpoint.uploadImage,
+                responseType: ImageURL.self
+            ) else {
+                throw StaccatoError.optionalBindingFailed
+            }
             self.imageURL = imageURL.imageUrl
         } catch {
             errorMessage = error.localizedDescription

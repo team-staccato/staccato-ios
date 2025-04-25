@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class MyPageViewModel: ObservableObject {
     @Published var profile: ProfileModel?
@@ -30,4 +31,18 @@ extension MyPageViewModel {
             }
         }
     }
+    
+    @MainActor
+    func uploadProfileImage(_ image: UIImage) {
+            Task {
+                do {
+                    let requestBody = PostProfileImageRequest(image: image)
+                    let _ = try await STService.shared.myPageService.uploadProfileImage(requestBody)
+                    
+                    fetchProfile()
+                } catch {
+                    print(error)
+                }
+            }
+        }
 }

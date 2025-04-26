@@ -36,8 +36,8 @@ extension MyPageViewModel {
     func uploadProfileImage(_ image: UIImage) {
             Task {
                 do {
-                    let requestBody = PostProfileImageRequest(image: image)
-                    let _ = try await STService.shared.myPageService.uploadProfileImage(requestBody)
+                    let requestBody = PostImageRequest(image: image)
+                    let _ = try await STService.shared.imageService.uploadProfileImage(requestBody)
                     
                     fetchProfile()
                 } catch {

@@ -10,6 +10,6 @@ import UIKit
 
 struct PostImageRequest {
     
-    let image: UIImage
+    let image: UIImage?
     
 }

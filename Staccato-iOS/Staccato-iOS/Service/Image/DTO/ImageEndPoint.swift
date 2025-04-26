@@ -16,8 +16,8 @@ extension ImageEndPoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .uploadImage: return "/mypage/images"
-        case .uploadProfileImage: return "/images"
+        case .uploadImage: return "/images"
+        case .uploadProfileImage: return "/mypage/images"
         }
     }
     

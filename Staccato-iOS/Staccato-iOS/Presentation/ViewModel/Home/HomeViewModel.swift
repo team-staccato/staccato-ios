@@ -11,40 +11,11 @@ import CoreLocation
 class HomeViewModel: ObservableObject {
 
     // MARK: - Properties
-    
+
     @Published var staccatoCoordinates: [StaccatoCoordinateModel] = []
     var presentedStaccatos: [StaccatoCoordinateModel] = []
-    
+
     @Published var isfetchingStaccatoList = false
-    
-    let locationManager = CLLocationManager()
-    
-    
-    // MARK: - Initialize
-    
-    init() {
-        setLocationManager()
-    }
-
-}
-
-
-// MARK: - Location
-
-extension HomeViewModel {
-
-    private func setLocationManager() {
-        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-        locationManager.requestWhenInUseAuthorization()
-    }
-    
-    func updateLocationForOneSec() {
-        locationManager.startUpdatingLocation()
-        
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 0.1초 뒤 업데이트 멈춤
-        }
-    }
 
 }
 

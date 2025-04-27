@@ -12,7 +12,6 @@ import PhotosUI
 class StaccatoCreateViewModel {
     var categoryId: Int?
     var title: String = ""
-    var locationManager = STLocationManager()
     var showDatePickerSheet = false
     var selectedDate: Date? = nil
 
@@ -26,10 +25,13 @@ class StaccatoCreateViewModel {
     var isPhotoPickerPresented = false
     var photoItem: PhotosPickerItem? = nil
 
+    var showPlaceSearchSheet = false
+    var selectedPlace: StaccatoPlaceModel?
+
+
     init(categoryId: Int? = nil) {
         self.categoryId = categoryId
         self.title = ""
-        self.locationManager = STLocationManager()
         self.showDatePickerSheet = false
         self.selectedDate = nil
         self.catchError = false
@@ -60,10 +62,10 @@ class StaccatoCreateViewModel {
     func createStaccato() async {
         let request = CreateStaccatoRequest(
             staccatoTitle: self.title,
-            placeName: "", // TODO: 로케이션 관련 구현 후 수정
-            address: "", // TODO: 로케이션 관련 구현 후 수정
-            latitude: 0.0, // TODO: 로케이션 관련 구현 후 수정
-            longitude: 0.0, // TODO: 로케이션 관련 구현 후 수정
+            placeName: self.selectedPlace?.name ?? "",
+            address: self.selectedPlace?.address ?? "",
+            latitude: self.selectedPlace?.coordinate.latitude ?? 0.0,
+            longitude: self.selectedPlace?.coordinate.longitude ?? 0.0,
             visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
             categoryID: self.categoryId ?? 0,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }

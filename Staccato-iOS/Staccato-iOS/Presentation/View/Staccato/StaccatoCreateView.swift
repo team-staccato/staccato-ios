@@ -12,11 +12,6 @@ import Lottie
 
 struct StaccatoCreateView: View {
     @State private var viewModel: StaccatoCreateViewModel
-    @State var title: String = ""
-    @State private var showPlaceSearchSheet = false
-    @State private var selectedPlace: StaccatoPlaceModel?
-    @State var showDatePickerSheet = false
-    @State var selectedDate: Date?
 
     @FocusState var isTitleFocused: Bool
 
@@ -50,9 +45,9 @@ struct StaccatoCreateView: View {
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
-        .sheet(isPresented: $showPlaceSearchSheet) {
+        .sheet(isPresented: $viewModel.showPlaceSearchSheet) {
             GMSPlaceSearchViewController { place in
-                self.selectedPlace = place
+                self.viewModel.selectedPlace = place
             }
         }
         .alert(viewModel.errorTitle ?? "", isPresented: $viewModel.catchError) {
@@ -231,11 +226,11 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
 
-            Button(selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
-                showPlaceSearchSheet = true
+            Button(viewModel.selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
+                viewModel.showPlaceSearchSheet = true
             }
             .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass,
-                                                     isActive: selectedPlace != nil))
+                                                     isActive: viewModel.selectedPlace != nil))
             .padding(.bottom, 10)
 
             Text("상세 주소")
@@ -243,7 +238,7 @@ extension StaccatoCreateView {
                 .foregroundStyle(.staccatoBlack)
                 .padding(.bottom, 6)
 
-            Text(selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
+            Text(viewModel.selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
                 .foregroundStyle(.gray3)
                 .typography(.body1)
                 .padding(.vertical, 12)
@@ -258,7 +253,7 @@ extension StaccatoCreateView {
 
             Button("현재 위치의 주소 불러오기") {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
-                    self.selectedPlace = place
+                    self.viewModel.selectedPlace = place
                 }
                 
             }

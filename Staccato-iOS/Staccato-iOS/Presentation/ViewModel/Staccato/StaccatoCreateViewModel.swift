@@ -12,7 +12,7 @@ import PhotosUI
 class StaccatoCreateViewModel {
     var categoryId: Int?
     var title: String = ""
-    var locationManager = LocationManager()
+    var locationManager = STLocationManager()
     var showDatePickerSheet = false
     var selectedDate: Date? = nil
 
@@ -29,7 +29,7 @@ class StaccatoCreateViewModel {
     init(categoryId: Int? = nil) {
         self.categoryId = categoryId
         self.title = ""
-        self.locationManager = LocationManager()
+        self.locationManager = STLocationManager()
         self.showDatePickerSheet = false
         self.selectedDate = nil
         self.catchError = false

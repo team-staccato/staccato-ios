@@ -10,49 +10,55 @@ import GoogleMaps
 import SwiftUI
 
 struct HomeView: View {
-    
+
     // MARK: - Properties
-    //NOTE: 뷰모델
+    //NOTE: ViewModel, AlertManager
     @StateObject private var viewModel = HomeViewModel()
-    
+    @Environment(StaccatoAlertManager.self) var alertManager
+
     // NOTE: 뷰
     private var mapView: GMSMapViewRepresentable {
         GMSMapViewRepresentable(viewModel)
     }
-    
+
     // NOTE: 모달 크기
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
-    
+
     // NOTE: 화면 전환
+    @Environment(NavigationState.self) var navigationState
     @State private var isMyPagePresented = false
-    
+
     // NOTE: 위치 접근 권한
     @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
-    
-    
+
+
     // MARK: - Body
-    
+
     var body: some View {
         ZStack(alignment: .topLeading) {
             mapView
                 .edgesIgnoringSafeArea(.all)
                 .padding(.bottom, modalHeight - 40) // TODO: 리팩토링 - 모달 크기 바뀔 때마다 updateUIView 호출됨
-            
+
             myPageButton
                 .padding(10)
             
             myLocationButton
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .topTrailing)
-            
+
             staccatoAddButton
                 .padding(.trailing, 12)
                 .padding(.bottom, modalHeight - 20)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            
+
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
+
+            if alertManager.isPresented {
+                StaccatoAlertView()
+            }
         }
         .onAppear() {
             locationAuthorizationManager.checkLocationAuthorization()
@@ -68,14 +74,14 @@ struct HomeView: View {
             MyPageView()
         }
     }
-    
+
 }
 
 
 // MARK: - UI Components
 
 extension HomeView {
-    
+
     private var myPageButton: some View {
         Button {
             isMyPagePresented = true
@@ -92,7 +98,7 @@ extension HomeView {
                 }
         }
     }
-    
+
     private var myLocationButton: some View {
         Button {
             viewModel.updateLocationForOneSec()
@@ -107,10 +113,10 @@ extension HomeView {
         .clipShape(.circle)
         .shadow(radius: 2)
     }
-    
+
     private var staccatoAddButton: some View {
         Button {
-            viewModel.modalNavigationState.navigate(to: .staccatoAdd)
+            navigationState.navigate(to: .staccatoAdd)
             // TODO: modal fullScreen mode
         } label: {
             Image(.plus)
@@ -124,12 +130,12 @@ extension HomeView {
         .clipShape(.circle)
         .shadow(radius: 4, y: 4)
     }
-    
+
     private var categoryListModal: some View {
         VStack {
             Spacer()
 
-            CategoryListView(viewModel)
+            CategoryListView(navigationState)
                 .frame(height: modalHeight)
                 .background(Color.white)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
@@ -154,5 +160,5 @@ extension HomeView {
                 )
         }
     }
-    
+
 }

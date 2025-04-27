@@ -301,7 +301,7 @@ extension StaccatoCreateView {
             }
         }
         .buttonStyle(.staccatoFullWidth)
-        .disabled(true)
+        .disabled(!viewModel.isReadyToSave)
     }
 
     // MARK: - Components

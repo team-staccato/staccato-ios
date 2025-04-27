@@ -37,6 +37,31 @@ final class CategoryEditorViewModel {
     var errorMessage: String?
     var uploadSuccess = false
 
+    // MARK: - Modifying
+    var id: Int?
+    var editorType: CategoryEditorType = .create
+
+    init(id: Int? = nil, editorType: CategoryEditorType = .create) {
+        self.isPhotoInputPresented = false
+        self.isPhotoPickerPresented = false
+        self.showCamera = false
+        self.photoItem = nil
+        self.selectedPhoto = nil
+        self.imageURL = nil
+        self.categoryTitle = ""
+        self.categoryDescription = ""
+        self.isPeriodSettingActive = false
+        self.selectedStartDate = nil
+        self.selectedEndDate = nil
+        self.isPeriodSheetPresented = false
+        self.catchError = false
+        self.errorTitle = nil
+        self.errorMessage = nil
+        self.uploadSuccess = false
+        self.id = id
+        self.editorType = editorType
+    }
+
     var categoryPeriod: String? {
         guard let selectedStartDate, let selectedEndDate else { return nil }
         return "\(selectedStartDate.formattedAsFullDate + " ~ " + selectedEndDate.formattedAsFullDate)"
@@ -84,5 +109,30 @@ final class CategoryEditorViewModel {
             errorMessage = error.localizedDescription
             catchError = true
         }
+    }
+
+    func modifyCategory() async {
+        let query = ModifyCategoryRequestQuery(
+            categoryThumbnailUrl: self.imageURL,
+            categoryTitle: self.categoryTitle,
+            description: self.categoryDescription,
+            startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
+            endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
+        )
+
+        guard let id = self.id else { return }
+
+        do {
+            try await STService.shared.categoryServie.modifyCategory(id: id, query)
+            self.uploadSuccess = true
+        } catch {
+            errorMessage = error.localizedDescription
+            catchError = true
+        }
+    }
+
+    enum CategoryEditorType {
+        case modify
+        case create
     }
 }

@@ -16,6 +16,13 @@ struct CategoryEditorView: View {
 
     @FocusState private var isDescriptionFocused: Bool
 
+    init(
+        id: Int? = nil,
+        editorType: CategoryEditorViewModel.CategoryEditorType = .create
+    ) {
+        self.vm = CategoryEditorViewModel(id: id, editorType: editorType)
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {

@@ -107,6 +107,7 @@ extension STLocationManager {
 
     /// 현재 위치를 업데이트합니다.
     func updateLocationForOneSec() {
+        checkLocationAuthorization()
         locationManager.startUpdatingLocation()
 
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) { [weak self] in

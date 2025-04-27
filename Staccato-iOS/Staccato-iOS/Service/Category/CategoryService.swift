@@ -12,6 +12,8 @@ protocol CategoryServiceProtocol {
     func getCategoryList(_ query: GetCategoryListRequestQuery) async throws -> GetCategoryListResponse
 
     func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse
+
+    func modifyCategory(id: Int, _ query: ModifyCategoryRequestQuery) async throws
 }
 
 class CategoryService: CategoryServiceProtocol {
@@ -39,4 +41,7 @@ class CategoryService: CategoryServiceProtocol {
         return categoryId
     }
 
+    func modifyCategory(id: Int, _ query: ModifyCategoryRequestQuery) async throws {
+        try await NetworkService.shared.request(endpoint: CategoryEndpoint.modifyCategory(query, id: id))
+    }
 }

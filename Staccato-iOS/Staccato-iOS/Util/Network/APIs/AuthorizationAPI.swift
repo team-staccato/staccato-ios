@@ -12,24 +12,30 @@ import Alamofire
 enum AuthorizationAPI: APIEndpoint {
     
     case login(nickname: String)
+    case recoverAccount(withCode: String)
     
     var path: String {
         switch self {
         case .login:
             return "/login"
+        case .recoverAccount:
+            return "/members"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .login:
+        case .login, .recoverAccount:
             return .post
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .login: return JSONEncoding.default
+        case .login:
+            return JSONEncoding.default
+        case .recoverAccount:
+            return URLEncoding(destination: .queryString)
         }
     }
     
@@ -38,6 +44,10 @@ enum AuthorizationAPI: APIEndpoint {
         case .login(nickname: let nickname):
             return [
                 "nickname": nickname
+            ]
+        case .recoverAccount(withCode: let code):
+            return [
+                "code": code
             ]
         }
     }

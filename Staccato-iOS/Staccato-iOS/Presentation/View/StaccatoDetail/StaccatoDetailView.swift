@@ -7,21 +7,23 @@
 
 import SwiftUI
 
+import Kingfisher
+
 struct StaccatoDetailView: View {
     
     // MARK: - State Properties
     
-    @ObservedObject var homeViewModel: HomeViewModel
+    let staccatoId: Int64
     
-    // TODO: 수정
-    @State var userId: Int64 = 1
-    @State var comments: [CommentModel] = CommentModel.dummy
+    @ObservedObject var viewModel: StaccatoDetailViewModel
     
     @State var commentText: String = ""
     @FocusState private var isCommentFocused: Bool
     
-    init(_ homeViewModel: HomeViewModel) {
-        self.homeViewModel = homeViewModel
+    init(_ staccatoId: Int64) {
+        self.staccatoId = staccatoId
+        self.viewModel = StaccatoDetailViewModel()
+        viewModel.getStaccatoDetail(staccatoId)
     }
     
     
@@ -31,28 +33,38 @@ struct StaccatoDetailView: View {
 
     var body: some View {
         VStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    imageSlider
-                    
-                    titleLabel
-                    
-                    Divider()
-                    
-                    locationSection
-                    
-                    Divider()
-                    
-                    feelingSection
-                    
-                    Divider()
-                    
-                    commentSection
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        imageSlider
+                        
+                        titleLabel
+                        
+                        Divider()
+                        
+                        locationSection
+                        
+                        Divider()
+                        
+                        feelingSection
+                        
+                        Divider()
+                        
+                        commentSection
+                            .id("commentSection")
+                    }
                 }
-            }
-            .id(homeViewModel.staccatoDetail?.id)
-            .onTapGesture {
-                isCommentFocused = false
+                .onChange(of: viewModel.comments) { _,_ in
+                    if viewModel.shouldScrollToBottom {
+                        withAnimation {
+                            proxy.scrollTo("commentSection", anchor: .bottom)
+                            viewModel.shouldScrollToBottom = false
+                        }
+                    }
+                }
+                .onTapGesture {
+                    isCommentFocused = false
+                }
             }
             
             Spacer()
@@ -78,7 +90,7 @@ private extension StaccatoDetailView {
     
     var imageSlider: some View {
         ImageSliderWithDot(
-            images: homeViewModel.staccatoDetail?.staccatoImageUrls ?? [],
+            images: viewModel.staccatoDetail?.staccatoImageUrls ?? [],
             imageWidth: ScreenUtils.width,
             imageHeight: ScreenUtils.width
         )
@@ -86,7 +98,7 @@ private extension StaccatoDetailView {
     }
     
     var titleLabel: some View {
-        Text(homeViewModel.staccatoDetail?.staccatoTitle ?? "")
+        Text(viewModel.staccatoDetail?.staccatoTitle ?? "")
             .typography(.title1)
             .foregroundStyle(.staccatoBlack)
             .lineLimit(.max)
@@ -96,20 +108,20 @@ private extension StaccatoDetailView {
     
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(homeViewModel.staccatoDetail?.placeName ?? "")
+            Text(viewModel.staccatoDetail?.placeName ?? "")
                 .typography(.body1)
                 .foregroundStyle(.staccatoBlack)
                 .lineLimit(.max)
                 .multilineTextAlignment(.leading)
             
-            Text(homeViewModel.staccatoDetail?.address ?? "")
+            Text(viewModel.staccatoDetail?.address ?? "")
                 .typography(.body4)
                 .foregroundStyle(.staccatoBlack)
                 .lineLimit(.max)
                 .multilineTextAlignment(.leading)
                 .padding(.top, 8)
             
-            let visitedAt: String = homeViewModel.staccatoDetail?.visitedAt ?? ""
+            let visitedAt: String = viewModel.staccatoDetail?.visitedAt ?? ""
             let visitedAtString: String = {
                 guard visitedAt.count >= 10 else { return "" }
                 let year = visitedAt.prefix(4)
@@ -135,11 +147,11 @@ private extension StaccatoDetailView {
             HStack {
                 ForEach(FeelingType.allCases, id: \.id) { feeling in
                     Button {
-                        let previousFeeling = homeViewModel.selectedFeeling
-                        homeViewModel.selectedFeeling = feeling == homeViewModel.selectedFeeling ? nil : feeling
-                        homeViewModel.postStaccatoFeeling(homeViewModel.selectedFeeling) { isSuccess in
+                        let previousFeeling = viewModel.selectedFeeling
+                        viewModel.selectedFeeling = feeling == viewModel.selectedFeeling ? nil : feeling
+                        viewModel.postStaccatoFeeling(viewModel.selectedFeeling) { isSuccess in
                             if !isSuccess {
-                                homeViewModel.selectedFeeling = previousFeeling
+                                viewModel.selectedFeeling = previousFeeling
                             }
                         }
                         
@@ -147,7 +159,7 @@ private extension StaccatoDetailView {
                         feeling.image
                             .resizable()
                             .frame(width: 60, height: 60)
-                            .opacity(homeViewModel.selectedFeeling == feeling ? 1 : 0.3)
+                            .opacity(viewModel.selectedFeeling == feeling ? 1 : 0.3)
                     }
                 }
             }
@@ -164,7 +176,7 @@ private extension StaccatoDetailView {
                 .foregroundStyle(.staccatoBlack)
             
             Group {
-                if comments.isEmpty {
+                if viewModel.comments.isEmpty {
                     VStack(spacing: 10) {
                         Image(.staccatoCharacter)
                         
@@ -177,8 +189,8 @@ private extension StaccatoDetailView {
                     .padding(.bottom, 28)
                 } else {
                     VStack(spacing: 12) {
-                        ForEach(comments, id: \.commentId) { comment in
-                            makeCommentView(userId: userId, comment: comment)
+                        ForEach(viewModel.comments, id: \.commentId) { comment in
+                            makeCommentView(userId: viewModel.userId, comment: comment)
                         }
                     }
                     .padding(.top, 16)
@@ -206,8 +218,7 @@ private extension StaccatoDetailView {
                 .focused($isCommentFocused)
             
             Button {
-                print("버튼 클릭됨!")
-                // TODO: 서버 통신
+                viewModel.postComment(commentText)
                 commentText.removeAll()
             } label: {
                 Image(StaccatoIcon.arrowRightCircleFill)
@@ -241,12 +252,22 @@ private extension StaccatoDetailView {
         }
         
         var profileImage: some View {
-            let image = comment.memberImage ?? Image(.staccatoLoginLogo)
-            return image
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipShape(.circle)
-                .frame(width: 38, height: 38)
+            if let imageUrl = comment.memberImageUrl {
+                let image = KFImage(URL(string: imageUrl))
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(.circle)
+                    .frame(width: 38, height: 38)
+                return AnyView(image)
+            } else {
+                let image = Image(.personCircleFill)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .foregroundStyle(.gray2)
+                    .clipShape(.circle)
+                    .frame(width: 38, height: 38)
+                return AnyView(image)
+            }
         }
         
         var commentView: some View {
@@ -294,6 +315,23 @@ private extension StaccatoDetailView {
                 }
                 .padding(.trailing, 24)
             }
+        }
+        .contextMenu {
+            Button {
+                // TODO: 댓글 수정 UI 요청
+            } label: {
+                Text("수정")
+                Image(StaccatoIcon.pencilLine)
+            }
+            
+            Button {
+                // TODO: 댓글 삭제 경고 Alert 커스텀
+                viewModel.deleteComment(comment.commentId)
+            } label: {
+                Text("삭제")
+                Image(StaccatoIcon.trash)
+            }
+            .foregroundStyle(.red)
         }
     }
     

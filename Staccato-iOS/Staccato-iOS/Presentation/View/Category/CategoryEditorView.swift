@@ -103,7 +103,7 @@ extension CategoryEditorView {
         .onChange(of: vm.photoItem) { _, newValue in
             Task {
                 await vm.loadTransferable(from: newValue)
-                await vm.uploadImage()
+                try await vm.uploadImage()
             }
         }
 

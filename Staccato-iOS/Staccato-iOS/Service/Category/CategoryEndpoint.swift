@@ -8,44 +8,41 @@
 import Alamofire
 
 enum CategoryEndpoint {
-    
     case getCategoryList(_ query: GetCategoryListRequestQuery)
-    
     case getCategoryDetail(_ categoryId: Int64)
-    
     case createCategory(_ query: CreateCategoryRequestQuery)
-    
     case deleteCategory(_ categoryId: Int64)
-    
 }
-
 
 extension CategoryEndpoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .getCategoryDetail(let categoryId), .deleteCategory(let categoryId): 
-            return "/categories/\(categoryId)"
-        default: 
+        case .getCategoryList, .createCategory:
             return "/categories"
+        case .getCategoryDetail(let categoryId),
+             .deleteCategory(let categoryId):
+            return "/categories/\(categoryId)"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .getCategoryList: return .get
-        case .getCategoryDetail: return .get
-        case .createCategory: return .post
-        case .deleteCategory: return .delete
+        case .getCategoryList, .getCategoryDetail:
+            return .get
+        case .createCategory:
+            return .post
+        case .deleteCategory:
+            return .delete
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getCategoryList: return URLEncoding.queryString
-        case .getCategoryDetail: return URLEncoding.queryString
-        case .createCategory: return JSONEncoding.default
-        case .deleteCategory: return URLEncoding.queryString
+        case .getCategoryList, .getCategoryDetail, .deleteCategory:
+            return URLEncoding.queryString
+        case .createCategory:
+            return JSONEncoding.default
         }
     }
     
@@ -62,13 +59,12 @@ extension CategoryEndpoint: APIEndpoint {
             return params.isEmpty ? nil : params
         case .createCategory(let query):
             return query.toDictionary()
-        default: return nil
+        default:
+            return nil
         }
     }
     
     var headers: [String : String]? {
-        switch self {
-        default: return HeaderType.tokenOnly()
-        }
+        return HeaderType.tokenOnly()
     }
 }

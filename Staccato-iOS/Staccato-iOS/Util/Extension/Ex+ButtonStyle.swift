@@ -11,12 +11,18 @@ extension ButtonStyle where Self == StaccatoCapsuleButtonStyle {
     static func staccatoCapsule(
         icon: StaccatoIcon,
         font: StaccatoFont = .body5,
-        spacing: CGFloat = 1
+        iconSpacing: CGFloat = 1,
+        horizontalPadding: CGFloat? = 8,
+        verticalPadding: CGFloat = 4,
+        fullWidth: Bool = false
     ) -> StaccatoCapsuleButtonStyle {
         .init(
             icon: icon,
             font: font,
-            spacing: spacing
+            iconSpacing: iconSpacing,
+            horizontalPadding: horizontalPadding,
+            verticalPadding: verticalPadding,
+            fullWidth: fullWidth
         )
     }
 }
@@ -44,7 +50,7 @@ extension ButtonStyle where Self == StaccatoFilledButtonStyle {
 extension ButtonStyle where Self == StaticTextFieldButtonStyle {
     static func staticTextFieldButtonStyle(
         icon: StaccatoIcon? = nil,
-        isActive: Binding<Bool> = .constant(false)
+        isActive: Bool = false
     ) -> StaticTextFieldButtonStyle {
         .init(
             icon: icon,

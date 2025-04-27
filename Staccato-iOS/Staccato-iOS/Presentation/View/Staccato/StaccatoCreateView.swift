@@ -36,7 +36,7 @@ class UploadablePhoto: Identifiable, Equatable {
         }
 
         do {
-            let imageURL = try await NetworkService.shared.uploadImage(self.photo)
+            let imageURL = try await STService.shared.imageService.uploadImage(PostImageRequest(image: self.photo))
             self.imageURL = imageURL.imageUrl
             print("성공")
         } catch {
@@ -49,7 +49,8 @@ class UploadablePhoto: Identifiable, Equatable {
 
 struct StaccatoCreateView: View {
     @State var title: String = ""
-    @State var locationManager = LocationManager()
+    @State private var showPlaceSearchSheet = false
+    @State private var selectedPlace: StaccatoPlaceModel?
     @State var showDatePickerSheet = false
     @State var selectedDate: Date?
     @FocusState var isTitleFocused: Bool
@@ -93,6 +94,11 @@ struct StaccatoCreateView: View {
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
 
+        .sheet(isPresented: $showPlaceSearchSheet) {
+            GMSPlaceSearchViewController { place in
+                self.selectedPlace = place
+            }
+        }
         .alert(errorTitle ?? "", isPresented: $catchError) {
             Button("확인") {
                 catchError = false
@@ -267,11 +273,11 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
 
-            // - TODO: 검색 시트 띄우기
-            Button("장소명, 주소, 위치로 검색해보세요") {
-
+            Button(selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
+                showPlaceSearchSheet = true
             }
-            .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass))
+            .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass,
+                                                     isActive: selectedPlace != nil))
             .padding(.bottom, 10)
 
             Text("상세 주소")
@@ -279,8 +285,7 @@ extension StaccatoCreateView {
                 .foregroundStyle(.staccatoBlack)
                 .padding(.bottom, 6)
 
-            // - TODO: 주소 값으로 불러오기
-            Text((locationManager.currentCoordinate != nil) ? locationManager.currentCoordinate.debugDescription : "상세주소는 여기에 표시됩니다.")
+            Text(selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
                 .foregroundStyle(.gray3)
                 .typography(.body1)
                 .padding(.vertical, 12)
@@ -293,25 +298,17 @@ extension StaccatoCreateView {
                 }
                 .padding(.bottom, 10)
 
-            Button {
-                locationManager.requestLocation()
-            } label: {
-                Label {
-                    Text("현재 위치의 주소 불러오기")
-                } icon: {
-                    Image(.location)
+            Button("현재 위치의 주소 불러오기") {
+                STLocationManager.shared.getCurrentPlaceInfo { place in
+                    self.selectedPlace = place
                 }
-                .foregroundStyle(.gray4)
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity)
-                .background {
-                    Capsule()
-                        .stroke(lineWidth: 1)
-                        .foregroundStyle(.gray3)
-                }
-
+                
             }
-        }
+            .buttonStyle(.staccatoCapsule(icon: .location,
+                                          font: .body4,
+                                          verticalPadding: 12,
+                                          fullWidth: true))
+            }
     }
 
     // MARK: - Date

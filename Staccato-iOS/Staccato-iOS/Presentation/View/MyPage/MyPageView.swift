@@ -79,7 +79,6 @@ extension MyPageView {
                         case .success(let image):
                             image
                                 .resizable()
-                                .scaledToFill()
                                 .clipShape(Circle())
                         case .failure:
                             Image(.personCircleFill)
@@ -248,7 +247,9 @@ extension MyPageView {
     private func loadTransferable(from imageSelection: PhotosPickerItem?) {
         Task {
             if let imageData = try? await imageSelection?.loadTransferable(type: Data.self) {
-                selectedPhoto = UIImage(data: imageData)
+                let image = UIImage(data: imageData)
+                viewModel.uploadProfileImage(image!)
+                selectedPhoto = image
             }
         }
     }

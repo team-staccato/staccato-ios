@@ -21,14 +21,12 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> GMSMapView {
-        // locationManager delegate
-        viewModel.locationManager.delegate = context.coordinator
-        
-        // mapView 설정
+        STLocationManager.shared.delegate = context.coordinator
+
         mapView.settings.myLocationButton = false // 우측아래 내위치 버튼 숨김
         mapView.isMyLocationEnabled = true // 내위치 파란점으로 표시
         mapView.delegate = context.coordinator
-        
+
         return mapView
     }
 
@@ -47,26 +45,27 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 extension GMSMapViewRepresentable {
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(self, navigationState)
+        return Coordinator(self)
     }
-    
+
     final class Coordinator: NSObject {
         let parent: GMSMapViewRepresentable
-        let navigationState: NavigationState
         
-        init(_ parent: GMSMapViewRepresentable, _ navigationState: NavigationState) {
+        init(_ parent: GMSMapViewRepresentable) {
             self.parent = parent
-            self.navigationState = parent.navigationState
         }
     }
 
 }
 
+
+// MARK: - LocationManager Delegate
+
 extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location: CLLocation = locations.last else {
-            print("❌ \(String(describing: StaccatoError.optionalBindingFailed.errorDescription)) - GMSMapView location")
+            print("❌ GMSMapView Location Optional Binding Failed")
             return
         }
         let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 13)
@@ -81,7 +80,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
             parent.mapView.animate(to: camera)
             parent.viewModel.isInitialCameraMove = false
         } else {
-            LocationAuthorizationManager.shared.checkLocationAuthorization()
+            STLocationManager.shared.checkLocationAuthorization()
         }
     }
 
@@ -97,11 +96,13 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 }
 
 
+// MARK: - GMSMapView Delegate
+
 extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
-            navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
+            parent.navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
         } else {
             print("⚠️ No StaccatoData found for this marker.")
         }

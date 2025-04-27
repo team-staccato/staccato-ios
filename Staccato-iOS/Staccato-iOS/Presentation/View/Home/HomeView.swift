@@ -26,7 +26,7 @@ struct HomeView: View {
     @State private var isMyPagePresented = false
 
     // NOTE: 위치 접근 권한
-    @State private var locationAuthorizationManager = LocationAuthorizationManager.shared
+    @State private var locationAuthorizationManager = STLocationManager.shared
 
     init() {
         let viewModel = HomeViewModel()
@@ -64,12 +64,12 @@ struct HomeView: View {
         }
         .onAppear() {
             locationAuthorizationManager.checkLocationAuthorization()
-            viewModel.updateLocationForOneSec()
+            STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
         }
         .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
-                viewModel.updateLocationForOneSec()
+                STLocationManager.shared.updateLocationForOneSec()
             }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
@@ -103,7 +103,7 @@ extension HomeView {
 
     private var myLocationButton: some View {
         Button {
-            viewModel.updateLocationForOneSec()
+            STLocationManager.shared.updateLocationForOneSec()
         } label: {
             Image(.dotScope)
                 .resizable()

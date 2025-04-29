@@ -47,7 +47,7 @@ extension StaccatoDatePicker {
                         cellBackground(for: date)
 
                         Text("\(Calendar.current.component(.day, from: date))")
-                            .foregroundStyle(isSelected(date) ? Color.white : Color.staccatoBlack)
+                            .foregroundStyle(isSelected(date) ? Color.staccatoWhite : Color.staccatoBlack)
                     }
                     .frame(maxWidth: .infinity, minHeight: 40, maxHeight: 40)
                 }

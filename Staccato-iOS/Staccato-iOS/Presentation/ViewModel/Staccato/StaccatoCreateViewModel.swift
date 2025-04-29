@@ -37,6 +37,8 @@ class StaccatoCreateViewModel {
                selectedDate != nil
     }
 
+    var categories: [CategoryModel] = []
+    var selectedCategory: CategoryModel?
 
     init(categoryId: Int? = nil) {
         self.categoryId = categoryId
@@ -51,6 +53,7 @@ class StaccatoCreateViewModel {
         self.showCamera = false
         self.isPhotoPickerPresented = false
         self.photoItem = nil
+        getCategoryList()
     }
 
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {
@@ -69,6 +72,12 @@ class StaccatoCreateViewModel {
     }
 
     func createStaccato() async {
+        guard let selectedCategoryId = self.selectedCategory?.id else {
+            self.catchError = true
+            self.errorMessage = "유효한 카테고리를 선택해주세요."
+            return
+        }
+
         let request = CreateStaccatoRequest(
             staccatoTitle: self.title,
             placeName: self.selectedPlace?.name ?? "",
@@ -76,7 +85,7 @@ class StaccatoCreateViewModel {
             latitude: self.selectedPlace?.coordinate.latitude ?? 0.0,
             longitude: self.selectedPlace?.coordinate.longitude ?? 0.0,
             visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
-            categoryID: self.categoryId ?? 0,
+            categoryID: selectedCategoryId,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
 
@@ -85,6 +94,25 @@ class StaccatoCreateViewModel {
         } catch {
             self.catchError = true
             self.errorMessage = error.localizedDescription
+        }
+    }
+
+    func getCategoryList() {
+        Task {
+            do {
+                let categoryList = try await STService.shared.categoryService.getCategoryList(
+                    GetCategoryListRequestQuery(filters: nil, sort: nil)
+                )
+
+                let categories = categoryList.categories.map {
+                    CategoryModel(from: $0)
+                }
+
+                self.categories = categories
+            } catch {
+                self.catchError = true
+                self.errorMessage = error.localizedDescription
+            }
         }
     }
 }

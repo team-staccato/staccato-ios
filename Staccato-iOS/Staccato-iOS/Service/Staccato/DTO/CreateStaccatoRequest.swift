@@ -13,6 +13,6 @@ struct CreateStaccatoRequest: Encodable {
     var address: String
     var latitude, longitude: Double
     var visitedAt: String
-    var categoryID: Int
+    var categoryID: UUID
     var staccatoImageUrls: [String]
 }

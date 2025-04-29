@@ -38,3 +38,5 @@ extension CategoryModel {
     }
     
 }
+
+extension CategoryModel: Hashable { }

@@ -4,8 +4,6 @@
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>사용자의 현재 위치를 입력하기 위해 위치 기반 서비스의 권한이 필요합니다.</string>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>NSCameraUsageDescription</key>
 	<string>우리의 추억을 저장하기 위해 카메라 접근 권한이 필요합니다.</string>
 	<key>API_KEY</key>

@@ -58,6 +58,20 @@ class StaccatoCreateViewModel {
         getCategoryList()
     }
 
+    init(staccato: StaccatoDetailModel) {
+        getCategoryList()
+        getPhotos(urls: staccato.staccatoImageUrls)
+
+        self.title = staccato.staccatoTitle
+        self.selectedPlace = StaccatoPlaceModel(
+            name: staccato.placeName,
+            address: staccato.address,
+            coordinate: CLLocationCoordinate2D(staccato.latitude, staccato.longitude)
+        )
+        self.selectedDate = Date.fromISOString(staccato.visitedAt)
+        self.selectedCategory = self.categories.first(where: { $0.categoryId == staccato.categoryId })
+    }
+
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {
         do {
             if let imageData = try await imageSelection?.loadTransferable(type: Data.self),
@@ -114,6 +128,14 @@ class StaccatoCreateViewModel {
             } catch {
                 self.catchError = true
                 self.errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    func getPhotos(urls: [String]) {
+        Task {
+            for url in urls {
+                photos.append(await UploadablePhoto(imageUrl: url))
             }
         }
     }

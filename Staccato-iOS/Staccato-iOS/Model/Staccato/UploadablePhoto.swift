@@ -20,6 +20,36 @@ class UploadablePhoto: Identifiable, Equatable {
         self.photo = photo
     }
 
+    init(imageUrl: String) async {
+        guard let url = URL(string: imageUrl) else {
+            self.imageURL = imageUrl
+            self.photo = UIImage()
+
+            return
+        }
+
+        self.imageURL = imageUrl
+
+        let loadedImage = await Task {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                return UIImage(data: data)
+            } catch {
+                print("이미지 다운로드 실패: \(error)")
+                return nil
+            }
+        }
+        .value
+
+        guard let loadedImage else {
+            self.photo = UIImage()
+            
+            return
+        }
+
+        self.photo = loadedImage
+    }
+
     nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
         return lhs.id == rhs.id
     }
@@ -32,7 +62,6 @@ class UploadablePhoto: Identifiable, Equatable {
         }
 
         do {
-            // TODO: Image Service로 변경
             let imageRequest = PostImageRequest(image: self.photo)
             let imageURL = try await STService.shared.imageService.uploadImage(imageRequest)
             self.imageURL = imageURL.imageUrl

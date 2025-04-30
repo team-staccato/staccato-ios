@@ -28,6 +28,9 @@ struct HomeView: View {
     // NOTE: 위치 접근 권한
     @State private var locationAuthorizationManager = STLocationManager.shared
 
+    // NOTE: Staccato Create Modal
+    @State private var isCreateStaccatoModalPresented = false
+
     init() {
         let viewModel = HomeViewModel()
         self._viewModel = StateObject(wrappedValue: viewModel)
@@ -75,6 +78,9 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()
         }
+        .sheet(isPresented: $isCreateStaccatoModalPresented) {
+            StaccatoCreateView(category: nil)
+        }
     }
 
 }
@@ -118,8 +124,7 @@ extension HomeView {
 
     private var staccatoAddButton: some View {
         Button {
-            navigationState.navigate(to: .staccatoAdd)
-            // TODO: modal fullScreen mode
+            isCreateStaccatoModalPresented = true
         } label: {
             Image(.plus)
                 .resizable()

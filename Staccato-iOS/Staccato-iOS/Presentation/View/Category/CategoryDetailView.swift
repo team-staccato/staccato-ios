@@ -17,6 +17,8 @@ struct CategoryDetailView: View {
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
 
+    @State private var isStaccatoCreateViewPresented = false
+
     init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
@@ -34,6 +36,7 @@ struct CategoryDetailView: View {
                 Spacer()
             }
         }
+
         .staccatoNavigationBar {
             Button("수정") {
                 // TODO: 수정 기능 구현
@@ -52,8 +55,13 @@ struct CategoryDetailView: View {
                 }
             }
         }
+
         .onAppear {
             viewModel.getCategoryDetail(categoryId)
+        }
+
+        .sheet(isPresented: $isStaccatoCreateViewPresented) {
+            StaccatoCreateView(category: viewModel.categoryDetail?.toCategoryModel())
         }
     }
 
@@ -138,7 +146,7 @@ extension CategoryDetailView {
                 Spacer()
 
                 Button("기록하기") {
-                    navigationState.navigate(to: .staccatoAdd)
+                    isStaccatoCreateViewPresented = true
                 }
                 .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }

@@ -17,8 +17,14 @@ struct StaccatoCreateView: View {
 
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
+    // NOTE: Create
     init(category: CategoryModel?) {
         self.viewModel = StaccatoCreateViewModel(selectedCategory: category)
+    }
+
+    // NOTE: Modify
+    init(staccato: StaccatoDetailModel) {
+        self.viewModel = StaccatoCreateViewModel(staccato: staccato)
     }
 
     var body: some View {
@@ -63,6 +69,31 @@ struct StaccatoCreateView: View {
 #Preview {
     StaccatoCreateView(category: nil)
         .environment(NavigationState())
+}
+
+#Preview("Modify") {
+    StaccatoCreateView(
+        staccato: StaccatoDetailModel(
+            id: UUID(),
+            staccatoId: 2,
+            categoryId: 2,
+            categoryTitle: "카테고리테스트",
+            startAt: "2025-04-30T14:50:47.004Z",
+            endAt: "2025-04-30T14:50:47.004Z",
+            staccatoTitle: "타이틀",
+            staccatoImageUrls: [
+                "https://image.staccato.kr/web/share/happy.png",
+                "https://image.staccato.kr/web/share/angry.png",
+                "https://image.staccato.kr/web/share/poopoo.png"],
+            visitedAt: "2025-04-30T14:50:47.004Z",
+            feeling: "느낌",
+            placeName: "스타복스",
+            address: "대구시 북구 복현동",
+            latitude: 30.0,
+            longitude: 30.0
+        )
+    )
+    .environment(NavigationState())
 }
 
 extension StaccatoCreateView {

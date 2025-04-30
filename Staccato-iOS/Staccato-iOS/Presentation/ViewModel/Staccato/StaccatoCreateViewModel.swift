@@ -30,11 +30,11 @@ class StaccatoCreateViewModel {
 
     var isReadyToSave: Bool {
         return !title.isEmpty &&
-            selectedPlace?.name.isEmpty == false &&
-               selectedPlace?.address.isEmpty == false &&
-               selectedPlace?.coordinate.latitude != nil &&
-               selectedPlace?.coordinate.longitude != nil &&
-               selectedDate != nil
+        selectedPlace?.name.isEmpty == false &&
+        selectedPlace?.address.isEmpty == false &&
+        selectedPlace?.coordinate.latitude != nil &&
+        selectedPlace?.coordinate.longitude != nil &&
+        selectedDate != nil
     }
 
     var categories: [CategoryModel] = []

@@ -12,30 +12,30 @@ import Lottie
 
 struct StaccatoCreateView: View {
     @State private var viewModel: StaccatoCreateViewModel
-
+    
     @FocusState var isTitleFocused: Bool
-
+    
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-
+    
     init(categoryId: Int?) {
         self.viewModel = StaccatoCreateViewModel(categoryId: categoryId)
     }
-
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 40) {
                 photoInputSection
-
+                
                 titleInputSection
-
+                
                 locationInputSection
-
+                
                 dateInputSection
-
+                
                 categorySelectSection
-
+                
                 Spacer()
-
+                
                 saveButton
             }
         }
@@ -73,41 +73,41 @@ extension StaccatoCreateView {
                 Text("사진")
                     .foregroundStyle(.staccatoBlack)
                     .typography(.title2)
-
+                
                 Text("(\(viewModel.photos.count)/5)")
                     .foregroundStyle(.gray3)
                     .typography(.body4)
-
+                
                 Spacer()
             }
             .padding(.bottom, 16)
-
+            
             photoInputGrid
-
+            
         }
         .confirmationDialog("사진을 첨부해 보세요", isPresented: $viewModel.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
                 viewModel.showCamera = true
             }
-
+            
             Button("앨범에서 가져오기") {
                 viewModel.isPhotoPickerPresented = true
             }
         })
-
+        
         .photosPicker(isPresented: $viewModel.isPhotoPickerPresented, selection: $viewModel.photoItem)
-
+        
         .fullScreenCover(isPresented: $viewModel.showCamera) {
             CameraView(cameraMode: .multiple, imageList: self.$viewModel.photos)
                 .background(.black)
         }
-
+        
         .onChange(of: viewModel.photoItem) { _, newValue in
             Task {
                 await viewModel.loadTransferable(from: newValue)
             }
         }
-
+        
         .onChange(of: viewModel.photos) { oldValue, newValue in
             Task {
                 if oldValue.count < newValue.count {
@@ -123,18 +123,18 @@ extension StaccatoCreateView {
             }
         }
     }
-
+    
     private var photoInputGrid: some View {
         LazyVGrid(columns: columns, spacing: 12) {
             photoInputPlaceholder
-
+            
             ForEach(viewModel.photos, id: \.id) { photo in
                 photoPreview(photo: photo)
             }
         }
         .padding(0)
     }
-
+    
     private var photoInputPlaceholder: some View {
         Button {
             viewModel.isPhotoInputPresented = true
@@ -143,7 +143,7 @@ extension StaccatoCreateView {
                 VStack(spacing: 8) {
                     Image(.camera)
                         .frame(width: 28)
-
+                    
                     Text("사진을 첨부해 보세요")
                         .typography(.body3)
                 }
@@ -153,16 +153,16 @@ extension StaccatoCreateView {
             }
             .aspectRatio(1, contentMode: .fit)
         }
-
+        
     }
-
+    
     private func photoPreview(photo: UploadablePhoto) -> some View {
         GeometryReader { geometry in
             ZStack {
                 Image(uiImage: photo.photo)
                     .resizable()
                     .scaledToFill()
-
+                
                 if photo.isUploading {
                     ZStack {
                         Color.white.opacity(0.8)
@@ -170,7 +170,7 @@ extension StaccatoCreateView {
                             .playing(loopMode: .loop)
                     }
                 }
-
+                
                 if photo.isFailed {
                     ZStack {
                         Color.white.opacity(0.8)
@@ -205,12 +205,12 @@ extension StaccatoCreateView {
         }
         .aspectRatio(1, contentMode: .fit)
     }
-
+    
     // MARK: - Title
     private var titleInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "스타카토 제목")
-
+            
             StaccatoTextField(
                 text: $viewModel.title,
                 isFocused: $isTitleFocused,
@@ -220,24 +220,24 @@ extension StaccatoCreateView {
             .focused($isTitleFocused)
         }
     }
-
+    
     // MARK: - Location
     private var locationInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
-
+            
             Button(viewModel.selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
                 viewModel.showPlaceSearchSheet = true
             }
             .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass,
                                                      isActive: viewModel.selectedPlace != nil))
             .padding(.bottom, 10)
-
+            
             Text("상세 주소")
                 .typography(.title3)
                 .foregroundStyle(.staccatoBlack)
                 .padding(.bottom, 6)
-
+            
             Text(viewModel.selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
                 .foregroundStyle(.gray3)
                 .typography(.body1)
@@ -250,7 +250,7 @@ extension StaccatoCreateView {
                         .foregroundStyle(.gray2)
                 }
                 .padding(.bottom, 10)
-
+            
             Button("현재 위치의 주소 불러오기") {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
                     self.viewModel.selectedPlace = place
@@ -261,31 +261,31 @@ extension StaccatoCreateView {
                                           font: .body4,
                                           verticalPadding: 12,
                                           fullWidth: true))
-            }
+        }
     }
-
+    
     // MARK: - Date
     private var dateInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
-
+            
             Button(viewModel.selectedDate?.formattedAsFullDateWithHour ?? "방문 날짜를 선택해주세요") {
                 viewModel.showDatePickerSheet = true
             }
             .buttonStyle(.staticTextFieldButtonStyle())
-
+            
             .sheet(isPresented: $viewModel.showDatePickerSheet) {
                 DatePickerView(selectedDate: $viewModel.selectedDate)
                     .presentationDetents([.fraction(0.4)])
             }
         }
     }
-
+    
     // MARK: - Category
     private var categorySelectSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
-
+            
             Menu(categoryMenuTitle) {
                 ForEach(viewModel.filteredCategory) { category in
                     Button(category.title) {
@@ -297,7 +297,7 @@ extension StaccatoCreateView {
             .disabled(viewModel.filteredCategory.isEmpty)
         }
     }
-
+    
     private var categoryMenuTitle: String {
         if viewModel.filteredCategory.isEmpty {
             return "기간을 포함하는 카테고리가 없어요"
@@ -305,7 +305,7 @@ extension StaccatoCreateView {
             return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
         }
     }
-
+    
     // MARK: - Save
     private var saveButton: some View {
         Button("저장") {
@@ -316,7 +316,7 @@ extension StaccatoCreateView {
         .buttonStyle(.staccatoFullWidth)
         .disabled(!viewModel.isReadyToSave)
     }
-
+    
     // MARK: - Components
     private func sectionTitle(title: String) -> some View {
         return Group {

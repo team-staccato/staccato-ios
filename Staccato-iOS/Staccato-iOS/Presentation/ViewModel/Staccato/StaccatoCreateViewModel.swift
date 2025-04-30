@@ -10,7 +10,6 @@ import PhotosUI
 
 @Observable
 class StaccatoCreateViewModel {
-    var categoryId: Int?
     var title: String = ""
     var showDatePickerSheet = false
     var selectedDate: Date? = nil
@@ -54,19 +53,8 @@ class StaccatoCreateViewModel {
         return result
     }
 
-    init(categoryId: Int? = nil) {
-        self.categoryId = categoryId
-        self.title = ""
-        self.showDatePickerSheet = false
-        self.selectedDate = nil
-        self.catchError = false
-        self.errorTitle = nil
-        self.errorMessage = nil
-        self.photos = []
-        self.isPhotoInputPresented = false
-        self.showCamera = false
-        self.isPhotoPickerPresented = false
-        self.photoItem = nil
+    init(selectedCategory: CategoryModel? = nil) {
+        self.selectedCategory = selectedCategory
         getCategoryList()
     }
 
@@ -86,7 +74,7 @@ class StaccatoCreateViewModel {
     }
 
     func createStaccato() async {
-        guard let selectedCategoryId = self.selectedCategory?.id else {
+        guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
             return

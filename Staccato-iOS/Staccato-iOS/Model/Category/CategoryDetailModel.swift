@@ -57,3 +57,17 @@ extension CategoryDetailModel {
     }
     
 }
+
+// MARK: Type Casting
+extension CategoryDetailModel {
+    func toCategoryModel() -> CategoryModel {
+        return CategoryModel(
+            id: UUID(),
+            categoryId: self.categoryId,
+            thumbNailURL: self.categoryThumbnailUrl,
+            title: self.categoryTitle,
+            startAt: self.startAt,
+            endAt: self.endAt
+        )
+    }
+}

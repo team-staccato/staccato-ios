@@ -39,6 +39,20 @@ class StaccatoCreateViewModel {
 
     var categories: [CategoryModel] = []
     var selectedCategory: CategoryModel?
+    var filteredCategory: [CategoryModel] {
+        guard let date = selectedDate else { return [] }
+
+        let result = categories.filter { category in
+            guard let startAt = Date.fromString(category.startAt),
+                  let endAt = Date.fromString(category.endAt)
+            else { return false }
+
+            return startAt <= date && date <= endAt
+        }
+
+
+        return result
+    }
 
     init(categoryId: Int? = nil) {
         self.categoryId = categoryId

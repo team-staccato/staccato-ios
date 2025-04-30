@@ -287,20 +287,20 @@ extension StaccatoCreateView {
             sectionTitle(title: "카테고리 선택")
 
             Menu(categoryMenuTitle) {
-                ForEach(viewModel.categories) { category in
+                ForEach(viewModel.filteredCategory) { category in
                     Button(category.title) {
                         self.viewModel.selectedCategory = category
                     }
                 }
             }
             .buttonStyle(.staticTextFieldButtonStyle())
-            .disabled(viewModel.categories.isEmpty)
+            .disabled(viewModel.filteredCategory.isEmpty)
         }
     }
 
     private var categoryMenuTitle: String {
-        if viewModel.categories.isEmpty {
-            return "아직 생성된 카테고리가 없어요"
+        if viewModel.filteredCategory.isEmpty {
+            return "기간을 포함하는 카테고리가 없어요"
         } else {
             return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
         }

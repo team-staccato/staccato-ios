@@ -7,6 +7,20 @@
 
 import Foundation
 
+// Type Method
+extension Date {
+    static func fromString(_ dateString: String?) -> Date? {
+        guard let dateString else { return nil }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+
+        return formatter.date(from: dateString)
+    }
+}
+
 extension Date {
     var formattedAsRequestDate: String {
         let formatter = DateFormatter()

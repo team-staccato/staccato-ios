@@ -84,7 +84,7 @@ struct StaccatoDetailView: View {
         }
 
         .sheet(isPresented: $isStaccatoModifySheetPresented) {
-            StaccatoCreateView(category: nil)
+            StaccatoEditorView(category: nil)
         }
     }
 }

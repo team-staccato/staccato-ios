@@ -10,6 +10,8 @@ import PhotosUI
 
 @Observable
 class StaccatoEditorViewModel {
+    let editorMode: StaccatoEditorMode
+
     var title: String = ""
     var showDatePickerSheet = false
     var selectedDate: Date? = nil
@@ -54,11 +56,13 @@ class StaccatoEditorViewModel {
     }
 
     init(selectedCategory: CategoryModel? = nil) {
+        self.editorMode = .create
         self.selectedCategory = selectedCategory
         getCategoryList()
     }
 
     init(staccato: StaccatoDetailModel) {
+        self.editorMode = .modify(id: staccato.staccatoId)
         getCategoryList()
         getPhotos(urls: staccato.staccatoImageUrls)
 
@@ -113,6 +117,32 @@ class StaccatoEditorViewModel {
         }
     }
 
+    func modifyStaccato(staccatoId: Int64) async {
+        guard let selectedCategoryId = self.selectedCategory?.categoryId else {
+            self.catchError = true
+            self.errorMessage = "유효한 카테고리를 선택해주세요."
+            return
+        }
+
+        let request = ModifyStaccatoRequest(
+            staccatoTitle: self.title,
+            placeName: self.selectedPlace?.name ?? "",
+            address: self.selectedPlace?.address ?? "",
+            latitude: self.selectedPlace?.coordinate.latitude ?? 0.0,
+            longitude: self.selectedPlace?.coordinate.longitude ?? 0.0,
+            visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
+            categoryID: selectedCategoryId,
+            staccatoImageUrls: photos.compactMap { return $0.imageURL }
+        )
+
+        do {
+            try await STService.shared.staccatoService.modifyStaccato(staccatoId, requestBody: request)
+        } catch {
+            self.catchError = true
+            self.errorMessage = error.localizedDescription
+        }
+    }
+
     func getCategoryList() {
         Task {
             do {
@@ -142,8 +172,8 @@ class StaccatoEditorViewModel {
 }
 
 extension StaccatoEditorViewModel {
-    enum EditorMode {
-        case modify
+    enum StaccatoEditorMode {
+        case modify(id: Int64)
         case create
     }
 }

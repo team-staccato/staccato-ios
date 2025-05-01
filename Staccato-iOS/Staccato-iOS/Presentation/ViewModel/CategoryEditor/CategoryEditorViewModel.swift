@@ -38,27 +38,27 @@ final class CategoryEditorViewModel {
     var uploadSuccess = false
 
     // MARK: - Modifying
-    var id: Int?
+    var id: Int64?
     var editorType: CategoryEditorType = .create
 
-    init(id: Int? = nil, editorType: CategoryEditorType = .create) {
-        self.isPhotoInputPresented = false
-        self.isPhotoPickerPresented = false
-        self.showCamera = false
-        self.photoItem = nil
-        self.selectedPhoto = nil
-        self.imageURL = nil
-        self.categoryTitle = ""
-        self.categoryDescription = ""
-        self.isPeriodSettingActive = false
-        self.selectedStartDate = nil
-        self.selectedEndDate = nil
-        self.isPeriodSheetPresented = false
-        self.catchError = false
-        self.errorTitle = nil
-        self.errorMessage = nil
-        self.uploadSuccess = false
-        self.id = id
+    init(categoryDetail: CategoryDetailModel? = nil, editorType: CategoryEditorType = .create) {
+        self.id = categoryDetail?.categoryId
+
+        if let imageURL = categoryDetail?.categoryThumbnailUrl {
+            self.imageURL = imageURL
+            self.getImage(imageURL)
+        }
+
+        self.categoryDescription = categoryDetail?.description ?? ""
+        self.categoryTitle = categoryDetail?.categoryTitle ?? ""
+
+        if let startAt = categoryDetail?.startAt,
+           let endAt = categoryDetail?.endAt {
+            self.selectedStartDate = Date.fromString(startAt)
+            self.selectedEndDate = Date.fromString(endAt)
+            self.isPeriodSettingActive = true
+        }
+
         self.editorType = editorType
     }
 
@@ -131,6 +131,28 @@ final class CategoryEditorViewModel {
         } catch {
             errorMessage = error.localizedDescription
             catchError = true
+        }
+    }
+
+    func getImage(_ url: String) {
+        Task {
+            guard let url = URL(string: url) else {
+                self.selectedPhoto = nil
+                return
+            }
+
+            let loadedImage = await Task {
+                do {
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    return UIImage(data: data)
+                } catch {
+                    print("이미지 다운로드 실패: \(error)")
+                    return nil
+                }
+            }
+            .value
+
+            self.selectedPhoto = loadedImage
         }
     }
 

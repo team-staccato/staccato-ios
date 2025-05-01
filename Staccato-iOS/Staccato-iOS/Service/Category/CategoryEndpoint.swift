@@ -12,7 +12,7 @@ enum CategoryEndpoint {
     case getCategoryDetail(_ categoryId: Int64)
     case createCategory(_ query: CreateCategoryRequestQuery)
 
-    case modifyCategory(_ query: ModifyCategoryRequestQuery, id: Int)
+    case modifyCategory(_ query: ModifyCategoryRequestQuery, id: Int64)
     case deleteCategory(_ categoryId: Int64)
 }
 

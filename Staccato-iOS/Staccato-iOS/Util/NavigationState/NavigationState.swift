@@ -12,7 +12,6 @@ import Observation
 
 enum HomeModalNavigationDestination: Hashable {
     case staccatoDetail(_ staccatoId: Int64)
-    case staccatoAdd
     case categoryDetail(_ categoryId: Int64)
     case categoryAdd
 }

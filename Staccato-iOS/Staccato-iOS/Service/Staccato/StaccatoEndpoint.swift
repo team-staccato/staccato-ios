@@ -15,6 +15,7 @@ enum StaccatoEndpoint {
     case getStaccatoDetail(_ staccatoId: Int64)
 
     case createStaccato(requestBody: CreateStaccatoRequest)
+    case modifyStaccato(_ staccatoId: Int64, requestBody: ModifyStaccatoRequest)
 }
 
 
@@ -22,7 +23,7 @@ extension StaccatoEndpoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .getStaccatoDetail(let staccatoId): return "/staccatos/\(staccatoId)"
+        case .getStaccatoDetail(let staccatoId), .modifyStaccato(let staccatoId, _): return "/staccatos/\(staccatoId)"
         case .postStaccatoFeeling(let staccatoId, _): return "/staccatos/\(staccatoId)/feeling"
         case .getStaccatoList, .createStaccato: return "/staccatos"
         }
@@ -34,6 +35,7 @@ extension StaccatoEndpoint: APIEndpoint {
         case .getStaccatoDetail: return .get
         case .postStaccatoFeeling: return .post
         case .createStaccato: return .post
+        case .modifyStaccato: return .put
         }
     }
     
@@ -43,12 +45,14 @@ extension StaccatoEndpoint: APIEndpoint {
         case .getStaccatoDetail: return URLEncoding.queryString
         case .postStaccatoFeeling: return JSONEncoding.default
         case .createStaccato: return JSONEncoding.default
+        case .modifyStaccato: return JSONEncoding.default
         }
     }
     
     var parameters: [String : Any]? {
         switch self {
         case .postStaccatoFeeling(_, let requestBody): return requestBody.toDictionary()
+        case .modifyStaccato(_, let requestBody): return requestBody.toDictionary()
         case .createStaccato(requestBody: let requestBody): return requestBody.toDictionary()
         case .getStaccatoList, .getStaccatoDetail: return nil
         }

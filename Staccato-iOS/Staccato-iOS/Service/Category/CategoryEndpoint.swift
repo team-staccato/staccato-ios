@@ -17,18 +17,18 @@ enum CategoryEndpoint {
 }
 
 extension CategoryEndpoint: APIEndpoint {
-    
+
     var path: String {
         switch self {
-        case .modifyCategory(_, let id): return "/categories/\(id)"
         case .getCategoryList, .createCategory:
             return "/categories"
         case .getCategoryDetail(let categoryId),
-             .deleteCategory(let categoryId):
+             .deleteCategory(let categoryId),
+             .modifyCategory(_, let categoryId):
             return "/categories/\(categoryId)"
         }
     }
-    
+
     var method: HTTPMethod {
         switch self {
         case .modifyCategory: return .put
@@ -40,7 +40,7 @@ extension CategoryEndpoint: APIEndpoint {
             return .delete
         }
     }
-    
+
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
         case .getCategoryList, .getCategoryDetail, .deleteCategory:
@@ -49,7 +49,7 @@ extension CategoryEndpoint: APIEndpoint {
             return JSONEncoding.default
         }
     }
-    
+
     var parameters: [String : Any]? {
         switch self {
         case .getCategoryList(let query):
@@ -69,7 +69,7 @@ extension CategoryEndpoint: APIEndpoint {
             return nil
         }
     }
-    
+
     var headers: [String : String]? {
         return HeaderType.tokenOnly()
     }

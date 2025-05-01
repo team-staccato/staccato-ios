@@ -29,7 +29,7 @@ class HomeViewModel: ObservableObject {
 
     var isInitialCameraMove: Bool = true
 
-    @Published var cameraPosition = CLLocationCoordinate2D(37.5664056, 126.9778222) // 서울시청
+    @Published var cameraPosition: GMSCameraPosition?
 
 }
 
@@ -78,7 +78,7 @@ extension HomeViewModel {
     
     func moveCamera(to coordinate: CLLocationCoordinate2D, zoom: Float = 15.0) {
         withAnimation {
-            cameraPosition = coordinate
+            cameraPosition = GMSCameraPosition.camera(withTarget: coordinate, zoom: 13)
         }
     }
     

@@ -47,8 +47,13 @@ struct StaccatoEditorView: View {
                 saveButton
             }
         }
+        .onAppear {
+            viewModel.getCategoryList()
+        }
+
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
+
         .staccatoModalBar(
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"

@@ -12,6 +12,7 @@ import Lottie
 
 struct StaccatoEditorView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: StaccatoEditorViewModel
 
@@ -351,6 +352,7 @@ extension StaccatoEditorView {
                 switch viewModel.editorMode {
                 case .create:
                     await viewModel.createStaccato()
+                    homeViewModel.fetchStaccatos()
                     dismiss()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)

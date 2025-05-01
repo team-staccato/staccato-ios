@@ -13,6 +13,7 @@ struct CategoryDetailView: View {
 
     @Environment(NavigationState.self) var navigationState
     @Environment(StaccatoAlertManager.self) var alertManager
+    @EnvironmentObject var homeViewModel: HomeViewModel
 
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryViewModel
@@ -59,6 +60,10 @@ struct CategoryDetailView: View {
         }
 
         .onAppear {
+            viewModel.getCategoryDetail(categoryId)
+        }
+
+        .onChange(of: homeViewModel.staccatos) {
             viewModel.getCategoryDetail(categoryId)
         }
 

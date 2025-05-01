@@ -8,13 +8,15 @@
 import Foundation
 
 protocol StaccatoServiceProtocol {
-    
+
     func getStaccatoList() async throws -> GetStaccatoListResponse
-    
+
     func getStaccatoDetail(_ staccatoId: Int64) async throws -> GetStaccatoDetailResponse
-    
+
     func postStaccatoFeeling(_ staccatoId: Int64,
                              requestBody: PostStaccatoFeelingRequest) async throws -> Void
+
+    func deleteStaccato(_ staccatoId: Int64) async throws
 
     func createStaccato(_ requestBody: CreateStaccatoRequest) async throws -> Void
 
@@ -51,6 +53,12 @@ class StaccatoService: StaccatoServiceProtocol {
                              requestBody: PostStaccatoFeelingRequest) async throws -> Void {
         try await NetworkService.shared.request(
             endpoint: StaccatoEndpoint.postStaccatoFeeling(staccatoId, requestBody: requestBody)
+        )
+    }
+    
+    func deleteStaccato(_ staccatoId: Int64) async throws {
+        try await NetworkService.shared.request(
+            endpoint: StaccatoEndpoint.delteStaccato(staccatoId)
         )
     }
 

@@ -16,12 +16,14 @@ struct Staccato_iOSApp: App {
 
     private let navigationState = NavigationState()
     private let alertManager = StaccatoAlertManager()
+    @StateObject private var homeViewModel = HomeViewModel()
 
     var body: some Scene {
         WindowGroup {
             HomeView()
                 .environment(navigationState)
                 .environment(alertManager)
+                .environmentObject(homeViewModel)
         }
     }
 

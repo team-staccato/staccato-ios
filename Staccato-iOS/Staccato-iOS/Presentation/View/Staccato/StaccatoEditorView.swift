@@ -318,7 +318,7 @@ extension StaccatoEditorView {
             sectionTitle(title: "카테고리 선택")
 
             Menu(categoryMenuTitle) {
-                ForEach(viewModel.filteredCategory) { category in
+                ForEach(viewModel.filteredCategory, id: \.id) { category in
                     Button(category.title) {
                         self.viewModel.selectedCategory = category
                     }

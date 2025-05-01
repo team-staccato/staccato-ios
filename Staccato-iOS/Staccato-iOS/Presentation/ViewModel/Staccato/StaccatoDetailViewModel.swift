@@ -21,7 +21,9 @@ class StaccatoDetailViewModel: ObservableObject {
     @Published var selectedFeeling: FeelingType?
     @Published var comments: [CommentModel] = []
     @Published var shouldScrollToBottom: Bool = false
-    
+
+    @Published var shareLink: URL?
+
     let userId: Int64 = AuthTokenManager.shared.getUserId() ?? -1
     
 }
@@ -132,5 +134,18 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
+    @MainActor
+    func postShareLink() {
+        guard let staccatoId = staccatoDetail?.staccatoId else { return }
+        Task {
+            do {
+                let shareLink: PostShareLinkResponse = try await STService.shared.staccatoService.postShareLink(staccatoId)
+                self.shareLink = URL(string: shareLink.shareLink)
+            } catch {
+                print("❌ Error on postShareLink: \(error.localizedDescription)")
+            }
+        }
+    }
+
 }

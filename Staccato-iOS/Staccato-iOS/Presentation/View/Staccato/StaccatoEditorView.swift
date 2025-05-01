@@ -10,15 +10,23 @@ import PhotosUI
 
 import Lottie
 
-struct StaccatoCreateView: View {
-    @State private var viewModel: StaccatoCreateViewModel
+struct StaccatoEditorView: View {
+    @Environment(\.dismiss) var dismiss
+
+    @State private var viewModel: StaccatoEditorViewModel
 
     @FocusState var isTitleFocused: Bool
 
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
-    init(categoryId: Int?) {
-        self.viewModel = StaccatoCreateViewModel(categoryId: categoryId)
+    // NOTE: Create
+    init(category: CategoryModel?) {
+        self.viewModel = StaccatoEditorViewModel(selectedCategory: category)
+    }
+
+    // NOTE: Modify
+    init(staccato: StaccatoDetailModel) {
+        self.viewModel = StaccatoEditorViewModel(staccato: staccato)
     }
 
     var body: some View {
@@ -41,7 +49,7 @@ struct StaccatoCreateView: View {
         }
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
-        .staccatoNavigationBar(
+        .staccatoModalBar(
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
@@ -60,12 +68,37 @@ struct StaccatoCreateView: View {
     }
 }
 
-#Preview {
-    StaccatoCreateView(categoryId: 0)
+#Preview("Create") {
+    StaccatoEditorView(category: nil)
         .environment(NavigationState())
 }
 
-extension StaccatoCreateView {
+#Preview("Modify") {
+    StaccatoEditorView(
+        staccato: StaccatoDetailModel(
+            id: UUID(),
+            staccatoId: 2,
+            categoryId: 2,
+            categoryTitle: "카테고리테스트",
+            startAt: "2025-04-30T14:50:47.004Z",
+            endAt: "2025-04-30T14:50:47.004Z",
+            staccatoTitle: "타이틀",
+            staccatoImageUrls: [
+                "https://image.staccato.kr/web/share/happy.png",
+                "https://image.staccato.kr/web/share/angry.png",
+                "https://image.staccato.kr/web/share/poopoo.png"],
+            visitedAt: "2025-04-30T14:50:47.004Z",
+            feeling: "느낌",
+            placeName: "스타복스",
+            address: "대구시 북구 복현동",
+            latitude: 30.0,
+            longitude: 30.0
+        )
+    )
+    .environment(NavigationState())
+}
+
+extension StaccatoEditorView {
     // MARK: - Photo
     private var photoInputSection: some View {
         VStack(alignment: .leading) {
@@ -255,13 +288,13 @@ extension StaccatoCreateView {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
                     self.viewModel.selectedPlace = place
                 }
-                
+
             }
             .buttonStyle(.staccatoCapsule(icon: .location,
                                           font: .body4,
                                           verticalPadding: 12,
                                           fullWidth: true))
-            }
+        }
     }
 
     // MARK: - Date
@@ -287,20 +320,20 @@ extension StaccatoCreateView {
             sectionTitle(title: "카테고리 선택")
 
             Menu(categoryMenuTitle) {
-                ForEach(viewModel.categories) { category in
+                ForEach(viewModel.filteredCategory, id: \.id) { category in
                     Button(category.title) {
                         self.viewModel.selectedCategory = category
                     }
                 }
             }
             .buttonStyle(.staticTextFieldButtonStyle())
-            .disabled(viewModel.categories.isEmpty)
+            .disabled(viewModel.filteredCategory.isEmpty)
         }
     }
 
     private var categoryMenuTitle: String {
-        if viewModel.categories.isEmpty {
-            return "아직 생성된 카테고리가 없어요"
+        if viewModel.filteredCategory.isEmpty {
+            return "기간을 포함하는 카테고리가 없어요"
         } else {
             return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
         }
@@ -310,7 +343,14 @@ extension StaccatoCreateView {
     private var saveButton: some View {
         Button("저장") {
             Task {
-                await viewModel.createStaccato()
+                switch viewModel.editorMode {
+                case .create:
+                    await viewModel.createStaccato()
+                    dismiss()
+                case .modify(let id):
+                    await viewModel.modifyStaccato(staccatoId: id)
+                    dismiss()
+                }
             }
         }
         .buttonStyle(.staccatoFullWidth)

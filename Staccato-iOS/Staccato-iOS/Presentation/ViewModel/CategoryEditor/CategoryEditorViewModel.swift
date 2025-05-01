@@ -37,6 +37,31 @@ final class CategoryEditorViewModel {
     var errorMessage: String?
     var uploadSuccess = false
 
+    // MARK: - Modifying
+    var id: Int64?
+    var editorType: CategoryEditorType = .create
+
+    init(categoryDetail: CategoryDetailModel? = nil, editorType: CategoryEditorType = .create) {
+        self.id = categoryDetail?.categoryId
+
+        if let imageURL = categoryDetail?.categoryThumbnailUrl {
+            self.imageURL = imageURL
+            self.getImage(imageURL)
+        }
+
+        self.categoryDescription = categoryDetail?.description ?? ""
+        self.categoryTitle = categoryDetail?.categoryTitle ?? ""
+
+        if let startAt = categoryDetail?.startAt,
+           let endAt = categoryDetail?.endAt {
+            self.selectedStartDate = Date.fromString(startAt)
+            self.selectedEndDate = Date.fromString(endAt)
+            self.isPeriodSettingActive = true
+        }
+
+        self.editorType = editorType
+    }
+
     var categoryPeriod: String? {
         guard let selectedStartDate, let selectedEndDate else { return nil }
         return "\(selectedStartDate.formattedAsFullDate + " ~ " + selectedEndDate.formattedAsFullDate)"
@@ -87,5 +112,52 @@ final class CategoryEditorViewModel {
             errorMessage = error.localizedDescription
             catchError = true
         }
+    }
+
+    func modifyCategory() async {
+        let query = ModifyCategoryRequestQuery(
+            categoryThumbnailUrl: self.imageURL,
+            categoryTitle: self.categoryTitle,
+            description: self.categoryDescription,
+            startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
+            endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
+        )
+
+        guard let id = self.id else { return }
+
+        do {
+            try await STService.shared.categoryService.modifyCategory(id: id, query)
+            self.uploadSuccess = true
+        } catch {
+            errorMessage = error.localizedDescription
+            catchError = true
+        }
+    }
+
+    func getImage(_ url: String) {
+        Task {
+            guard let url = URL(string: url) else {
+                self.selectedPhoto = nil
+                return
+            }
+
+            let loadedImage = await Task {
+                do {
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    return UIImage(data: data)
+                } catch {
+                    print("이미지 다운로드 실패: \(error)")
+                    return nil
+                }
+            }
+            .value
+
+            self.selectedPhoto = loadedImage
+        }
+    }
+
+    enum CategoryEditorType {
+        case modify
+        case create
     }
 }

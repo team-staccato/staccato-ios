@@ -7,6 +7,29 @@
 
 import Foundation
 
+// Type Method
+extension Date {
+    static func fromString(_ dateString: String?, dateFormat: String = "yyyy-MM-dd") -> Date? {
+        guard let dateString else { return nil }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = dateFormat
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+
+        return formatter.date(from: dateString)
+    }
+
+    static func fromISOString(_ isoString: String) -> Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [
+            .withInternetDateTime,
+            .withFractionalSeconds
+        ]
+        return formatter.date(from: isoString)
+    }
+}
+
 extension Date {
     var formattedAsRequestDate: String {
         let formatter = DateFormatter()
@@ -19,7 +42,7 @@ extension Date {
         formatter.dateFormat = "yyyy. MM. dd"
         return formatter.string(from: self)
     }
-    
+
     var formattedAsMonthAndDay: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM월 dd일"

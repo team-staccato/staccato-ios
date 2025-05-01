@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 @Observable
-class StaccatoCreateViewModel {
+class StaccatoEditorViewModel {
     var title: String = ""
     var showDatePickerSheet = false
     var selectedDate: Date? = nil
@@ -138,5 +138,12 @@ class StaccatoCreateViewModel {
                 photos.append(await UploadablePhoto(imageUrl: url))
             }
         }
+    }
+}
+
+extension StaccatoEditorViewModel {
+    enum EditorMode {
+        case modify
+        case create
     }
 }

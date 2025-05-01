@@ -9,7 +9,7 @@ import Foundation
 
 final class CategoryDetailViewModel: ObservableObject {
 
-    var categoryListViewModel: CategoryListViewModel
+    private let categoryListViewModel: CategoryListViewModel
     
     @Published var categoryDetail: CategoryDetailModel?
 

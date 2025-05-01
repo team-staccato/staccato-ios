@@ -46,7 +46,7 @@ struct CategoryListView: View {
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
                     case .categoryDetail(let categoryId): CategoryDetailView(categoryId, categoryListViewModel: viewModel)
-                    case .categoryAdd: CategoryEditorView()
+                    case .categoryAdd: CategoryEditorView(categoryListViewModel: viewModel)
                     }
                 }
             }
@@ -61,7 +61,7 @@ struct CategoryListView: View {
         }
 
         .fullScreenCover(isPresented: $isCreateCategoryModalPresented) {
-            CategoryEditorView()
+            CategoryEditorView(categoryListViewModel: viewModel)
         }
     }
     

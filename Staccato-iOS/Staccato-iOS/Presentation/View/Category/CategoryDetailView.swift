@@ -15,6 +15,7 @@ struct CategoryDetailView: View {
     @Environment(StaccatoAlertManager.self) var alertManager
 
     let categoryId: Int64
+    let categoryListViewModel: CategoryListViewModel
     @ObservedObject var viewModel: CategoryDetailViewModel
 
     @State private var isStaccatoCreateViewPresented = false
@@ -22,6 +23,7 @@ struct CategoryDetailView: View {
 
     init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
+        self.categoryListViewModel = categoryListViewModel
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
     }
 
@@ -67,7 +69,11 @@ struct CategoryDetailView: View {
         }
 
         .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
-            CategoryEditorView(categoryDetail: self.viewModel.categoryDetail, editorType: .modify)
+            CategoryEditorView(
+                categoryDetail: self.viewModel.categoryDetail,
+                editorType: .modify,
+                categoryListViewModel: categoryListViewModel
+            )
         }
     }
 

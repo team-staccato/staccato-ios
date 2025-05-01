@@ -7,40 +7,63 @@
 
 import SwiftUI
 
-struct StaccatoFullWidthButtonStyle: ButtonStyle {
+struct StaccatoFilledButtonStyle: ButtonStyle {
+
     @Environment(\.isEnabled) var isEnabled
+
+    let verticalPadding: CGFloat
+    let foregroundColor: Color
+    let backgroundColor: Color
+    let cornerRadius: CGFloat
+
+    init(
+        verticalPadding: CGFloat = 14,
+        foregroundColor: Color = .white,
+        backgroundColor: Color = .accent,
+        cornerRadius: CGFloat = 5
+    ) {
+        self.verticalPadding = verticalPadding
+        self.foregroundColor = foregroundColor
+        self.backgroundColor = backgroundColor
+        self.cornerRadius = cornerRadius
+    }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .foregroundStyle(isEnabled ? .white : .gray4)
+            .padding(.vertical, verticalPadding)
+            .foregroundStyle(isEnabled ? foregroundColor : .gray4)
             .typography(.title3)
             .background {
-                RoundedRectangle(cornerRadius: 5)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .foregroundStyle(
                         isEnabled ?
-                        (configuration.isPressed ? .accent.opacity(0.7) : .accent)
+                        (configuration.isPressed ? backgroundColor.opacity(0.7) : backgroundColor)
                         : .gray1
                     )
             }
     }
+
 }
 
 struct StaccatoCapsuleButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     let icon: StaccatoIcon
     let font: StaccatoFont
-    let spacing: CGFloat
+    let iconSpacing: CGFloat
+    let horizontalPadding: CGFloat?
+    let verticalPadding: CGFloat
+    let fullWidth: Bool
 
     func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: spacing) {
+        HStack(spacing: iconSpacing) {
             Image(icon)
             configuration.label
         }
         .typography(font)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, verticalPadding)
+        .frame(maxWidth: fullWidth ? .infinity : nil)
         .background {
             Capsule()
                 .stroke(lineWidth: 0.5)
@@ -51,7 +74,7 @@ struct StaccatoCapsuleButtonStyle: ButtonStyle {
 
 struct StaticTextFieldButtonStyle: ButtonStyle {
     let icon: StaccatoIcon?
-    @Binding var isActive: Bool
+    var isActive: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: 0) {

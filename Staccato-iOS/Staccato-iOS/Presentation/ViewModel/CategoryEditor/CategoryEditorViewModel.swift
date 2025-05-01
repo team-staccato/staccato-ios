@@ -84,10 +84,12 @@ final class CategoryEditorViewModel {
         }
     }
 
-    func uploadImage() async {
+    func uploadImage() async throws {
+       
         do {
-            let imageURL = try await NetworkService.shared.uploadImage(selectedPhoto)
-            self.imageURL = imageURL.imageUrl
+            let requestBody = PostImageRequest(image: selectedPhoto)
+            let imageUrl = try await STService.shared.imageService.uploadImage(requestBody)
+            self.imageURL = imageUrl.imageUrl
         } catch {
             errorMessage = error.localizedDescription
             catchError = true
@@ -102,8 +104,9 @@ final class CategoryEditorViewModel {
             startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
             endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
         )
+
         do {
-            try await STService.shared.categoryServie.createCategory(query)
+            try await STService.shared.categoryService.createCategory(query)
             self.uploadSuccess = true
         } catch {
             errorMessage = error.localizedDescription

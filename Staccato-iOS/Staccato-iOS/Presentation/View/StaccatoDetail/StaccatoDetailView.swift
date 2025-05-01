@@ -15,6 +15,9 @@ struct StaccatoDetailView: View {
     
     let staccatoId: Int64
     
+    @Environment(StaccatoAlertManager.self) var alertManager
+    @Environment(NavigationState.self) var navigationState
+    
     @ObservedObject var viewModel: StaccatoDetailViewModel
     
     @State var commentText: String = ""
@@ -77,7 +80,16 @@ struct StaccatoDetailView: View {
             }
 
             Button("삭제") {
-                // TODO: 삭제 기능 구현
+                withAnimation {
+                    alertManager.show(
+                        .confirmCancelAlert(
+                            title: "삭제하시겠습니까?",
+                            message: "삭제를 누르면 복구할 수 없습니다") {
+                                viewModel.delteStaccato(staccatoId)
+                                navigationState.dismiss()
+                            }
+                    )
+                }
             }
         }
     }

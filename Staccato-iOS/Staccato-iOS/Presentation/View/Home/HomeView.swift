@@ -13,8 +13,8 @@ struct HomeView: View {
 
     // MARK: - Properties
     //NOTE: View, ViewModel
-    @StateObject private var viewModel: HomeViewModel
-    private let mapView: GMSMapViewRepresentable
+    @EnvironmentObject var viewModel: HomeViewModel
+    private let mapView = GMSMapViewRepresentable()
 
     // NOTE: 모달 크기
     @State private var modalHeight: CGFloat = HomeModalSize.medium.height
@@ -30,12 +30,6 @@ struct HomeView: View {
 
     // NOTE: Staccato Create Modal
     @State private var isCreateStaccatoModalPresented = false
-
-    init() {
-        let viewModel = HomeViewModel()
-        self._viewModel = StateObject(wrappedValue: viewModel)
-        self.mapView = GMSMapViewRepresentable(viewModel)
-    }
 
 
     // MARK: - Body

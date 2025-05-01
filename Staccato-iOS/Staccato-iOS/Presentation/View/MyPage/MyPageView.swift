@@ -10,7 +10,7 @@ import PhotosUI
 
 struct MyPageView: View {
     
-    @StateObject private var viewModel = MyPageViewModel()
+    @EnvironmentObject private var viewModel: MyPageViewModel
     
     @State var copyButtonPressed = false
     @State var isPhotoInputPresented = false

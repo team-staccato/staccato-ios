@@ -17,6 +17,7 @@ struct Staccato_iOSApp: App {
     private let navigationState = NavigationState()
     private let alertManager = StaccatoAlertManager()
     @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var mypageViewModel = MyPageViewModel()
 
     var body: some Scene {
         WindowGroup {
@@ -24,6 +25,7 @@ struct Staccato_iOSApp: App {
                 .environment(navigationState)
                 .environment(alertManager)
                 .environmentObject(homeViewModel)
+                .environmentObject(mypageViewModel)
         }
     }
 

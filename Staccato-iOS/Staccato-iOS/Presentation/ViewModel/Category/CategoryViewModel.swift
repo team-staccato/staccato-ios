@@ -12,8 +12,6 @@ final class CategoryViewModel: ObservableObject {
 
     // MARK: - Properties
 
-    @Published var userName: String = "UserName" // TODO: API 연결
-
     @Published var categories: [CategoryModel] = []
 
     @Published var filterSelection: CategoryListFilterType = .all {

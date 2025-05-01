@@ -25,6 +25,7 @@ struct StaccatoDetailView: View {
     @FocusState private var isCommentFocused: Bool
 
     @State private var isStaccatoModifySheetPresented = false
+    @State private var isShareLinkLoading = false
 
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
@@ -44,7 +45,7 @@ struct StaccatoDetailView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         imageSlider
                         
-                        titleLabel
+                        titleStack
                         
                         Divider()
                         
@@ -103,6 +104,12 @@ struct StaccatoDetailView: View {
         .onChange(of: viewModel.staccatoDetail) { _, _ in
             updateMapCamera()
         }
+        .onChange(of: viewModel.shareLink) { _, newValue in
+            if newValue != nil {
+                presentShareSheet()
+                isShareLinkLoading = false
+            }
+        }
 
         .sheet(isPresented: $isStaccatoModifySheetPresented) {
             StaccatoEditorView(category: nil)
@@ -125,6 +132,23 @@ private extension StaccatoDetailView {
         }
     }
 
+    private func presentShareSheet() {
+        guard let shareLink = viewModel.shareLink else { return }
+        
+        let activityViewController = UIActivityViewController(
+            activityItems: [shareLink],
+            applicationActivities: nil
+        )
+        
+        // Present the share sheet from the root view controller
+        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+            rootVC.present(activityViewController, animated: true) {
+                // Optional: Reset the share link after sharing
+                viewModel.shareLink = nil
+            }
+        }
+    }
+
 }
 
 
@@ -141,15 +165,37 @@ private extension StaccatoDetailView {
         .padding(.bottom, 7)
     }
     
-    var titleLabel: some View {
-        Text(viewModel.staccatoDetail?.staccatoTitle ?? "")
-            .typography(.title1)
-            .foregroundStyle(.staccatoBlack)
-            .lineLimit(.max)
-            .multilineTextAlignment(.leading)
-            .padding(.horizontal, horizontalInset)
+    var titleStack: some View {
+        HStack {
+            Text(viewModel.staccatoDetail?.staccatoTitle ?? "")
+                .typography(.title1)
+                .foregroundStyle(.staccatoBlack)
+                .lineLimit(.max)
+                .multilineTextAlignment(.leading)
+
+            Spacer()
+
+            shareButton
+        }
+        .padding(.horizontal, horizontalInset)
     }
     
+    var shareButton: some View {
+        Button {
+            isShareLinkLoading = true
+            viewModel.postShareLink()
+        } label: {
+            if isShareLinkLoading {
+                ProgressView()
+            } else {
+                Image(StaccatoIcon.squareAndArrowUp)
+                    .foregroundStyle(.gray3)
+                    .fontWeight(.semibold)
+            }
+        }
+        .frame(width: 20, height: 20)
+    }
+
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(viewModel.staccatoDetail?.placeName ?? "")

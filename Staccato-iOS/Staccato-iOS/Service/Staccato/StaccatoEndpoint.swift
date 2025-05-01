@@ -15,6 +15,7 @@ enum StaccatoEndpoint {
     case getStaccatoDetail(_ staccatoId: Int64)
     case createStaccato(requestBody: CreateStaccatoRequest)
     case modifyStaccato(_ staccatoId: Int64, requestBody: ModifyStaccatoRequest)
+    case postShareLink(_ staccatoId: Int64)
 
 }
 
@@ -29,6 +30,7 @@ extension StaccatoEndpoint: APIEndpoint {
             return "/staccatos/\(staccatoId)"
         case .getStaccatoList, .createStaccato: return "/staccatos"
         case .postStaccatoFeeling(let staccatoId, _): return "/staccatos/\(staccatoId)/feeling"
+        case .postShareLink(let staccatoId): return "/staccatos/\(staccatoId)/share"
         }
     }
     
@@ -40,6 +42,7 @@ extension StaccatoEndpoint: APIEndpoint {
         case .delteStaccato: return .delete
         case .createStaccato: return .post
         case .modifyStaccato: return .put
+        case .postShareLink: return .post
         }
     }
     
@@ -50,6 +53,7 @@ extension StaccatoEndpoint: APIEndpoint {
         case .postStaccatoFeeling: return JSONEncoding.default
         case .createStaccato: return JSONEncoding.default
         case .modifyStaccato: return JSONEncoding.default
+        case .postShareLink: return JSONEncoding.default
         }
     }
     

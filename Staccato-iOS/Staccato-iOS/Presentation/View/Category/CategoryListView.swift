@@ -12,7 +12,7 @@ struct CategoryListView: View {
     @Environment(NavigationState.self) var navigationState
     @Bindable var bindableNavigationState: NavigationState
     
-    @StateObject private var viewModel = CategoryListViewModel()
+    @StateObject private var viewModel = CategoryViewModel()
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
@@ -45,8 +45,8 @@ struct CategoryListView: View {
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
-                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, categoryListViewModel: viewModel)
-                    case .categoryAdd: CategoryEditorView(categoryListViewModel: viewModel)
+                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, viewModel)
+                    case .categoryAdd: CategoryEditorView(categoryViewModel: viewModel)
                     }
                 }
             }
@@ -61,7 +61,7 @@ struct CategoryListView: View {
         }
 
         .fullScreenCover(isPresented: $isCreateCategoryModalPresented) {
-            CategoryEditorView(categoryListViewModel: viewModel)
+            CategoryEditorView(categoryViewModel: viewModel)
         }
     }
     

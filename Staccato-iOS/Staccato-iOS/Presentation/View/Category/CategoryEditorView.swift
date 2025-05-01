@@ -16,6 +16,16 @@ struct CategoryEditorView: View {
 
     @FocusState private var isDescriptionFocused: Bool
 
+    init(
+        categoryDetail: CategoryDetailModel? = nil,
+        editorType: CategoryEditorViewModel.CategoryEditorType = .create
+    ) {
+        self.vm = CategoryEditorViewModel(
+            categoryDetail: categoryDetail,
+            editorType: editorType
+        )
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -38,7 +48,14 @@ struct CategoryEditorView: View {
 
                 Button("저장") {
                     Task {
-                        await vm.createCategory()
+                        switch vm.editorType {
+                        case .create:
+                            await vm.createCategory()
+                            dismiss()
+                        case .modify:
+                            await vm.modifyCategory()
+                            dismiss()
+                        }
                     }
                 }
                 .buttonStyle(.staccatoFullWidth)
@@ -48,7 +65,10 @@ struct CategoryEditorView: View {
         }
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
-        .staccatoNavigationBar(title: "카테고리 만들기", subtitle: "스타카토를 담을 카테고리를 만들어 보세요!")
+        .staccatoModalBar(
+            title: "카테고리 만들기",
+            subtitle: "스타카토를 담을 카테고리를 만들어 보세요!"
+        )
         .ignoresSafeArea(.all, edges: .bottom)
 
         .sheet(isPresented: $vm.isPeriodSheetPresented) {
@@ -80,6 +100,23 @@ struct CategoryEditorView: View {
             CategoryEditorView()
         }
     }
+}
+
+#Preview("수정") {
+    CategoryEditorView(
+        categoryDetail: CategoryDetailModel(
+            categoryId: 1,
+            categoryThumbnailUrl: "https://image.staccato.kr/web/share/happy.png",
+            categoryTitle: "테스트카테고리",
+            description: "이건 설명",
+            startAt: "2024-01-01",
+            endAt: "2024-01-30",
+            mates: [],
+            staccatos: []
+        ),
+        editorType: .modify
+    )
+    .environment(NavigationState())
 }
 
 // MARK: - Section
@@ -121,7 +158,7 @@ extension CategoryEditorView {
 
         .fullScreenCover(isPresented: $vm.showCamera) {
             CameraView(selectedImage: $vm.selectedPhoto)
-                .background(.black)
+                .background(.staccatoBlack)
         }
     }
 

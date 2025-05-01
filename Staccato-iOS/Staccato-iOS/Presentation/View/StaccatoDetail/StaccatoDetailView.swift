@@ -22,7 +22,9 @@ struct StaccatoDetailView: View {
     
     @State var commentText: String = ""
     @FocusState private var isCommentFocused: Bool
-    
+
+    @State private var isStaccatoModifySheetPresented = false
+
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
         self.viewModel = StaccatoDetailViewModel()
@@ -76,7 +78,7 @@ struct StaccatoDetailView: View {
         }
         .staccatoNavigationBar {
             Button("수정") {
-                // TODO: 수정 기능 구현
+                isStaccatoModifySheetPresented = true
             }
 
             Button("삭제") {
@@ -91,6 +93,10 @@ struct StaccatoDetailView: View {
                     )
                 }
             }
+        }
+
+        .sheet(isPresented: $isStaccatoModifySheetPresented) {
+            StaccatoEditorView(category: nil)
         }
     }
 }

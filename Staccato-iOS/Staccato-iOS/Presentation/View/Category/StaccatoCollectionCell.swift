@@ -42,7 +42,7 @@ struct StaccatoCollectionCell: View {
             }
             .padding(.bottom, 10)
             .padding(.leading, 12)
-            .foregroundStyle(.white)
+            .foregroundStyle(.staccatoWhite)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
@@ -52,9 +52,9 @@ extension StaccatoCollectionCell {
     private var linearGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(stops: [
-                .init(color: Color.black.opacity(0), location: 0.0),
-                .init(color: Color.black.opacity(0.5), location: 0.65),
-                .init(color: Color.black.opacity(0.7), location: 1.0)
+                .init(color: Color.staccatoBlack.opacity(0), location: 0.0),
+                .init(color: Color.staccatoBlack.opacity(0.5), location: 0.65),
+                .init(color: Color.staccatoBlack.opacity(0.7), location: 1.0)
             ]),
             startPoint: .top,
             endPoint: .bottom

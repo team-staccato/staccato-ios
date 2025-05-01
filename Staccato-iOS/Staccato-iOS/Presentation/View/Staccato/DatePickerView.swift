@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension StaccatoCreateView {
+extension StaccatoEditorView {
     struct DatePickerView: View {
         @Binding var selectedDate: Date?
 
@@ -147,5 +147,5 @@ extension StaccatoCreateView {
 }
 
 #Preview {
-    StaccatoCreateView.DatePickerView(selectedDate: .constant(.now))
+    StaccatoEditorView.DatePickerView(selectedDate: .constant(.now))
 }

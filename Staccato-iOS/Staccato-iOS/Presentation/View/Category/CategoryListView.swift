@@ -16,7 +16,8 @@ struct CategoryListView: View {
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
-    
+    @State private var isCreateCategoryModalPresented = false
+
     
     // MARK: - Initializer
     
@@ -35,14 +36,15 @@ struct CategoryListView: View {
                     titleHStack
                         .padding(.top, 22)
                         .padding(.bottom, 12)
+                        .padding(.horizontal, 18)
                     categoryList
+                        .padding(.horizontal, 18)
                 }
-                .background(Color.white)
-                .padding(.horizontal, 18)
+                .background(Color.staccatoWhite)
+                .frame(maxWidth: .infinity)
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
-                    case .staccatoAdd: StaccatoCreateView()
                     case .categoryDetail(let categoryId): CategoryDetailView(categoryId, categoryListViewModel: viewModel)
                     case .categoryAdd: CategoryEditorView()
                     }
@@ -56,6 +58,10 @@ struct CategoryListView: View {
                 // 여기서 에러 메세지 띄우는 동작 등 구현
                 print(error.localizedDescription)
             }
+        }
+
+        .fullScreenCover(isPresented: $isCreateCategoryModalPresented) {
+            CategoryEditorView()
         }
     }
     
@@ -125,8 +131,7 @@ private extension CategoryListView {
     
     var categoryAddButton: some View {
         Button("추가") {
-            navigationState.navigate(to: .categoryAdd)
-            // TODO: modal fullScreen mode
+            isCreateCategoryModalPresented = true
         }
         .buttonStyle(.staccatoCapsule(
             icon: .folderFillBadgePlus,

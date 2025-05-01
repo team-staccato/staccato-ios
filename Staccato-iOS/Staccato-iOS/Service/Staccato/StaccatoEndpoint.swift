@@ -11,7 +11,7 @@ enum StaccatoEndpoint {
     
     case getStaccatoList
     case postStaccatoFeeling(_ staccatoId: Int64, requestBody: PostStaccatoFeelingRequest)
-    
+    case delteStaccato(_ staccatoId: Int64)
     case getStaccatoDetail(_ staccatoId: Int64)
     
 }
@@ -21,7 +21,9 @@ extension StaccatoEndpoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .getStaccatoDetail(let staccatoId): return "/staccatos/\(staccatoId)"
+        case .getStaccatoDetail(let staccatoId),
+                .delteStaccato(let staccatoId):
+            return "/staccatos/\(staccatoId)"
         case .postStaccatoFeeling(let staccatoId, _): return "/staccatos/\(staccatoId)/feeling"
         default: return "/staccatos"
         }
@@ -32,14 +34,15 @@ extension StaccatoEndpoint: APIEndpoint {
         case .getStaccatoList: return .get
         case .getStaccatoDetail: return .get
         case .postStaccatoFeeling: return .post
+        case .delteStaccato: return .delete
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
         case .getStaccatoList: return URLEncoding.default
-        case .getStaccatoDetail: return URLEncoding.queryString
-        case .postStaccatoFeeling(_, let requestBody): return JSONEncoding.default
+        case .getStaccatoDetail, .delteStaccato: return URLEncoding.queryString
+        case .postStaccatoFeeling: return JSONEncoding.default
         }
     }
     

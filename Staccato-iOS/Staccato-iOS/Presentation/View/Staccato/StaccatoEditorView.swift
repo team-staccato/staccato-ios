@@ -10,64 +10,24 @@ import PhotosUI
 
 import Lottie
 
-@MainActor
-@Observable
-class UploadablePhoto: Identifiable, Equatable {
-    let id: UUID = UUID()
-    let photo: UIImage
+struct StaccatoEditorView: View {
+    @Environment(\.dismiss) var dismiss
 
-    var isUploading = false
-    var isFailed = false
-    var imageURL: String?
+    @State private var viewModel: StaccatoEditorViewModel
 
-    init(photo: UIImage) {
-        self.photo = photo
-    }
-
-    nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func uploadImage() async throws {
-        isUploading = true
-        print("여기임")
-        defer {
-            isUploading = false
-        }
-
-        do {
-            let imageURL = try await STService.shared.imageService.uploadImage(PostImageRequest(image: self.photo))
-            self.imageURL = imageURL.imageUrl
-            print("성공")
-        } catch {
-            isFailed = true
-            print("실패")
-            throw error
-        }
-    }
-}
-
-struct StaccatoCreateView: View {
-    @State var title: String = ""
-    @State private var showPlaceSearchSheet = false
-    @State private var selectedPlace: StaccatoPlaceModel?
-    @State var showDatePickerSheet = false
-    @State var selectedDate: Date?
     @FocusState var isTitleFocused: Bool
 
-    @State var catchError: Bool = false
-    @State var errorTitle: String?
-    @State var errorMessage: String?
-
-    // MARK: Photo Input
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-    @State var photos: [UploadablePhoto] = []
-    @State var isPhotoInputPresented = false
-    @State var showCamera = false
-    @State var isPhotoPickerPresented = false
-    @State var photoItem: PhotosPickerItem?
 
-    @State var isUploading = false
+    // NOTE: Create
+    init(category: CategoryModel?) {
+        self.viewModel = StaccatoEditorViewModel(selectedCategory: category)
+    }
+
+    // NOTE: Modify
+    init(staccato: StaccatoDetailModel) {
+        self.viewModel = StaccatoEditorViewModel(staccato: staccato)
+    }
 
     var body: some View {
         ScrollView {
@@ -89,31 +49,56 @@ struct StaccatoCreateView: View {
         }
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
-        .staccatoNavigationBar(
+        .staccatoModalBar(
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
-
-        .sheet(isPresented: $showPlaceSearchSheet) {
+        .sheet(isPresented: $viewModel.showPlaceSearchSheet) {
             GMSPlaceSearchViewController { place in
-                self.selectedPlace = place
+                self.viewModel.selectedPlace = place
             }
         }
-        .alert(errorTitle ?? "", isPresented: $catchError) {
+        .alert(viewModel.errorTitle ?? "", isPresented: $viewModel.catchError) {
             Button("확인") {
-                catchError = false
+                viewModel.catchError = false
             }
         } message: {
-            Text(errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+            Text(viewModel.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
     }
 }
 
-#Preview {
-    StaccatoCreateView()
+#Preview("Create") {
+    StaccatoEditorView(category: nil)
+        .environment(NavigationState())
 }
 
-extension StaccatoCreateView {
+#Preview("Modify") {
+    StaccatoEditorView(
+        staccato: StaccatoDetailModel(
+            id: UUID(),
+            staccatoId: 2,
+            categoryId: 2,
+            categoryTitle: "카테고리테스트",
+            startAt: "2025-04-30T14:50:47.004Z",
+            endAt: "2025-04-30T14:50:47.004Z",
+            staccatoTitle: "타이틀",
+            staccatoImageUrls: [
+                "https://image.staccato.kr/web/share/happy.png",
+                "https://image.staccato.kr/web/share/angry.png",
+                "https://image.staccato.kr/web/share/poopoo.png"],
+            visitedAt: "2025-04-30T14:50:47.004Z",
+            feeling: "느낌",
+            placeName: "스타복스",
+            address: "대구시 북구 복현동",
+            latitude: 30.0,
+            longitude: 30.0
+        )
+    )
+    .environment(NavigationState())
+}
+
+extension StaccatoEditorView {
     // MARK: - Photo
     private var photoInputSection: some View {
         VStack(alignment: .leading) {
@@ -122,7 +107,7 @@ extension StaccatoCreateView {
                     .foregroundStyle(.staccatoBlack)
                     .typography(.title2)
 
-                Text("(\(photos.count)/5)")
+                Text("(\(viewModel.photos.count)/5)")
                     .foregroundStyle(.gray3)
                     .typography(.body4)
 
@@ -133,38 +118,38 @@ extension StaccatoCreateView {
             photoInputGrid
 
         }
-        .confirmationDialog("사진을 첨부해 보세요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
+        .confirmationDialog("사진을 첨부해 보세요", isPresented: $viewModel.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                showCamera = true
+                viewModel.showCamera = true
             }
 
             Button("앨범에서 가져오기") {
-                isPhotoPickerPresented = true
+                viewModel.isPhotoPickerPresented = true
             }
         })
 
-        .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
+        .photosPicker(isPresented: $viewModel.isPhotoPickerPresented, selection: $viewModel.photoItem)
 
-        .fullScreenCover(isPresented: $showCamera) {
-            CameraView(cameraMode: .multiple, imageList: self.$photos)
-                .background(.staccatoBlack)
+        .fullScreenCover(isPresented: $viewModel.showCamera) {
+            CameraView(cameraMode: .multiple, imageList: self.$viewModel.photos)
+                .background(.black)
         }
 
-        .onChange(of: photoItem) { _, newValue in
+        .onChange(of: viewModel.photoItem) { _, newValue in
             Task {
-                await loadTransferable(from: newValue)
+                await viewModel.loadTransferable(from: newValue)
             }
         }
 
-        .onChange(of: photos) { oldValue, newValue in
+        .onChange(of: viewModel.photos) { oldValue, newValue in
             Task {
                 if oldValue.count < newValue.count {
                     if let lastIndex = newValue.indices.last {
                         do {
-                            try await photos[lastIndex].uploadImage()
+                            try await viewModel.photos[lastIndex].uploadImage()
                         } catch {
-                            self.errorTitle = "이미지 업로드 실패"
-                            self.errorMessage = error.localizedDescription
+                            viewModel.errorTitle = "이미지 업로드 실패"
+                            viewModel.errorMessage = error.localizedDescription
                         }
                     }
                 }
@@ -176,7 +161,7 @@ extension StaccatoCreateView {
         LazyVGrid(columns: columns, spacing: 12) {
             photoInputPlaceholder
 
-            ForEach(photos, id: \.id) { photo in
+            ForEach(viewModel.photos, id: \.id) { photo in
                 photoPreview(photo: photo)
             }
         }
@@ -185,7 +170,7 @@ extension StaccatoCreateView {
 
     private var photoInputPlaceholder: some View {
         Button {
-            isPhotoInputPresented = true
+            viewModel.isPhotoInputPresented = true
         } label: {
             GeometryReader { geometry in
                 VStack(spacing: 8) {
@@ -226,6 +211,7 @@ extension StaccatoCreateView {
                             .resizable()
                             .scaledToFit()
                             .frame(width: 78)
+                            .foregroundStyle(.black.opacity(0.2))
                     }
                 }
             }
@@ -233,9 +219,9 @@ extension StaccatoCreateView {
             .clipShape(.rect(cornerRadius: 5))
             .overlay(alignment: .topTrailing) {
                 Button {
-                    if let index = photos.firstIndex(of: photo) {
+                    if let index = viewModel.photos.firstIndex(of: photo) {
                         withAnimation {
-                            _ = photos.remove(at: index)
+                            _ = viewModel.photos.remove(at: index)
                         }
                     }
                 } label: {
@@ -259,7 +245,7 @@ extension StaccatoCreateView {
             sectionTitle(title: "스타카토 제목")
 
             StaccatoTextField(
-                text: $title,
+                text: $viewModel.title,
                 isFocused: $isTitleFocused,
                 placeholder: "어떤 순간이었나요? 제목을 입력해 주세요",
                 maximumTextLength: 30
@@ -273,11 +259,11 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
 
-            Button(selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
-                showPlaceSearchSheet = true
+            Button(viewModel.selectedPlace?.name ?? "장소명, 주소, 위치로 검색해보세요") {
+                viewModel.showPlaceSearchSheet = true
             }
             .buttonStyle(.staticTextFieldButtonStyle(icon: .magnifyingGlass,
-                                                     isActive: selectedPlace != nil))
+                                                     isActive: viewModel.selectedPlace != nil))
             .padding(.bottom, 10)
 
             Text("상세 주소")
@@ -285,7 +271,7 @@ extension StaccatoCreateView {
                 .foregroundStyle(.staccatoBlack)
                 .padding(.bottom, 6)
 
-            Text(selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
+            Text(viewModel.selectedPlace?.address ?? "상세주소는 여기에 표시됩니다.")
                 .foregroundStyle(.gray3)
                 .typography(.body1)
                 .padding(.vertical, 12)
@@ -300,15 +286,15 @@ extension StaccatoCreateView {
 
             Button("현재 위치의 주소 불러오기") {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
-                    self.selectedPlace = place
+                    self.viewModel.selectedPlace = place
                 }
-                
+
             }
             .buttonStyle(.staccatoCapsule(icon: .location,
                                           font: .body4,
                                           verticalPadding: 12,
                                           fullWidth: true))
-            }
+        }
     }
 
     // MARK: - Date
@@ -316,13 +302,13 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
 
-            Button(selectedDate?.formattedAsFullDateWithHour ?? "방문 날짜를 선택해주세요") {
-                showDatePickerSheet = true
+            Button(viewModel.selectedDate?.formattedAsFullDateWithHour ?? "방문 날짜를 선택해주세요") {
+                viewModel.showDatePickerSheet = true
             }
             .buttonStyle(.staticTextFieldButtonStyle())
 
-            .sheet(isPresented: $showDatePickerSheet) {
-                DatePickerView(selectedDate: $selectedDate)
+            .sheet(isPresented: $viewModel.showDatePickerSheet) {
+                DatePickerView(selectedDate: $viewModel.selectedDate)
                     .presentationDetents([.fraction(0.4)])
             }
         }
@@ -333,20 +319,42 @@ extension StaccatoCreateView {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
 
-            Button("카테고리를 선택해주세요") {
-
+            Menu(categoryMenuTitle) {
+                ForEach(viewModel.filteredCategory, id: \.id) { category in
+                    Button(category.title) {
+                        self.viewModel.selectedCategory = category
+                    }
+                }
             }
             .buttonStyle(.staticTextFieldButtonStyle())
+            .disabled(viewModel.filteredCategory.isEmpty)
+        }
+    }
+
+    private var categoryMenuTitle: String {
+        if viewModel.filteredCategory.isEmpty {
+            return "기간을 포함하는 카테고리가 없어요"
+        } else {
+            return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
         }
     }
 
     // MARK: - Save
     private var saveButton: some View {
         Button("저장") {
-
+            Task {
+                switch viewModel.editorMode {
+                case .create:
+                    await viewModel.createStaccato()
+                    dismiss()
+                case .modify(let id):
+                    await viewModel.modifyStaccato(staccatoId: id)
+                    dismiss()
+                }
+            }
         }
         .buttonStyle(.staccatoFullWidth)
-        .disabled(true)
+        .disabled(!viewModel.isReadyToSave)
     }
 
     // MARK: - Components
@@ -359,23 +367,5 @@ extension StaccatoCreateView {
         }
         .typography(.title2)
         .padding(.bottom, 8)
-    }
-}
-
-extension StaccatoCreateView {
-    func loadTransferable(from imageSelection: PhotosPickerItem?) async {
-        do {
-            if let imageData = try await imageSelection?.loadTransferable(type: Data.self) {
-                guard let transferedImage = UIImage(data: imageData) else { throw StaccatoError.imageParsingFailed }
-
-                self.photos.append(UploadablePhoto(photo: transferedImage))
-                self.photoItem = nil
-            }
-        } catch {
-            print(error.localizedDescription)
-            errorTitle = "이미지 업로드 실패"
-            errorMessage = error.localizedDescription
-            catchError = true
-        }
     }
 }

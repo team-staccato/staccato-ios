@@ -17,6 +17,9 @@ struct CategoryDetailView: View {
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
 
+    @State private var isStaccatoCreateViewPresented = false
+    @State private var isCategoryModifyModalPresented = false
+
     init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
@@ -35,9 +38,10 @@ struct CategoryDetailView: View {
             }
         }
         .background(.staccatoWhite)
+
         .staccatoNavigationBar {
             Button("수정") {
-                // TODO: 수정 기능 구현
+                isCategoryModifyModalPresented = true
             }
 
             Button("삭제") {
@@ -53,13 +57,21 @@ struct CategoryDetailView: View {
                 }
             }
         }
+
         .onAppear {
             viewModel.getCategoryDetail(categoryId)
+        }
+
+        .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
+            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
+        }
+
+        .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
+            CategoryEditorView(categoryDetail: self.viewModel.categoryDetail, editorType: .modify)
         }
     }
 
 }
-
 
 // MARK: - UI Comonents
 
@@ -140,7 +152,7 @@ extension CategoryDetailView {
                 Spacer()
 
                 Button("기록하기") {
-                    navigationState.navigate(to: .staccatoAdd)
+                    isStaccatoCreateViewPresented = true
                 }
                 .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }

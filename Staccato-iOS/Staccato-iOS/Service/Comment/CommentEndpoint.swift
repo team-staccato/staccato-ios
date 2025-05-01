@@ -23,7 +23,7 @@ extension CommentEndpoint: APIEndpoint {
         switch self {
         case .putComment(let commentId, _): return "/comments/\(commentId)"
         case .deleteComment(let commentId): return "/comments/\(commentId)"
-        default: return "/comments/v2"
+        default: return "/comments"
         }
     }
     

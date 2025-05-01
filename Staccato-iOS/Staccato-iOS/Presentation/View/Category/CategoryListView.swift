@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CategoryListView: View {
-    
+
     @Environment(NavigationState.self) var navigationState
     @EnvironmentObject var mypageViewModel: MyPageViewModel
     @Bindable var bindableNavigationState: NavigationState
@@ -19,16 +19,16 @@ struct CategoryListView: View {
     @State private var isSortFilterMenuPresented: Bool = false
     @State private var isCreateCategoryModalPresented = false
 
-    
+
     // MARK: - Initializer
-    
+
     init(_ navigationState: NavigationState) {
         self.bindableNavigationState = navigationState
     }
-    
-    
+
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack {
             modalTop
@@ -65,14 +65,14 @@ struct CategoryListView: View {
             CategoryEditorView(categoryViewModel: viewModel)
         }
     }
-    
+
 }
 
 
 // MARK: - UI Components
 
 private extension CategoryListView {
-    
+
     // MARK: - Modal top
     
     var modalTop: some View {
@@ -81,10 +81,10 @@ private extension CategoryListView {
             .padding(.top, 10)
             .foregroundStyle(.gray2)
     }
-    
-    
+
+
     // MARK: - TitleView
-    
+
     var titleHStack: some View {
         VStack(alignment: .leading) {
             Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
@@ -98,7 +98,7 @@ private extension CategoryListView {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     var categorySortFilterButton: some View {
         Button {
             isSortFilterMenuPresented.toggle()
@@ -129,7 +129,7 @@ private extension CategoryListView {
             .presentationCompactAdaptation(.popover)
         }
     }
-    
+
     var categoryAddButton: some View {
         Button("추가") {
             isCreateCategoryModalPresented = true
@@ -140,10 +140,10 @@ private extension CategoryListView {
             iconSpacing: 4)
         )
     }
-    
-    
+
+
     // MARK: - List
-    
+
     var categoryList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {

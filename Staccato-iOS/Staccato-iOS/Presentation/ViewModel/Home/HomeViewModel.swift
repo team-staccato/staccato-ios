@@ -41,10 +41,7 @@ extension HomeViewModel {
 
     func fetchStaccatos() {
         Task {
-            guard !isfetchingStaccatoList else {
-                print("🥑 is Loading staccatos")
-                return
-            }
+            guard !isfetchingStaccatoList else { return }
             isfetchingStaccatoList = true
             
             defer {

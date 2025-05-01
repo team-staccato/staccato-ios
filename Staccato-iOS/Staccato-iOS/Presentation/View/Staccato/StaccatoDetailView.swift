@@ -32,10 +32,10 @@ struct StaccatoDetailView: View {
         self.viewModel = StaccatoDetailViewModel()
         viewModel.getStaccatoDetail(staccatoId)
     }
-    
-    
+
+
     // MARK: - UI Properties
-    
+
     private let horizontalInset: CGFloat = 16
 
     var body: some View {
@@ -141,11 +141,9 @@ private extension StaccatoDetailView {
             activityItems: [shareLink],
             applicationActivities: nil
         )
-        
-        // Present the share sheet from the root view controller
+
         if let rootVC = UIApplication.shared.windows.first?.rootViewController {
             rootVC.present(activityViewController, animated: true) {
-                // Optional: Reset the share link after sharing
                 viewModel.shareLink = nil
             }
         }
@@ -417,8 +415,13 @@ private extension StaccatoDetailView {
             }
             
             Button {
-                // TODO: 댓글 삭제 경고 Alert 커스텀
-                viewModel.deleteComment(comment.commentId)
+                alertManager.show(
+                    .confirmCancelAlert(
+                        title: "댓글을 삭제하시겠습니까?",
+                        message: "삭제하면 되돌릴 수 없어요") {
+                            viewModel.deleteComment(comment.commentId)
+                        }
+                )
             } label: {
                 Text("삭제")
                 Image(StaccatoIcon.trash)

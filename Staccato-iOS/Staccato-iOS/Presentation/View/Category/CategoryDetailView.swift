@@ -18,6 +18,7 @@ struct CategoryDetailView: View {
     @ObservedObject var viewModel: CategoryDetailViewModel
 
     @State private var isStaccatoCreateViewPresented = false
+    @State private var isCategoryModifyModalPresented = false
 
     init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
@@ -39,7 +40,7 @@ struct CategoryDetailView: View {
 
         .staccatoNavigationBar {
             Button("수정") {
-                // TODO: 수정 기능 구현
+                isCategoryModifyModalPresented = true
             }
 
             Button("삭제") {
@@ -60,8 +61,12 @@ struct CategoryDetailView: View {
             viewModel.getCategoryDetail(categoryId)
         }
 
-        .sheet(isPresented: $isStaccatoCreateViewPresented) {
+        .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
             StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
+        }
+
+        .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
+            CategoryEditorView(categoryDetail: self.viewModel.categoryDetail, editorType: .modify)
         }
     }
 

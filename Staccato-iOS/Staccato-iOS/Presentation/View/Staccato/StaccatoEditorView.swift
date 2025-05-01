@@ -11,6 +11,8 @@ import PhotosUI
 import Lottie
 
 struct StaccatoEditorView: View {
+    @Environment(\.dismiss) var dismiss
+
     @State private var viewModel: StaccatoEditorViewModel
 
     @FocusState var isTitleFocused: Bool
@@ -47,7 +49,7 @@ struct StaccatoEditorView: View {
         }
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
-        .staccatoNavigationBar(
+        .staccatoModalBar(
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )
@@ -344,8 +346,10 @@ extension StaccatoEditorView {
                 switch viewModel.editorMode {
                 case .create:
                     await viewModel.createStaccato()
+                    dismiss()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)
+                    dismiss()
                 }
             }
         }

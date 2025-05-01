@@ -60,7 +60,7 @@ struct CategoryDetailView: View {
             viewModel.getCategoryDetail(categoryId)
         }
 
-        .sheet(isPresented: $isStaccatoCreateViewPresented) {
+        .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
             StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
         }
     }

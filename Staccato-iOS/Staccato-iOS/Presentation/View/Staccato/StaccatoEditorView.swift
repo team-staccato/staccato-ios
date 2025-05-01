@@ -47,7 +47,7 @@ struct StaccatoEditorView: View {
         }
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
-        .staccatoNavigationBar(
+        .staccatoModalBar(
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
         )

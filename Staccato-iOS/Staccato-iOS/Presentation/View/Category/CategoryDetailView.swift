@@ -17,6 +17,9 @@ struct CategoryDetailView: View {
     let categoryId: Int64
     @ObservedObject var viewModel: CategoryDetailViewModel
 
+    @State private var isStaccatoCreateViewPresented = false
+    @State private var isCategoryModifyModalPresented = false
+
     init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
         self.categoryId = categoryId
         self.viewModel = CategoryDetailViewModel(categoryListViewModel)
@@ -34,9 +37,11 @@ struct CategoryDetailView: View {
                 Spacer()
             }
         }
+        .background(.staccatoWhite)
+
         .staccatoNavigationBar {
             Button("수정") {
-                // TODO: 수정 기능 구현
+                isCategoryModifyModalPresented = true
             }
 
             Button("삭제") {
@@ -52,13 +57,21 @@ struct CategoryDetailView: View {
                 }
             }
         }
+
         .onAppear {
             viewModel.getCategoryDetail(categoryId)
+        }
+
+        .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
+            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
+        }
+
+        .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
+            CategoryEditorView(categoryDetail: self.viewModel.categoryDetail, editorType: .modify)
         }
     }
 
 }
-
 
 // MARK: - UI Comonents
 
@@ -78,7 +91,7 @@ extension CategoryDetailView {
             VStack(alignment: .leading, spacing: 10) {
                 Text(viewModel.categoryDetail?.categoryTitle ?? "")
                     .typography(.title1)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.staccatoWhite)
                     .lineLimit(.max)
                     .multilineTextAlignment(.leading)
                 
@@ -86,7 +99,7 @@ extension CategoryDetailView {
                    let endAt = viewModel.categoryDetail?.endAt {
                     Text("\(startAt) ~ \(endAt)")
                         .typography(.body4)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.staccatoWhite)
                 }
             }
             .padding(.horizontal, 16)
@@ -97,9 +110,9 @@ extension CategoryDetailView {
     private var linearGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(stops: [
-                .init(color: Color.black.opacity(0.2), location: 0.0),
-                .init(color: Color.black.opacity(0.6), location: 0.67),
-                .init(color: Color.black.opacity(0.85), location: 1.0)
+                .init(color: Color.staccatoBlack.opacity(0.2), location: 0.0),
+                .init(color: Color.staccatoBlack.opacity(0.6), location: 0.67),
+                .init(color: Color.staccatoBlack.opacity(0.85), location: 1.0)
             ]),
             startPoint: .top,
             endPoint: .bottom
@@ -139,7 +152,7 @@ extension CategoryDetailView {
                 Spacer()
 
                 Button("기록하기") {
-                    navigationState.navigate(to: .staccatoAdd)
+                    isStaccatoCreateViewPresented = true
                 }
                 .buttonStyle(.staccatoCapsule(icon: .pencilLine))
             }

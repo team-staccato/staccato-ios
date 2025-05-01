@@ -18,7 +18,7 @@ struct StaccatoFilledButtonStyle: ButtonStyle {
 
     init(
         verticalPadding: CGFloat = 14,
-        foregroundColor: Color = .white,
+        foregroundColor: Color = .staccatoWhite,
         backgroundColor: Color = .accent,
         cornerRadius: CGFloat = 5
     ) {

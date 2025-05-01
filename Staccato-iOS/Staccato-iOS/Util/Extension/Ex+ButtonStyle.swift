@@ -35,7 +35,7 @@ extension ButtonStyle where Self == StaccatoFilledButtonStyle {
 
     static func staccatoFilled(
         verticalPadding: CGFloat = 14,
-        foregroundColor: Color = .white,
+        foregroundColor: Color = .staccatoWhite,
         backgroundColor: Color = .accent
     ) -> StaccatoFilledButtonStyle {
         .init(

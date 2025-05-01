@@ -125,7 +125,7 @@ private struct ImageLoadingErrorView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 30, height: 30)
-                .foregroundColor(.white)
+                .foregroundColor(.staccatoWhite)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(.gray2)

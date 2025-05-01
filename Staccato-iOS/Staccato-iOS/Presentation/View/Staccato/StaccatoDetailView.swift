@@ -112,7 +112,9 @@ struct StaccatoDetailView: View {
         }
 
         .sheet(isPresented: $isStaccatoModifySheetPresented) {
-            StaccatoEditorView(category: nil)
+            if let staccatoDetail = viewModel.staccatoDetail {
+                StaccatoEditorView(staccato: staccatoDetail)
+            }
         }
     }
 }

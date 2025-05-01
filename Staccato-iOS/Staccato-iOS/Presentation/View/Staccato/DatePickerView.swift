@@ -50,10 +50,13 @@ extension StaccatoEditorView {
         }
 
         init(selectedDate: Binding<Date?>) {
-            self.year = calendar.dateComponents(in: .current, from: .now).year ?? 2025
-            self.month = calendar.dateComponents(in: .current, from: .now).month ?? 1
-            self.day = calendar.dateComponents(in: .current, from: .now).day ?? 1
-            self.hour = calendar.dateComponents(in: .current, from: .now).hour ?? 0
+            let baseDate = selectedDate.wrappedValue ?? Date()
+            let components = calendar.dateComponents(in: .current, from: baseDate)
+
+            self.year = components.year ?? 2025
+            self.month = components.month ?? 1
+            self.day = components.day ?? 1
+            self.hour = components.hour ?? 0
             self._selectedDate = selectedDate
         }
 
@@ -115,6 +118,10 @@ extension StaccatoEditorView {
                 .padding(.bottom, 60)
             }
             .padding(.horizontal)
+
+            .onAppear {
+                validateComponents()
+            }
 
             .onChange(of: year, validateComponents)
             .onChange(of: month, validateComponents)

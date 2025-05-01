@@ -14,6 +14,9 @@ struct StaccatoDetailView: View {
     // MARK: - State Properties
     
     let staccatoId: Int64
+    @EnvironmentObject var homeViewModel: HomeViewModel
+    @Environment(StaccatoAlertManager.self) var alertManager
+    @Environment(NavigationState.self) var navigationState
     
     @ObservedObject var viewModel: StaccatoDetailViewModel
     
@@ -79,7 +82,21 @@ struct StaccatoDetailView: View {
             }
 
             Button("삭제") {
-                // TODO: 삭제 기능 구현
+                withAnimation {
+                    alertManager.show(
+                        .confirmCancelAlert(
+                            title: "삭제하시겠습니까?",
+                            message: "삭제를 누르면 복구할 수 없습니다") {
+                                viewModel.delteStaccato(staccatoId)
+                                navigationState.dismiss()
+                                // TODO: deleteStaccato 메소드 내부로 옮겨서 성공했을 경우만 실행하기
+                                if let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
+                                    homeViewModel.staccatos.remove(at: indexToRemove)
+                                }
+                                
+                            }
+                    )
+                }
             }
         }
 

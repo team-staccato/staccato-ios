@@ -11,14 +11,10 @@ import SwiftUI
 
 struct GMSMapViewRepresentable: UIViewRepresentable {
 
-    @ObservedObject var viewModel: HomeViewModel
+    @EnvironmentObject var viewModel: HomeViewModel
     @Environment(NavigationState.self) var navigationState
 
     private let mapView = GMSMapView()
-
-    init(_ viewModel: HomeViewModel) {
-        self.viewModel = viewModel
-    }
 
     func makeUIView(context: Context) -> GMSMapView {
         STLocationManager.shared.delegate = context.coordinator

@@ -49,7 +49,6 @@ class StaccatoEditorViewModel {
 
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
-        getCategoryList()
         getPhotos(urls: staccato.staccatoImageUrls)
 
         self.title = staccato.staccatoTitle
@@ -58,7 +57,7 @@ class StaccatoEditorViewModel {
             address: staccato.address,
             coordinate: CLLocationCoordinate2D(staccato.latitude, staccato.longitude)
         )
-        self.selectedDate = Date.fromISOString(staccato.visitedAt)
+        self.selectedDate = Date(fromISOString: staccato.visitedAt)
         self.selectedCategory = self.categories.first(where: { $0.categoryId == staccato.categoryId })
     }
 

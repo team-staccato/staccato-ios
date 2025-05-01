@@ -37,6 +37,7 @@ struct CategoryDetailView: View {
                 Spacer()
             }
         }
+        .background(.staccatoWhite)
 
         .staccatoNavigationBar {
             Button("수정") {
@@ -90,7 +91,7 @@ extension CategoryDetailView {
             VStack(alignment: .leading, spacing: 10) {
                 Text(viewModel.categoryDetail?.categoryTitle ?? "")
                     .typography(.title1)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.staccatoWhite)
                     .lineLimit(.max)
                     .multilineTextAlignment(.leading)
                 
@@ -98,7 +99,7 @@ extension CategoryDetailView {
                    let endAt = viewModel.categoryDetail?.endAt {
                     Text("\(startAt) ~ \(endAt)")
                         .typography(.body4)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.staccatoWhite)
                 }
             }
             .padding(.horizontal, 16)
@@ -109,9 +110,9 @@ extension CategoryDetailView {
     private var linearGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(stops: [
-                .init(color: Color.black.opacity(0.2), location: 0.0),
-                .init(color: Color.black.opacity(0.6), location: 0.67),
-                .init(color: Color.black.opacity(0.85), location: 1.0)
+                .init(color: Color.staccatoBlack.opacity(0.2), location: 0.0),
+                .init(color: Color.staccatoBlack.opacity(0.6), location: 0.67),
+                .init(color: Color.staccatoBlack.opacity(0.85), location: 1.0)
             ]),
             startPoint: .top,
             endPoint: .bottom

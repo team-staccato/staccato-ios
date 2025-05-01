@@ -198,7 +198,7 @@ extension StaccatoEditorView {
 
                 if photo.isUploading {
                     ZStack {
-                        Color.white.opacity(0.8)
+                        Color.staccatoWhite.opacity(0.8)
                         LottieView(animation: .named("UploadImage"))
                             .playing(loopMode: .loop)
                     }
@@ -206,7 +206,7 @@ extension StaccatoEditorView {
 
                 if photo.isFailed {
                     ZStack {
-                        Color.white.opacity(0.8)
+                        Color.staccatoWhite.opacity(0.8)
                         Image(.photoBadgeExclamationmark)
                             .resizable()
                             .scaledToFit()
@@ -230,7 +230,7 @@ extension StaccatoEditorView {
                         .scaledToFit()
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(.red, .gray3)
-                        .background(Circle().fill(.white))
+                        .background(Circle().fill(.staccatoWhite))
                         .frame(width: 25, height: 25)
                         .offset(x: 5, y: -5)
                 }

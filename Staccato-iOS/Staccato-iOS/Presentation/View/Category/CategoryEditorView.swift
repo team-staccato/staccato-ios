@@ -158,7 +158,7 @@ extension CategoryEditorView {
 
         .fullScreenCover(isPresented: $vm.showCamera) {
             CameraView(selectedImage: $vm.selectedPhoto)
-                .background(.black)
+                .background(.staccatoBlack)
         }
     }
 

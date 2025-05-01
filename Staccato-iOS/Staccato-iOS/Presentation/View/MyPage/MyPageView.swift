@@ -127,7 +127,7 @@ extension MyPageView {
         
         .fullScreenCover(isPresented: $showCamera) {
             CameraView(selectedImage: $selectedPhoto)
-                .background(.black)
+                .background(.staccatoBlack)
         }
         
         .onChange(of: photoItem) { _, newValue in
@@ -169,8 +169,8 @@ extension MyPageView {
     private var toastMessage: some View {
         Text("복구 코드가 복사되었습니다.")
             .padding()
-            .background(Color.black.opacity(0.8))
-            .foregroundColor(.white)
+            .background(Color.staccatoBlack.opacity(0.8))
+            .foregroundColor(.staccatoWhite)
             .cornerRadius(10)
             .padding(.bottom, 50)
             .transition(.opacity)

@@ -32,7 +32,7 @@ struct CategoryListSortFilterView: View {
             filterOptions
             
         }
-        .background(Color(uiColor: .systemBackground))
+        .background(Color(uiColor: .staccatoWhite))
     }
     
 }

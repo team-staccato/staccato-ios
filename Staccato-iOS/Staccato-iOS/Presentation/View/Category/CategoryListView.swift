@@ -36,10 +36,12 @@ struct CategoryListView: View {
                     titleHStack
                         .padding(.top, 22)
                         .padding(.bottom, 12)
+                        .padding(.horizontal, 18)
                     categoryList
+                        .padding(.horizontal, 18)
                 }
-                .background(Color.white)
-                .padding(.horizontal, 18)
+                .background(Color.staccatoWhite)
+                .frame(maxWidth: .infinity)
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)

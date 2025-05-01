@@ -10,8 +10,8 @@ import PhotosUI
 
 import Lottie
 
-struct StaccatoCreateView: View {
-    @State private var viewModel: StaccatoCreateViewModel
+struct StaccatoEditorView: View {
+    @State private var viewModel: StaccatoEditorViewModel
 
     @FocusState var isTitleFocused: Bool
 
@@ -19,12 +19,12 @@ struct StaccatoCreateView: View {
 
     // NOTE: Create
     init(category: CategoryModel?) {
-        self.viewModel = StaccatoCreateViewModel(selectedCategory: category)
+        self.viewModel = StaccatoEditorViewModel(selectedCategory: category)
     }
 
     // NOTE: Modify
     init(staccato: StaccatoDetailModel) {
-        self.viewModel = StaccatoCreateViewModel(staccato: staccato)
+        self.viewModel = StaccatoEditorViewModel(staccato: staccato)
     }
 
     var body: some View {
@@ -67,12 +67,12 @@ struct StaccatoCreateView: View {
 }
 
 #Preview {
-    StaccatoCreateView(category: nil)
+    StaccatoEditorView(category: nil)
         .environment(NavigationState())
 }
 
 #Preview("Modify") {
-    StaccatoCreateView(
+    StaccatoEditorView(
         staccato: StaccatoDetailModel(
             id: UUID(),
             staccatoId: 2,
@@ -96,7 +96,7 @@ struct StaccatoCreateView: View {
     .environment(NavigationState())
 }
 
-extension StaccatoCreateView {
+extension StaccatoEditorView {
     // MARK: - Photo
     private var photoInputSection: some View {
         VStack(alignment: .leading) {

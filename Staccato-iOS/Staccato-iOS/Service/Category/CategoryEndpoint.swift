@@ -11,23 +11,27 @@ enum CategoryEndpoint {
     case getCategoryList(_ query: GetCategoryListRequestQuery)
     case getCategoryDetail(_ categoryId: Int64)
     case createCategory(_ query: CreateCategoryRequestQuery)
+
+    case modifyCategory(_ query: ModifyCategoryRequestQuery, id: Int64)
     case deleteCategory(_ categoryId: Int64)
 }
 
 extension CategoryEndpoint: APIEndpoint {
-    
+
     var path: String {
         switch self {
         case .getCategoryList, .createCategory:
             return "/categories"
         case .getCategoryDetail(let categoryId),
-             .deleteCategory(let categoryId):
+             .deleteCategory(let categoryId),
+             .modifyCategory(_, let categoryId):
             return "/categories/\(categoryId)"
         }
     }
-    
+
     var method: HTTPMethod {
         switch self {
+        case .modifyCategory: return .put
         case .getCategoryList, .getCategoryDetail:
             return .get
         case .createCategory:
@@ -36,16 +40,16 @@ extension CategoryEndpoint: APIEndpoint {
             return .delete
         }
     }
-    
+
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
         case .getCategoryList, .getCategoryDetail, .deleteCategory:
             return URLEncoding.queryString
-        case .createCategory:
+        case .createCategory, .modifyCategory:
             return JSONEncoding.default
         }
     }
-    
+
     var parameters: [String : Any]? {
         switch self {
         case .getCategoryList(let query):
@@ -59,11 +63,13 @@ extension CategoryEndpoint: APIEndpoint {
             return params.isEmpty ? nil : params
         case .createCategory(let query):
             return query.toDictionary()
+        case .modifyCategory(let query, _):
+            return query.toDictionary()
         default:
             return nil
         }
     }
-    
+
     var headers: [String : String]? {
         return HeaderType.tokenOnly()
     }

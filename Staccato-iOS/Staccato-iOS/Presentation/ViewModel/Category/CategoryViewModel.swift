@@ -1,5 +1,5 @@
 //
-//  CategoryListViewModel.swift
+//  CategoryViewModel.swift
 //  Staccato-iOS
 //
 //  Created by 김유림 on 2/4/25.
@@ -8,14 +8,14 @@
 import SwiftUI
 
 @MainActor
-final class CategoryListViewModel: ObservableObject {
-    
+final class CategoryViewModel: ObservableObject {
+
     // MARK: - Properties
-    
+
     @Published var userName: String = "UserName" // TODO: API 연결
-    
+
     @Published var categories: [CategoryModel] = []
-    
+
     @Published var filterSelection: CategoryListFilterType = .all {
         didSet {
             do {
@@ -25,7 +25,7 @@ final class CategoryListViewModel: ObservableObject {
             }
         }
     }
-    
+
     @Published var sortSelection: CategoryListSortType = .recentlyUpdated {
         didSet {
             do {
@@ -35,10 +35,12 @@ final class CategoryListViewModel: ObservableObject {
             }
         }
     }
-    
-    
+
+    @Published var categoryDetail: CategoryDetailModel?
+
+
     // MARK: - Networking
-    
+
     func getCategoryList() throws {
         Task {
             let categoryList = try await STService.shared.categoryService.getCategoryList(
@@ -50,6 +52,34 @@ final class CategoryListViewModel: ObservableObject {
             
             let categories = categoryList.categories.map { CategoryModel(from: $0) }
             self.categories = categories
+        }
+    }
+
+    @MainActor
+    func getCategoryDetail(_ categoryId: Int64) {
+        Task {
+            do {
+                let response = try await STService.shared.categoryService.getCategoryDetail(categoryId)
+                let categoryDetail = CategoryDetailModel(from: response)
+                self.categoryDetail = categoryDetail
+            } catch {
+                print("⚠️ \(error.localizedDescription) - fetching category detail")
+            }
+        }
+    }
+
+    func deleteCategory() {
+        guard let categoryDetail else {
+            print("⚠️ \(StaccatoError.optionalBindingFailed) - delete category")
+            return
+        }
+        Task {
+            do {
+                try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
+                try getCategoryList()
+            } catch {
+                print("⚠️ \(error.localizedDescription) - delete category")
+            }
         }
     }
 

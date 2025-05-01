@@ -15,16 +15,14 @@ struct CategoryDetailView: View {
     @Environment(StaccatoAlertManager.self) var alertManager
 
     let categoryId: Int64
-    let categoryListViewModel: CategoryListViewModel
-    @ObservedObject var viewModel: CategoryDetailViewModel
+    @ObservedObject var viewModel: CategoryViewModel
 
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
 
-    init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
+    init(_ categoryId: Int64, _ categoryViewModel: CategoryViewModel) {
         self.categoryId = categoryId
-        self.categoryListViewModel = categoryListViewModel
-        self.viewModel = CategoryDetailViewModel(categoryListViewModel)
+        self.viewModel = categoryViewModel
     }
 
     var body: some View {
@@ -72,7 +70,7 @@ struct CategoryDetailView: View {
             CategoryEditorView(
                 categoryDetail: self.viewModel.categoryDetail,
                 editorType: .modify,
-                categoryListViewModel: categoryListViewModel
+                categoryViewModel: viewModel
             )
         }
     }

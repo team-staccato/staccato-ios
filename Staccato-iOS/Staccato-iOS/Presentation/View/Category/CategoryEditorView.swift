@@ -19,12 +19,12 @@ struct CategoryEditorView: View {
     init(
         categoryDetail: CategoryDetailModel? = nil,
         editorType: CategoryEditorViewModel.CategoryEditorType = .create,
-        categoryListViewModel: CategoryListViewModel
+        categoryViewModel: CategoryViewModel
     ) {
         self.vm = CategoryEditorViewModel(
             categoryDetail: categoryDetail,
             editorType: editorType,
-            categoryListViewModel: categoryListViewModel
+            categoryViewModel: categoryViewModel
         )
     }
 
@@ -99,7 +99,7 @@ struct CategoryEditorView: View {
 #Preview {
     NavigationStack {
         NavigationLink("이동") {
-            CategoryEditorView(categoryListViewModel: CategoryListViewModel())
+            CategoryEditorView(categoryViewModel: CategoryViewModel())
         }
     }
 }
@@ -117,7 +117,7 @@ struct CategoryEditorView: View {
             staccatos: []
         ),
         editorType: .modify,
-        categoryListViewModel: CategoryListViewModel()
+        categoryViewModel: CategoryViewModel()
     )
     .environment(NavigationState())
 }

@@ -40,15 +40,15 @@ final class CategoryEditorViewModel {
     // MARK: - Modifying
     var id: Int64?
     var editorType: CategoryEditorType = .create
-    private let categoryListViewModel: CategoryListViewModel
+    private let categoryViewModel: CategoryViewModel
 
     init(
         categoryDetail: CategoryDetailModel? = nil,
         editorType: CategoryEditorType = .create,
-        categoryListViewModel: CategoryListViewModel
+        categoryViewModel: CategoryViewModel
     ) {
         self.id = categoryDetail?.categoryId
-        self.categoryListViewModel = categoryListViewModel
+        self.categoryViewModel = categoryViewModel
 
         if let imageURL = categoryDetail?.categoryThumbnailUrl {
             self.imageURL = imageURL
@@ -113,7 +113,7 @@ final class CategoryEditorViewModel {
 
         do {
             try await STService.shared.categoryService.createCategory(query)
-            try await categoryListViewModel.getCategoryList()
+            try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
         } catch {
             errorMessage = error.localizedDescription
@@ -135,7 +135,8 @@ final class CategoryEditorViewModel {
         do {
             try await STService.shared.categoryService.modifyCategory(id: id, query)
             self.uploadSuccess = true
-            try await categoryListViewModel.getCategoryList()
+            try await categoryViewModel.getCategoryList()
+            await categoryViewModel.getCategoryDetail(id)
         } catch {
             errorMessage = error.localizedDescription
             catchError = true

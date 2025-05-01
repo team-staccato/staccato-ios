@@ -79,7 +79,7 @@ struct HomeView: View {
             MyPageView()
         }
         .sheet(isPresented: $isCreateStaccatoModalPresented) {
-            StaccatoCreateView(category: nil)
+            StaccatoEditorView(category: nil)
         }
     }
 

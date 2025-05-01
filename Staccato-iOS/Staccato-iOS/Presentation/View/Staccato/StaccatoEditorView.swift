@@ -66,7 +66,7 @@ struct StaccatoEditorView: View {
     }
 }
 
-#Preview {
+#Preview("Create") {
     StaccatoEditorView(category: nil)
         .environment(NavigationState())
 }
@@ -341,7 +341,12 @@ extension StaccatoEditorView {
     private var saveButton: some View {
         Button("저장") {
             Task {
-                await viewModel.createStaccato()
+                switch viewModel.editorMode {
+                case .create:
+                    await viewModel.createStaccato()
+                case .modify(let id):
+                    await viewModel.modifyStaccato(staccatoId: id)
+                }
             }
         }
         .buttonStyle(.staccatoFullWidth)

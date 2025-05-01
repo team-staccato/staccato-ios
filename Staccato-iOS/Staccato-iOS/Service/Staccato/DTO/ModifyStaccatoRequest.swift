@@ -1,12 +1,12 @@
 //
-//  CreateStaccatoRequest 2.swift
+//  ModifyStaccatoRequest.swift
 //  Staccato-iOS
 //
 //  Created by 정승균 on 5/1/25.
 //
 
 
-struct CreateStaccatoRequest: Encodable {
+struct ModifyStaccatoRequest: Encodable {
     var staccatoTitle: String
     var placeName: String
     var address: String

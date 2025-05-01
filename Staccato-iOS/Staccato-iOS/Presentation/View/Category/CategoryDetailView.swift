@@ -61,7 +61,7 @@ struct CategoryDetailView: View {
         }
 
         .sheet(isPresented: $isStaccatoCreateViewPresented) {
-            StaccatoCreateView(category: viewModel.categoryDetail?.toCategoryModel())
+            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
         }
     }
 

@@ -186,14 +186,14 @@ private extension StaccatoDetailView {
             viewModel.postShareLink()
         } label: {
             if isShareLinkLoading {
-                ProgressView()
+                ProgressView("링크 생성중")
             } else {
                 Image(StaccatoIcon.squareAndArrowUp)
                     .foregroundStyle(.gray3)
                     .fontWeight(.semibold)
+                    .frame(width: 20, height: 20)
             }
         }
-        .frame(width: 20, height: 20)
     }
 
     var locationSection: some View {

@@ -28,6 +28,9 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ uiView: GMSMapView, context: Context) {
         updateMarkers(to: uiView)
+
+        let camera = GMSCameraPosition.camera(withTarget:  viewModel.cameraPosition, zoom: 13)
+        uiView.animate(to: camera)
 #if DEBUG
         print("GMSMapViewRepresentable updated")
 #endif

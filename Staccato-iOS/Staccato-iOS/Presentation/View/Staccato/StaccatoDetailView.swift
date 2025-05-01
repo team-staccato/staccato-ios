@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 import Kingfisher
 
@@ -99,11 +100,31 @@ struct StaccatoDetailView: View {
                 }
             }
         }
+        .onChange(of: viewModel.staccatoDetail) { _, _ in
+            updateMapCamera()
+        }
 
         .sheet(isPresented: $isStaccatoModifySheetPresented) {
             StaccatoEditorView(category: nil)
         }
     }
+}
+
+
+// MARK: - Helper
+
+private extension StaccatoDetailView {
+
+    func updateMapCamera() {
+        if let detail = viewModel.staccatoDetail {
+            let coordinate = CLLocationCoordinate2D(
+                latitude: detail.latitude,
+                longitude: detail.longitude
+            )
+            homeViewModel.moveCamera(to: coordinate)
+        }
+    }
+
 }
 
 

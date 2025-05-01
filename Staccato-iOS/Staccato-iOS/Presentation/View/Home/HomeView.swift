@@ -5,15 +5,17 @@
 //  Created by 김유림 on 1/9/25.
 //
 
-import GoogleMaps
-
 import SwiftUI
+
+import GoogleMaps
+import Kingfisher
 
 struct HomeView: View {
 
     // MARK: - Properties
     //NOTE: View, ViewModel
     @EnvironmentObject var viewModel: HomeViewModel
+    @EnvironmentObject var mypageViewModel: MyPageViewModel
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: 모달 크기
@@ -62,6 +64,7 @@ struct HomeView: View {
             locationAuthorizationManager.checkLocationAuthorization()
             STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
+            mypageViewModel.fetchProfile()
         }
         .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
             if newValue {
@@ -87,16 +90,29 @@ extension HomeView {
         Button {
             isMyPagePresented = true
         } label: {
-            Image(.personCircleFill)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 40, height: 40)
-                .background(Color.staccatoWhite)
-                .foregroundStyle(.gray3)
-                .clipShape(Circle())
-                .overlay {
-                    Circle().stroke(Color.staccatoWhite, lineWidth: 2)
-                }
+            if let profileImageUrl = mypageViewModel.profile?.profileImageUrl {
+                KFImage(URL(string:  profileImageUrl))
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                    .background(Color.staccatoWhite)
+                    .foregroundStyle(.gray3)
+                    .clipShape(Circle())
+                    .overlay {
+                        Circle().stroke(Color.staccatoWhite, lineWidth: 2)
+                    }
+            } else {
+                Image(.personCircleFill)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                    .background(Color.staccatoWhite)
+                    .foregroundStyle(.gray3)
+                    .clipShape(Circle())
+                    .overlay {
+                        Circle().stroke(Color.staccatoWhite, lineWidth: 2)
+                    }
+            }
         }
     }
 

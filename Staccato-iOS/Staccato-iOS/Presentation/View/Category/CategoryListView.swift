@@ -10,6 +10,7 @@ import SwiftUI
 struct CategoryListView: View {
     
     @Environment(NavigationState.self) var navigationState
+    @EnvironmentObject var mypageViewModel: MyPageViewModel
     @Bindable var bindableNavigationState: NavigationState
     
     @StateObject private var viewModel = CategoryViewModel()
@@ -86,7 +87,7 @@ private extension CategoryListView {
     
     var titleHStack: some View {
         VStack(alignment: .leading) {
-            Text("\(viewModel.userName)의 추억들")
+            Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
                 .typography(.title1)
             
             HStack {

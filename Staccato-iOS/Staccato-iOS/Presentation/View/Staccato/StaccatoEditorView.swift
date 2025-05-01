@@ -320,20 +320,20 @@ extension StaccatoEditorView {
             sectionTitle(title: "카테고리 선택")
 
             Menu(categoryMenuTitle) {
-                ForEach(viewModel.filteredCategory, id: \.id) { category in
+                ForEach(viewModel.categories, id: \.id) { category in
                     Button(category.title) {
                         self.viewModel.selectedCategory = category
                     }
                 }
             }
             .buttonStyle(.staticTextFieldButtonStyle())
-            .disabled(viewModel.filteredCategory.isEmpty)
+            .disabled(viewModel.categories.isEmpty)
         }
     }
 
     private var categoryMenuTitle: String {
-        if viewModel.filteredCategory.isEmpty {
-            return "기간을 포함하는 카테고리가 없어요"
+        if viewModel.categories.isEmpty {
+            return "생성된 카테고리가 없어요"
         } else {
             return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
         }

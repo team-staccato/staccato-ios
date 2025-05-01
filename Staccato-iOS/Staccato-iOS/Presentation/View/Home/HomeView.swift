@@ -78,7 +78,7 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()
         }
-        .sheet(isPresented: $isCreateStaccatoModalPresented) {
+        .fullScreenCover(isPresented: $isCreateStaccatoModalPresented) {
             StaccatoEditorView(category: nil)
         }
     }

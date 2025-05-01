@@ -126,7 +126,7 @@ final class CategoryEditorViewModel {
         guard let id = self.id else { return }
 
         do {
-            try await STService.shared.categoryServie.modifyCategory(id: id, query)
+            try await STService.shared.categoryService.modifyCategory(id: id, query)
             self.uploadSuccess = true
         } catch {
             errorMessage = error.localizedDescription

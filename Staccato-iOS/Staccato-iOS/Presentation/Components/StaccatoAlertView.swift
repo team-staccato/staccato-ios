@@ -39,7 +39,7 @@ struct StaccatoAlertView: View {
             .padding(.bottom, 20)
             .padding(.horizontal, 24)
         }
-        .background(.white)
+        .background(.staccatoWhite)
         .clipShape(RoundedCornerShape(corners: .allCorners, radius: 10))
         .padding(.horizontal, 16)
         .shadow(color: .black.opacity(0.1), radius: 10)

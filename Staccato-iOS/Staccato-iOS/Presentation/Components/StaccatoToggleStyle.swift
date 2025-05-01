@@ -27,7 +27,7 @@ struct StaccatoToggleStyle: ToggleStyle {
                 .foregroundStyle(configuration.isOn ? .accent : .gray4)
 
             Circle()
-                .foregroundStyle(.white)
+                .foregroundStyle(.staccatoWhite)
                 .padding(2)
         }
         .frame(width: 48, height: 20)

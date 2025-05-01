@@ -60,7 +60,6 @@ struct HomeView: View {
 
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
-
             if alertManager.isPresented {
                 StaccatoAlertView()
             }
@@ -98,11 +97,11 @@ extension HomeView {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 40, height: 40)
-                .background(Color.white)
+                .background(Color.staccatoWhite)
                 .foregroundStyle(.gray3)
                 .clipShape(Circle())
                 .overlay {
-                    Circle().stroke(Color.white, lineWidth: 2)
+                    Circle().stroke(Color.staccatoWhite, lineWidth: 2)
                 }
         }
     }
@@ -117,7 +116,7 @@ extension HomeView {
                 .foregroundStyle(.gray4)
         }
         .frame(width: 38, height: 38)
-        .background(.white)
+        .background(.staccatoWhite)
         .clipShape(.circle)
         .shadow(radius: 2)
     }
@@ -130,7 +129,7 @@ extension HomeView {
                 .resizable()
                 .fontWeight(.bold)
                 .frame(width: 25, height: 25)
-                .foregroundStyle(.white)
+                .foregroundStyle(.staccatoWhite)
         }
         .frame(width: 48, height: 48)
         .background(.accent)
@@ -144,7 +143,7 @@ extension HomeView {
 
             CategoryListView(navigationState)
                 .frame(height: modalHeight)
-                .background(Color.white)
+                .background(Color.staccatoWhite)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
                 .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
                 .gesture(
@@ -167,5 +166,4 @@ extension HomeView {
                 )
         }
     }
-
 }

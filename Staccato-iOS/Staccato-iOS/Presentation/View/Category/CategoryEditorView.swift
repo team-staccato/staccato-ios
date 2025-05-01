@@ -17,10 +17,13 @@ struct CategoryEditorView: View {
     @FocusState private var isDescriptionFocused: Bool
 
     init(
-        id: Int? = nil,
+        categoryDetail: CategoryDetailModel? = nil,
         editorType: CategoryEditorViewModel.CategoryEditorType = .create
     ) {
-        self.vm = CategoryEditorViewModel(id: id, editorType: editorType)
+        self.vm = CategoryEditorViewModel(
+            categoryDetail: categoryDetail,
+            editorType: editorType
+        )
     }
 
     var body: some View {
@@ -45,7 +48,14 @@ struct CategoryEditorView: View {
 
                 Button("저장") {
                     Task {
-                        await vm.createCategory()
+                        switch vm.editorType {
+                        case .create:
+                            await vm.createCategory()
+                            dismiss()
+                        case .modify:
+                            await vm.modifyCategory()
+                            dismiss()
+                        }
                     }
                 }
                 .buttonStyle(.staccatoFullWidth)
@@ -90,6 +100,23 @@ struct CategoryEditorView: View {
             CategoryEditorView()
         }
     }
+}
+
+#Preview("수정") {
+    CategoryEditorView(
+        categoryDetail: CategoryDetailModel(
+            categoryId: 1,
+            categoryThumbnailUrl: "https://image.staccato.kr/web/share/happy.png",
+            categoryTitle: "테스트카테고리",
+            description: "이건 설명",
+            startAt: "2024-01-01",
+            endAt: "2024-01-30",
+            mates: [],
+            staccatos: []
+        ),
+        editorType: .modify
+    )
+    .environment(NavigationState())
 }
 
 // MARK: - Section

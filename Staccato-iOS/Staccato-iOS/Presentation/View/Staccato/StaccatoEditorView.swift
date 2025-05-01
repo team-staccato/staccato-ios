@@ -11,6 +11,8 @@ import PhotosUI
 import Lottie
 
 struct StaccatoEditorView: View {
+    @Environment(\.dismiss) var dismiss
+
     @State private var viewModel: StaccatoEditorViewModel
 
     @FocusState var isTitleFocused: Bool
@@ -344,8 +346,10 @@ extension StaccatoEditorView {
                 switch viewModel.editorMode {
                 case .create:
                     await viewModel.createStaccato()
+                    dismiss()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)
+                    dismiss()
                 }
             }
         }

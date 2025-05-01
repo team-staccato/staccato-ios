@@ -8,18 +8,27 @@
 import SwiftUI
 import CoreLocation
 
+import GoogleMaps
+
 class HomeViewModel: ObservableObject {
 
     // MARK: - Properties
-    
-    @Published var modalNavigationState = HomeModalNavigationState()
-    
-    @Published var staccatoCoordinates: [StaccatoCoordinateModel] = []
-    var presentedStaccatos: [StaccatoCoordinateModel] = []
-    
+
+    @Published var staccatos: Set<StaccatoCoordinateModel> = []
+    var displayedStaccatos: Set<StaccatoCoordinateModel> = []
+    var displayedMarkers: [Int64 : GMSMarker] = [:] // == [staccato.id : GMSMarker]
+
+    var staccatosToAdd: Set<StaccatoCoordinateModel> {
+    staccatos.subtracting(displayedStaccatos)
+    }
+    var staccatosToRemove: Set<StaccatoCoordinateModel> {
+    displayedStaccatos.subtracting(staccatos)
+    }
+
     @Published var isfetchingStaccatoList = false
     
     let locationManager = CLLocationManager()
+    var isInitialCameraMove: Bool = true
     
     
     // MARK: - Initialize
@@ -73,13 +82,13 @@ extension HomeViewModel {
                 
                 let locations: [StaccatoCoordinateModel] = staccatoList.staccatoLocationResponses.map {
                     StaccatoCoordinateModel(
+                        id: $0.staccatoId,
                         staccatoId: $0.staccatoId,
                         latitude: $0.latitude,
                         longitude: $0.longitude
                     )
                 }
-                
-                self.staccatoCoordinates = locations
+                self.staccatos = Set(locations)
             } catch {
                 print("Error fetching staccatos: \(error.localizedDescription)")
             }

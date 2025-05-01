@@ -8,36 +8,45 @@
 import Alamofire
 
 enum CategoryEndpoint {
-    
     case getCategoryList(_ query: GetCategoryListRequestQuery)
-    
+    case getCategoryDetail(_ categoryId: Int64)
     case createCategory(_ query: CreateCategoryRequestQuery)
 
     case modifyCategory(_ query: ModifyCategoryRequestQuery, id: Int)
+    case deleteCategory(_ categoryId: Int64)
 }
-
 
 extension CategoryEndpoint: APIEndpoint {
     
     var path: String {
         switch self {
-        case .getCategoryList, .createCategory: return "/categories"
         case .modifyCategory(_, let id): return "/categories/\(id)"
+        case .getCategoryList, .createCategory:
+            return "/categories"
+        case .getCategoryDetail(let categoryId),
+             .deleteCategory(let categoryId):
+            return "/categories/\(categoryId)"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .getCategoryList: return .get
-        case .createCategory: return .post
         case .modifyCategory: return .put
+        case .getCategoryList, .getCategoryDetail:
+            return .get
+        case .createCategory:
+            return .post
+        case .deleteCategory:
+            return .delete
         }
     }
     
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getCategoryList: return URLEncoding.queryString
-        case .createCategory, .modifyCategory: return JSONEncoding.default
+        case .getCategoryList, .getCategoryDetail, .deleteCategory:
+            return URLEncoding.queryString
+        case .createCategory, .modifyCategory:
+            return JSONEncoding.default
         }
     }
     
@@ -56,12 +65,12 @@ extension CategoryEndpoint: APIEndpoint {
             return query.toDictionary()
         case .modifyCategory(let query, _):
             return query.toDictionary()
+        default:
+            return nil
         }
     }
     
     var headers: [String : String]? {
-        switch self {
-        case .getCategoryList, .createCategory, .modifyCategory: return HeaderType.tokenOnly()
-        }
+        return HeaderType.tokenOnly()
     }
 }

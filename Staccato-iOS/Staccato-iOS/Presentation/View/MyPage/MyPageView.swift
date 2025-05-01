@@ -39,7 +39,7 @@ struct MyPageView: View {
             
             Spacer()
         }
-        .staccatoNavigationBar(title: "마이페이지", titlePosition: .center)
+        .staccatoModalBar(title: "마이페이지", titlePosition: .center)
         .overlay(
             Group {
                 if showToast {
@@ -79,7 +79,6 @@ extension MyPageView {
                         case .success(let image):
                             image
                                 .resizable()
-                                .scaledToFill()
                                 .clipShape(Circle())
                         case .failure:
                             Image(.personCircleFill)
@@ -248,7 +247,9 @@ extension MyPageView {
     private func loadTransferable(from imageSelection: PhotosPickerItem?) {
         Task {
             if let imageData = try? await imageSelection?.loadTransferable(type: Data.self) {
-                selectedPhoto = UIImage(data: imageData)
+                let image = UIImage(data: imageData)
+                viewModel.uploadProfileImage(image!)
+                selectedPhoto = image
             }
         }
     }

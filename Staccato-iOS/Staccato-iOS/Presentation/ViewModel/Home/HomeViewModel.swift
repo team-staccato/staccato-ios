@@ -27,8 +27,6 @@ class HomeViewModel: ObservableObject {
 
     @Published var isfetchingStaccatoList = false
 
-    var isInitialCameraMove: Bool = true
-
     @Published var cameraPosition: GMSCameraPosition?
 
 }

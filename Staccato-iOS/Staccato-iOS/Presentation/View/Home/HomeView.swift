@@ -93,7 +93,7 @@ extension HomeView {
             if let profileImageUrl = mypageViewModel.profile?.profileImageUrl {
                 KFImage(URL(string:  profileImageUrl))
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .aspectRatio(contentMode: .fill)
                     .frame(width: 40, height: 40)
                     .background(Color.staccatoWhite)
                     .foregroundStyle(.gray3)

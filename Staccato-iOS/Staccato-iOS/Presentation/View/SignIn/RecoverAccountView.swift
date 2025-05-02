@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct RecoverAccountView: View {
-    @StateObject private var viewModel = RecoverAccountViewModel()
+
+    @EnvironmentObject var viewModel: SignInViewModel
     
     @State private var code: String = ""
     @State private var errorMessage: String?
@@ -66,9 +67,6 @@ struct RecoverAccountView: View {
         .padding(.horizontal, 24)
         .staccatoNavigationBar()
         .ignoresSafeArea(.all, edges: .bottom)
-        .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-            HomeView()
-        }
     }
 }
 

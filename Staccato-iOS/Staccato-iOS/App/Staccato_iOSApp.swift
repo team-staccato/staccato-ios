@@ -18,10 +18,13 @@ struct Staccato_iOSApp: App {
     private let alertManager = StaccatoAlertManager()
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var mypageViewModel = MyPageViewModel()
-    @StateObject private var signInViewModel = SignInViewModel()
+    @StateObject private var signInViewModel: SignInViewModel
 
     init() {
-        signInViewModel.checkAutoLogin()
+        let signInVM = SignInViewModel()
+        _signInViewModel = StateObject(wrappedValue: signInVM)
+
+        signInVM.checkAutoLogin()
     }
     
     var body: some Scene {

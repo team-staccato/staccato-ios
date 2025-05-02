@@ -35,8 +35,8 @@ struct SignInView: View {
                         )
                         .offset(x: viewModel.isValid ? 0 : shakeOffset)
                         .onChange(of: nickName) {
-                            if nickName.count > 20 {
-                                nickName = String(nickName.prefix(20))
+                            if nickName.count > 10 {
+                                nickName = String(nickName.prefix(10))
                             } else {
                                 isChanging = true
                                 debounceValidation(text: nickName)
@@ -51,7 +51,7 @@ struct SignInView: View {
                         
                         Spacer()
                         
-                        Text("\(nickName.count)/20")
+                        Text("\(nickName.count)/10")
                             .typography(.body4)
                             .foregroundStyle(.gray3)
                             .frame(maxWidth: .infinity, alignment: .trailing)

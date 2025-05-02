@@ -12,7 +12,16 @@ class SignInViewModel: ObservableObject {
     @Published var isValid: Bool = true
 }
 
+@MainActor
 extension SignInViewModel {
+
+    func checkAutoLogin() {
+        if let token = AuthTokenManager.shared.getToken(),
+           !token.isEmpty {
+            isLoggedIn = true
+        }
+    }
+
     func login(nickName: String) async throws -> LoginResponse {
         guard let loginResponse = try await NetworkService.shared.request(
             endpoint: AuthorizationAPI.login(nickname: nickName),
@@ -26,17 +35,25 @@ extension SignInViewModel {
         
         return loginResponse
     }
-    
-    func checkAutoLogin() {
-        if let token = AuthTokenManager.shared.getToken(),
-           !token.isEmpty {
-            isLoggedIn = true
+
+    func login(withCode code: String) async throws -> LoginResponse {
+        guard let loginResponse = try await NetworkService.shared.request(
+            endpoint: AuthorizationAPI.recoverAccount(withCode: code),
+                responseType: LoginResponse.self
+        ) else {
+            throw StaccatoError.optionalBindingFailed
         }
+        
+        AuthTokenManager.shared.saveToken(loginResponse.token)
+        self.isLoggedIn = true
+        
+        return loginResponse
     }
-    
+
     // 한글, 영어, 마침표, 언더바(_)만 허용
     func validateText(nickName: String) {
         let regex = "^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z._]{1,\(20)}$"
         isValid = NSPredicate(format: "SELF MATCHES %@", regex).evaluate(with: nickName)
     }
+
 }

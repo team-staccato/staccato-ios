@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SignInView: View {
-    @StateObject private var viewModel = SignInViewModel()
+    @EnvironmentObject private var viewModel: SignInViewModel
     @Environment(StaccatoAlertManager.self) var alertManager
     @State private var nickName: String = ""
     @State private var validationMessage: String?
@@ -76,9 +76,6 @@ struct SignInView: View {
                 .padding(.horizontal, 24)
                 .onAppear {
                     viewModel.checkAutoLogin()
-                }
-                .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    HomeView()
                 }
                 
                 if alertManager.isPresented {

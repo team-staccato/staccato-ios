@@ -407,12 +407,12 @@ private extension StaccatoDetailView {
             }
         }
         .contextMenu {
-            Button {
-                // TODO: 댓글 수정 UI 요청
-            } label: {
-                Text("수정")
-                Image(StaccatoIcon.pencilLine)
-            }
+//            Button {
+//                // TODO: 댓글 수정 UI 요청
+//            } label: {
+//                Text("수정")
+//                Image(StaccatoIcon.pencilLine)
+//            }
             
             Button {
                 alertManager.show(

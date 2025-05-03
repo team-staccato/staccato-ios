@@ -12,6 +12,7 @@ import Lottie
 
 struct StaccatoEditorView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: StaccatoEditorViewModel
 
@@ -47,8 +48,13 @@ struct StaccatoEditorView: View {
                 saveButton
             }
         }
+        .onAppear {
+            viewModel.getCategoryList()
+        }
+
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
+
         .staccatoModalBar(
             title: "스타카토 기록하기",
             subtitle: "기억하고 싶은 순간을 남겨보세요!"
@@ -320,20 +326,20 @@ extension StaccatoEditorView {
             sectionTitle(title: "카테고리 선택")
 
             Menu(categoryMenuTitle) {
-                ForEach(viewModel.filteredCategory, id: \.id) { category in
+                ForEach(viewModel.categories, id: \.id) { category in
                     Button(category.title) {
                         self.viewModel.selectedCategory = category
                     }
                 }
             }
             .buttonStyle(.staticTextFieldButtonStyle())
-            .disabled(viewModel.filteredCategory.isEmpty)
+            .disabled(viewModel.categories.isEmpty)
         }
     }
 
     private var categoryMenuTitle: String {
-        if viewModel.filteredCategory.isEmpty {
-            return "기간을 포함하는 카테고리가 없어요"
+        if viewModel.categories.isEmpty {
+            return "생성된 카테고리가 없어요"
         } else {
             return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
         }
@@ -346,6 +352,7 @@ extension StaccatoEditorView {
                 switch viewModel.editorMode {
                 case .create:
                     await viewModel.createStaccato()
+                    homeViewModel.fetchStaccatos()
                     dismiss()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)

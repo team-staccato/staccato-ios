@@ -8,26 +8,27 @@
 import SwiftUI
 
 struct CategoryListView: View {
-    
+
     @Environment(NavigationState.self) var navigationState
+    @EnvironmentObject var mypageViewModel: MyPageViewModel
     @Bindable var bindableNavigationState: NavigationState
     
-    @StateObject private var viewModel = CategoryListViewModel()
+    @StateObject private var viewModel = CategoryViewModel()
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortFilterMenuPresented: Bool = false
     @State private var isCreateCategoryModalPresented = false
 
-    
+
     // MARK: - Initializer
-    
+
     init(_ navigationState: NavigationState) {
         self.bindableNavigationState = navigationState
     }
-    
-    
+
+
     // MARK: - Body
-    
+
     var body: some View {
         VStack {
             modalTop
@@ -45,8 +46,8 @@ struct CategoryListView: View {
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
-                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, categoryListViewModel: viewModel)
-                    case .categoryAdd: CategoryEditorView()
+                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, viewModel)
+                    case .categoryAdd: CategoryEditorView(categoryViewModel: viewModel)
                     }
                 }
             }
@@ -61,17 +62,17 @@ struct CategoryListView: View {
         }
 
         .fullScreenCover(isPresented: $isCreateCategoryModalPresented) {
-            CategoryEditorView()
+            CategoryEditorView(categoryViewModel: viewModel)
         }
     }
-    
+
 }
 
 
 // MARK: - UI Components
 
 private extension CategoryListView {
-    
+
     // MARK: - Modal top
     
     var modalTop: some View {
@@ -80,13 +81,13 @@ private extension CategoryListView {
             .padding(.top, 10)
             .foregroundStyle(.gray2)
     }
-    
-    
+
+
     // MARK: - TitleView
-    
+
     var titleHStack: some View {
         VStack(alignment: .leading) {
-            Text("\(viewModel.userName)의 추억들")
+            Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
                 .typography(.title1)
             
             HStack {
@@ -97,7 +98,7 @@ private extension CategoryListView {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     var categorySortFilterButton: some View {
         Button {
             isSortFilterMenuPresented.toggle()
@@ -128,7 +129,7 @@ private extension CategoryListView {
             .presentationCompactAdaptation(.popover)
         }
     }
-    
+
     var categoryAddButton: some View {
         Button("추가") {
             isCreateCategoryModalPresented = true
@@ -139,10 +140,10 @@ private extension CategoryListView {
             iconSpacing: 4)
         )
     }
-    
-    
+
+
     // MARK: - List
-    
+
     var categoryList: some View {
         ScrollView {
             LazyVStack(spacing: 12) {

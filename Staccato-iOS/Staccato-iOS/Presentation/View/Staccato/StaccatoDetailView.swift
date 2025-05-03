@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 import Kingfisher
 
@@ -24,16 +25,17 @@ struct StaccatoDetailView: View {
     @FocusState private var isCommentFocused: Bool
 
     @State private var isStaccatoModifySheetPresented = false
+    @State private var isShareLinkLoading = false
 
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
         self.viewModel = StaccatoDetailViewModel()
         viewModel.getStaccatoDetail(staccatoId)
     }
-    
-    
+
+
     // MARK: - UI Properties
-    
+
     private let horizontalInset: CGFloat = 16
 
     var body: some View {
@@ -43,7 +45,7 @@ struct StaccatoDetailView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         imageSlider
                         
-                        titleLabel
+                        titleStack
                         
                         Divider()
                         
@@ -99,11 +101,54 @@ struct StaccatoDetailView: View {
                 }
             }
         }
+        .onChange(of: viewModel.staccatoDetail) { _, _ in
+            updateMapCamera()
+        }
+        .onChange(of: viewModel.shareLink) { _, newValue in
+            if newValue != nil {
+                presentShareSheet()
+                isShareLinkLoading = false
+            }
+        }
 
         .sheet(isPresented: $isStaccatoModifySheetPresented) {
-            StaccatoEditorView(category: nil)
+            if let staccatoDetail = viewModel.staccatoDetail {
+                StaccatoEditorView(staccato: staccatoDetail)
+            }
         }
     }
+}
+
+
+// MARK: - Helper
+
+private extension StaccatoDetailView {
+
+    func updateMapCamera() {
+        if let detail = viewModel.staccatoDetail {
+            let coordinate = CLLocationCoordinate2D(
+                latitude: detail.latitude,
+                longitude: detail.longitude
+            )
+            homeViewModel.moveCamera(to: coordinate)
+        }
+    }
+
+    private func presentShareSheet() {
+        guard let shareLink = viewModel.shareLink else { return }
+        
+        let activityViewController = UIActivityViewController(
+            activityItems: [shareLink],
+            applicationActivities: nil
+        )
+
+        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
+            rootVC.present(activityViewController, animated: true) {
+                viewModel.shareLink = nil
+            }
+        }
+    }
+
 }
 
 
@@ -120,15 +165,37 @@ private extension StaccatoDetailView {
         .padding(.bottom, 7)
     }
     
-    var titleLabel: some View {
-        Text(viewModel.staccatoDetail?.staccatoTitle ?? "")
-            .typography(.title1)
-            .foregroundStyle(.staccatoBlack)
-            .lineLimit(.max)
-            .multilineTextAlignment(.leading)
-            .padding(.horizontal, horizontalInset)
+    var titleStack: some View {
+        HStack {
+            Text(viewModel.staccatoDetail?.staccatoTitle ?? "")
+                .typography(.title1)
+                .foregroundStyle(.staccatoBlack)
+                .lineLimit(.max)
+                .multilineTextAlignment(.leading)
+
+            Spacer()
+
+            shareButton
+        }
+        .padding(.horizontal, horizontalInset)
     }
     
+    var shareButton: some View {
+        Button {
+            isShareLinkLoading = true
+            viewModel.postShareLink()
+        } label: {
+            if isShareLinkLoading {
+                ProgressView("링크 생성중")
+            } else {
+                Image(StaccatoIcon.squareAndArrowUp)
+                    .foregroundStyle(.gray3)
+                    .fontWeight(.semibold)
+                    .frame(width: 20, height: 20)
+            }
+        }
+    }
+
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(viewModel.staccatoDetail?.placeName ?? "")
@@ -340,16 +407,21 @@ private extension StaccatoDetailView {
             }
         }
         .contextMenu {
-            Button {
-                // TODO: 댓글 수정 UI 요청
-            } label: {
-                Text("수정")
-                Image(StaccatoIcon.pencilLine)
-            }
+//            Button {
+//                // TODO: 댓글 수정 UI 요청
+//            } label: {
+//                Text("수정")
+//                Image(StaccatoIcon.pencilLine)
+//            }
             
             Button {
-                // TODO: 댓글 삭제 경고 Alert 커스텀
-                viewModel.deleteComment(comment.commentId)
+                alertManager.show(
+                    .confirmCancelAlert(
+                        title: "댓글을 삭제하시겠습니까?",
+                        message: "삭제하면 되돌릴 수 없어요") {
+                            viewModel.deleteComment(comment.commentId)
+                        }
+                )
             } label: {
                 Text("삭제")
                 Image(StaccatoIcon.trash)

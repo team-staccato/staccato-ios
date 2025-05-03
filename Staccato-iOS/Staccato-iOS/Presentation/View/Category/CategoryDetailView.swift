@@ -13,16 +13,17 @@ struct CategoryDetailView: View {
 
     @Environment(NavigationState.self) var navigationState
     @Environment(StaccatoAlertManager.self) var alertManager
+    @EnvironmentObject var homeViewModel: HomeViewModel
 
     let categoryId: Int64
-    @ObservedObject var viewModel: CategoryDetailViewModel
+    @ObservedObject var viewModel: CategoryViewModel
 
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
 
-    init(_ categoryId: Int64, categoryListViewModel: CategoryListViewModel) {
+    init(_ categoryId: Int64, _ categoryViewModel: CategoryViewModel) {
         self.categoryId = categoryId
-        self.viewModel = CategoryDetailViewModel(categoryListViewModel)
+        self.viewModel = categoryViewModel
     }
 
     var body: some View {
@@ -62,12 +63,20 @@ struct CategoryDetailView: View {
             viewModel.getCategoryDetail(categoryId)
         }
 
+        .onChange(of: homeViewModel.staccatos) {
+            viewModel.getCategoryDetail(categoryId)
+        }
+
         .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
             StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
         }
 
         .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
-            CategoryEditorView(categoryDetail: self.viewModel.categoryDetail, editorType: .modify)
+            CategoryEditorView(
+                categoryDetail: self.viewModel.categoryDetail,
+                editorType: .modify,
+                categoryViewModel: viewModel
+            )
         }
     }
 

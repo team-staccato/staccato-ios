@@ -40,20 +40,6 @@ class StaccatoEditorViewModel {
 
     var categories: [CategoryModel] = []
     var selectedCategory: CategoryModel?
-    var filteredCategory: [CategoryModel] {
-        guard let date = selectedDate else { return [] }
-
-        let result = categories.filter { category in
-            guard let startAt = Date.fromString(category.startAt),
-                  let endAt = Date.fromString(category.endAt)
-            else { return false }
-
-            return startAt <= date && date <= endAt
-        }
-
-
-        return result
-    }
 
     init(selectedCategory: CategoryModel? = nil) {
         self.editorMode = .create
@@ -63,7 +49,6 @@ class StaccatoEditorViewModel {
 
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
-        getCategoryList()
         getPhotos(urls: staccato.staccatoImageUrls)
 
         self.title = staccato.staccatoTitle
@@ -72,7 +57,7 @@ class StaccatoEditorViewModel {
             address: staccato.address,
             coordinate: CLLocationCoordinate2D(staccato.latitude, staccato.longitude)
         )
-        self.selectedDate = Date.fromISOString(staccato.visitedAt)
+        self.selectedDate = Date(fromISOString: staccato.visitedAt)
         self.selectedCategory = self.categories.first(where: { $0.categoryId == staccato.categoryId })
     }
 
@@ -105,7 +90,7 @@ class StaccatoEditorViewModel {
             latitude: self.selectedPlace?.coordinate.latitude ?? 0.0,
             longitude: self.selectedPlace?.coordinate.longitude ?? 0.0,
             visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
-            categoryID: selectedCategoryId,
+            categoryId: selectedCategoryId,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
 

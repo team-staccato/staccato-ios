@@ -10,7 +10,7 @@ import PhotosUI
 
 struct CategoryEditorView: View {
     @Environment(\.dismiss) var dismiss
-    @Bindable private var vm = CategoryEditorViewModel()
+    @Bindable private var vm: CategoryEditorViewModel
 
     @FocusState private var isTitleFocused: Bool
 
@@ -18,11 +18,13 @@ struct CategoryEditorView: View {
 
     init(
         categoryDetail: CategoryDetailModel? = nil,
-        editorType: CategoryEditorViewModel.CategoryEditorType = .create
+        editorType: CategoryEditorViewModel.CategoryEditorType = .create,
+        categoryViewModel: CategoryViewModel
     ) {
         self.vm = CategoryEditorViewModel(
             categoryDetail: categoryDetail,
-            editorType: editorType
+            editorType: editorType,
+            categoryViewModel: categoryViewModel
         )
     }
 
@@ -97,7 +99,7 @@ struct CategoryEditorView: View {
 #Preview {
     NavigationStack {
         NavigationLink("이동") {
-            CategoryEditorView()
+            CategoryEditorView(categoryViewModel: CategoryViewModel())
         }
     }
 }
@@ -114,7 +116,8 @@ struct CategoryEditorView: View {
             mates: [],
             staccatos: []
         ),
-        editorType: .modify
+        editorType: .modify,
+        categoryViewModel: CategoryViewModel()
     )
     .environment(NavigationState())
 }

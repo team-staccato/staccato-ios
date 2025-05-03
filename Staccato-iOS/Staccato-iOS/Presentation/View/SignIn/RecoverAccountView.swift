@@ -8,50 +8,50 @@
 import SwiftUI
 
 struct RecoverAccountView: View {
-    @StateObject private var viewModel = RecoverAccountViewModel()
+
+    @EnvironmentObject var viewModel: SignInViewModel
+    @Environment(\.dismiss) private var dismiss
     
     @State private var code: String = ""
     @State private var errorMessage: String?
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                Text("이전 기록을 불러올게요\n고유 코드를 입력해주세요")
-                    .typography(.title1)
-                    .foregroundStyle(.staccatoBlack)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
-                    .padding(.bottom)
-                    .padding(.top)
-                
-                TextField(
-                    "ex) bt2hnhd4-07kght-0pp2ln",
-                    text: $code
-                )
-                .padding()
-                .background(.gray1)
-                .cornerRadius(4)
-                .onChange(of: code) { _, newValue in
-                    if newValue.count > 36 {
-                        code = String(newValue.prefix(36))
-                    }
+        VStack {
+            Text("이전 기록을 불러올게요\n고유 코드를 입력해주세요")
+                .typography(.title1)
+                .foregroundStyle(.staccatoBlack)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .multilineTextAlignment(.leading)
+                .padding(.bottom)
+                .padding(.top)
+            
+            TextField(
+                "ex) bt2hnhd4-07kght-0pp2ln",
+                text: $code
+            )
+            .padding()
+            .background(.gray1)
+            .cornerRadius(4)
+            .onChange(of: code) { _, newValue in
+                if newValue.count > 36 {
+                    code = String(newValue.prefix(36))
                 }
-                
-                Text("\(code.count)/36")
-                    .typography(.body4)
-                    .foregroundStyle(.gray3)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .padding(.bottom)
-                
-                Spacer()
-                
-                Button("시작하기") {
-                    login()
-                }
-                .buttonStyle(.staccatoFullWidth)
-                .padding(.vertical)
-                .disabled(code.count != 36)
             }
+            
+            Text("\(code.count)/36")
+                .typography(.body4)
+                .foregroundStyle(.gray3)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.bottom)
+            
+            Spacer()
+            
+            Button("시작하기") {
+                login()
+            }
+            .buttonStyle(.staccatoFullWidth)
+            .padding(.vertical)
+            .disabled(code.count != 36)
         }
         .alert(isPresented: Binding<Bool>(
             get: { errorMessage != nil },
@@ -64,10 +64,24 @@ struct RecoverAccountView: View {
             )
         }
         .padding(.horizontal, 24)
-        .staccatoNavigationBar()
         .ignoresSafeArea(.all, edges: .bottom)
-        .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-            HomeView()
+
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    HStack {
+                        Image(.chevronLeft)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 20)
+                            .padding(.leading, 16)
+                            .foregroundStyle(.gray3)
+                    }
+                }
+            }
         }
     }
 }

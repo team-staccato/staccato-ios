@@ -23,6 +23,8 @@ protocol StaccatoServiceProtocol {
     func modifyStaccato(_ staccatoId: Int64,
                         requestBody: ModifyStaccatoRequest) async throws -> Void
 
+    func postShareLink(_ staccatoId: Int64) async throws -> PostShareLinkResponse
+
 }
 
 class StaccatoService: StaccatoServiceProtocol {
@@ -72,6 +74,17 @@ class StaccatoService: StaccatoServiceProtocol {
         try await NetworkService.shared.request(
             endpoint: StaccatoEndpoint.modifyStaccato(staccatoId, requestBody: requestBody)
         )
+    }
+
+    func postShareLink(_ staccatoId: Int64) async throws -> PostShareLinkResponse {
+        guard let shareLink = try await NetworkService.shared.request(
+            endpoint: StaccatoEndpoint.postShareLink(staccatoId),
+            responseType: PostShareLinkResponse.self
+        ) else {
+            throw StaccatoError.optionalBindingFailed
+        }
+
+        return shareLink
     }
 
 }

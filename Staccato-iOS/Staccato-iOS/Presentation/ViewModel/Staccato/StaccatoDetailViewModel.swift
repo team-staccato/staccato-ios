@@ -8,9 +8,9 @@
 import Foundation
 
 class StaccatoDetailViewModel: ObservableObject {
-    
+
     // MARK: - Properties
-    
+
     @Published var staccatoDetail: StaccatoDetailModel? {
         didSet {
             Task { @MainActor in
@@ -21,7 +21,9 @@ class StaccatoDetailViewModel: ObservableObject {
     @Published var selectedFeeling: FeelingType?
     @Published var comments: [CommentModel] = []
     @Published var shouldScrollToBottom: Bool = false
-    
+
+    @Published var shareLink: URL?
+
     let userId: Int64 = AuthTokenManager.shared.getUserId() ?? -1
     
 }
@@ -30,7 +32,7 @@ class StaccatoDetailViewModel: ObservableObject {
 // MARK: - Network
 
 extension StaccatoDetailViewModel {
-    
+
     @MainActor
     func getStaccatoDetail(_ staccatoId: Int64) {
         Task {
@@ -44,7 +46,7 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
     func delteStaccato(_ staccatoId: Int64) {
         Task {
             do {
@@ -54,7 +56,7 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
     func postStaccatoFeeling(_ feeling: FeelingType?, isSuccess: @escaping ((Bool) -> Void)) {
         Task {
             do {
@@ -71,7 +73,7 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
     @MainActor
     func getComments() {
         guard let staccatoDetail else {
@@ -89,7 +91,7 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
     @MainActor
     func postComment(_ content: String) {
         guard let staccatoDetail else { return }
@@ -106,7 +108,7 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
     @MainActor
     func updateComment(commentId: Int64, comment: String) {
         Task {
@@ -121,7 +123,7 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
     func deleteComment(_ commentId: Int64) {
         Task {
             do {
@@ -132,5 +134,18 @@ extension StaccatoDetailViewModel {
             }
         }
     }
-    
+
+    @MainActor
+    func postShareLink() {
+        guard let staccatoId = staccatoDetail?.staccatoId else { return }
+        Task {
+            do {
+                let shareLink: PostShareLinkResponse = try await STService.shared.staccatoService.postShareLink(staccatoId)
+                self.shareLink = URL(string: shareLink.shareLink)
+            } catch {
+                print("❌ Error on postShareLink: \(error.localizedDescription)")
+            }
+        }
+    }
+
 }

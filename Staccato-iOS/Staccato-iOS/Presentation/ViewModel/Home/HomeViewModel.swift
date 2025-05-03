@@ -19,43 +19,15 @@ class HomeViewModel: ObservableObject {
     var displayedMarkers: [Int64 : GMSMarker] = [:] // == [staccato.id : GMSMarker]
 
     var staccatosToAdd: Set<StaccatoCoordinateModel> {
-    staccatos.subtracting(displayedStaccatos)
+        staccatos.subtracting(displayedStaccatos)
     }
     var staccatosToRemove: Set<StaccatoCoordinateModel> {
-    displayedStaccatos.subtracting(staccatos)
+        displayedStaccatos.subtracting(staccatos)
     }
 
     @Published var isfetchingStaccatoList = false
-    
-    let locationManager = CLLocationManager()
-    var isInitialCameraMove: Bool = true
-    
-    
-    // MARK: - Initialize
-    
-    init() {
-        setLocationManager()
-    }
 
-}
-
-
-// MARK: - Location
-
-extension HomeViewModel {
-
-    private func setLocationManager() {
-        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-        locationManager.requestWhenInUseAuthorization()
-    }
-    
-    func updateLocationForOneSec() {
-        locationManager.startUpdatingLocation()
-        
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.locationManager.stopUpdatingLocation() // 무한 호출 방지를 위해 0.1초 뒤 업데이트 멈춤
-        }
-    }
+    @Published var cameraPosition: GMSCameraPosition?
 
 }
 
@@ -67,10 +39,7 @@ extension HomeViewModel {
 
     func fetchStaccatos() {
         Task {
-            guard !isfetchingStaccatoList else {
-                print("🥑 is Loading staccatos")
-                return
-            }
+            guard !isfetchingStaccatoList else { return }
             isfetchingStaccatoList = true
             
             defer {
@@ -95,4 +64,17 @@ extension HomeViewModel {
         }
     }
 
+}
+
+
+// MARK: - Map
+
+extension HomeViewModel {
+    
+    func moveCamera(to coordinate: CLLocationCoordinate2D, zoom: Float = 15.0) {
+        withAnimation {
+            cameraPosition = GMSCameraPosition.camera(withTarget: coordinate, zoom: 13)
+        }
+    }
+    
 }

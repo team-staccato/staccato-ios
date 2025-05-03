@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SignInView: View {
-    @StateObject private var viewModel = SignInViewModel()
+    @EnvironmentObject private var viewModel: SignInViewModel
     @Environment(StaccatoAlertManager.self) var alertManager
     @State private var nickName: String = ""
     @State private var validationMessage: String?
@@ -35,8 +35,8 @@ struct SignInView: View {
                         )
                         .offset(x: viewModel.isValid ? 0 : shakeOffset)
                         .onChange(of: nickName) {
-                            if nickName.count > 20 {
-                                nickName = String(nickName.prefix(20))
+                            if nickName.count > 10 {
+                                nickName = String(nickName.prefix(10))
                             } else {
                                 isChanging = true
                                 debounceValidation(text: nickName)
@@ -51,7 +51,7 @@ struct SignInView: View {
                         
                         Spacer()
                         
-                        Text("\(nickName.count)/20")
+                        Text("\(nickName.count)/10")
                             .typography(.body4)
                             .foregroundStyle(.gray3)
                             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -76,9 +76,6 @@ struct SignInView: View {
                 .padding(.horizontal, 24)
                 .onAppear {
                     viewModel.checkAutoLogin()
-                }
-                .navigationDestination(isPresented: $viewModel.isLoggedIn) {
-                    HomeView()
                 }
                 
                 if alertManager.isPresented {

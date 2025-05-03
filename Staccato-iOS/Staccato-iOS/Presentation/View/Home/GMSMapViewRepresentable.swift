@@ -22,12 +22,21 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         mapView.settings.myLocationButton = false // 우측아래 내위치 버튼 숨김
         mapView.isMyLocationEnabled = true // 내위치 파란점으로 표시
         mapView.delegate = context.coordinator
+        
+        // 초기 위치를 서울시청으로 함
+        let seoulCityhall = CLLocationCoordinate2D(latitude: 37.5664056, longitude: 126.9778222)
+        let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 13)
+        mapView.camera = camera
 
         return mapView
     }
 
     func updateUIView(_ uiView: GMSMapView, context: Context) {
         updateMarkers(to: uiView)
+
+        if let cameraPosition = viewModel.cameraPosition {
+            uiView.animate(to: cameraPosition)
+        }
 #if DEBUG
         print("GMSMapViewRepresentable updated")
 #endif
@@ -68,22 +77,15 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
         parent.mapView.animate(to: camera)
     }
 
-    // NOTE: 위치 접근권한이 없을 때 초기 위치를 서울시청으로 함
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        if parent.viewModel.isInitialCameraMove {
-            let seoulCityhall = CLLocationCoordinate2D(37.5664056, 126.9778222)
-            let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 13)
-            parent.mapView.animate(to: camera)
-            parent.viewModel.isInitialCameraMove = false
-        } else {
-            STLocationManager.shared.checkLocationAuthorization()
-        }
-    }
-
-    // 위치 접근 권한 바뀔 때 파란 점 표시 여부 업데이트
+    // 위치 접근 권한 바뀔 때 파란 점 표시 여부 업데이트 및 현위치로 이동
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if manager.authorizationStatus == .authorizedAlways || manager.authorizationStatus == .authorizedWhenInUse {
             parent.mapView.isMyLocationEnabled = true
+
+            if let coordinate = manager.location?.coordinate {
+                let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: 13)
+                parent.mapView.animate(to: camera)
+            }
         } else {
             parent.mapView.isMyLocationEnabled = false
         }

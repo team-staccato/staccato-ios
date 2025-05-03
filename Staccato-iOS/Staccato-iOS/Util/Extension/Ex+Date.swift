@@ -20,13 +20,23 @@ extension Date {
         return formatter.date(from: dateString)
     }
 
-    static func fromISOString(_ isoString: String) -> Date? {
+    init?(fromISOString dateString: String) {
         let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [
-            .withInternetDateTime,
-            .withFractionalSeconds
-        ]
-        return formatter.date(from: isoString)
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        if let date = formatter.date(from: dateString) {
+            self = date
+        } else {
+            // Fallback for slightly different formats
+            let alternativeFormatter = DateFormatter()
+            alternativeFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+
+            guard let date = alternativeFormatter.date(from: dateString) else {
+                return nil
+            }
+
+            self = date
+        }
     }
 }
 

@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Model
 
-struct StaccatoDetailModel: Identifiable {
+struct StaccatoDetailModel: Identifiable, Equatable {
     
     let id: UUID
     

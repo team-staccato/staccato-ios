@@ -33,6 +33,9 @@ struct HomeView: View {
     // NOTE: Staccato Create Modal
     @State private var isCreateStaccatoModalPresented = false
 
+    // NOTE: 앱 업데이트 Alert 여부
+    @State private var showUpdateAlert = false
+
 
     // MARK: - Body
 
@@ -61,6 +64,15 @@ struct HomeView: View {
             }
         }
         .onAppear() {
+            // 앱 버전체크 // TODO: 리팩토링
+            AppVersionCheckManager.shared.fetchAppStoreVersion { version in
+                guard let appStoreVersion = version else {
+                    print("❌ 버전 옵셔널 바인딩 실패")
+                    return
+                }
+                showUpdateAlert = AppVersionCheckManager.shared.isUpdateAvailable(appStoreVersion: appStoreVersion)
+            }
+
             locationAuthorizationManager.checkLocationAuthorization()
             STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
@@ -76,6 +88,17 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $isCreateStaccatoModalPresented) {
             StaccatoEditorView(category: nil)
+        }
+
+        // 업데이트 안내 // TODO: 리팩토링
+        .alert(isPresented: $showUpdateAlert) {
+            Alert(
+                title: Text("업데이트 필요"),
+                message: Text("현재 버전은 앱이 정상적으로 작동하지 않습니다😢 \n새로운 버전으로 업데이트 해주세요."),
+                dismissButton: .default(Text("업데이트하러 가기"), action: {
+                    UIApplication.shared.open(AppVersionCheckManager.shared.appStoreURL)
+                })
+            )
         }
     }
 

@@ -1,0 +1,12 @@
+//
+//  Config.xcconfig
+//  Staccato-iOS
+//
+//  Created by 김유림 on 1/9/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+API_KEY = AIzaSyCUbvFZMgdCj_2nWBqlkdRELdvfRUmxstc
+BASE_URL = https:/$()/stage.staccato.kr

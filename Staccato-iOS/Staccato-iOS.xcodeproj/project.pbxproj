@@ -23,7 +23,8 @@
 		137153B72D26EFEA00EABE10 /* Exceptions for "Staccato-iOS" folder in "Staccato-iOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Support/Config.xcconfig,
+				Support/Config/Debug.xcconfig,
+				Support/Config/Release.xcconfig,
 				Support/Info.plist,
 			);
 			target = 137153872D26CDCA00EABE10 /* Staccato-iOS */;
@@ -170,7 +171,7 @@
 		137153942D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config.xcconfig;
+			baseConfigurationReferenceRelativePath = Support/Config/Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -235,7 +236,7 @@
 		137153952D26CDCC00EABE10 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config.xcconfig;
+			baseConfigurationReferenceRelativePath = Support/Config/Release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -293,7 +294,7 @@
 		137153972D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config.xcconfig;
+			baseConfigurationReferenceRelativePath = Support/Config/Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -322,7 +323,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.teamstaccato.staccato-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -340,7 +341,7 @@
 		137153982D26CDCC00EABE10 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config.xcconfig;
+			baseConfigurationReferenceRelativePath = Support/Config/Release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -369,7 +370,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.teamstaccato.staccato-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

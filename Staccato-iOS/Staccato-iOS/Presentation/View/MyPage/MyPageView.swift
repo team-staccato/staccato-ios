@@ -22,34 +22,36 @@ struct MyPageView: View {
     @State private var showToast = false
     
     var body: some View {
-        VStack {
-            profileImageSection
-                .padding(.bottom, 24)
-                .padding(.top, 35)
-            
-            userNameSection
-                .padding(.bottom, 16)
-            
-            recoveryCodeCopyButton
-                .padding(.bottom, 40)
-            
-            Divider()
-            
-            menuSection
-            
-            Spacer()
-        }
-        .staccatoModalBar(title: "마이페이지", titlePosition: .center)
-        .overlay(
-            Group {
-                if showToast {
-                    toastMessage
-                }
-            },
-            alignment: .bottom
-        )
-        .onAppear {
-            viewModel.fetchProfile()
+        NavigationView {
+            VStack {
+                profileImageSection
+                    .padding(.bottom, 24)
+                    .padding(.top, 35)
+                
+                userNameSection
+                    .padding(.bottom, 16)
+                
+                recoveryCodeCopyButton
+                    .padding(.bottom, 40)
+                
+                Divider()
+                
+                menuSection
+                
+                Spacer()
+            }
+            .staccatoModalBar(title: "마이페이지", titlePosition: .center)
+            .overlay(
+                Group {
+                    if showToast {
+                        toastMessage
+                    }
+                },
+                alignment: .bottom
+            )
+            .onAppear {
+                viewModel.fetchProfile()
+            }
         }
     }
 }
@@ -175,7 +177,6 @@ extension MyPageView {
             .padding(.bottom, 50)
             .transition(.opacity)
     }
-
     
     private var menuSection: some View {
         VStack {

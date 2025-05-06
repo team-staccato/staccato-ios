@@ -19,7 +19,7 @@ struct HomeView: View {
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: 모달 크기
-    @State private var modalHeight: CGFloat = HomeModalSize.medium.height
+    @Environment(HomeModalManager.self) var homeModalManager
     @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
 
     // NOTE: 화면 전환, Alert 매니저
@@ -42,8 +42,9 @@ struct HomeView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             mapView
+                .background(Color.red)
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40)
+                .padding(.bottom, homeModalManager.modalHeight - 40)
 
             myPageButton
                 .padding(10)
@@ -54,7 +55,7 @@ struct HomeView: View {
 
             staccatoAddButton
                 .padding(.trailing, 12)
-                .padding(.bottom, modalHeight - 20)
+                .padding(.bottom, homeModalManager.modalHeight - 20)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
 
             categoryListModal
@@ -63,6 +64,8 @@ struct HomeView: View {
                 StaccatoAlertView()
             }
         }
+        .ignoresSafeArea(.keyboard)
+        .edgesIgnoringSafeArea(.bottom)
         .onAppear() {
             // 앱 버전체크 // TODO: 리팩토링
             AppVersionCheckManager.shared.fetchAppStoreVersion { version in
@@ -170,7 +173,7 @@ extension HomeView {
             Spacer()
 
             CategoryListView(navigationState)
-                .frame(height: modalHeight)
+                .frame(height: homeModalManager.modalHeight)
                 .background(Color.staccatoWhite)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
                 .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
@@ -178,17 +181,17 @@ extension HomeView {
                     DragGesture()
                         .onChanged { value in
                             // 드래그 중에 모달의 높이를 변경
-                            let newHeight = max(100, modalHeight - value.translation.height)
-                            modalHeight = newHeight
+                            let newHeight = max(100, homeModalManager.modalHeight - value.translation.height)
+                            homeModalManager.modalHeight = newHeight
                         }
                         .onEnded { value in
                             // 드래그 종료 후, 모달의 최종 높이를 설정
-                            if modalHeight < HomeModalSize.small.height + dragOffset {
-                                modalHeight = HomeModalSize.small.height  // small
-                            } else if modalHeight < HomeModalSize.medium.height + dragOffset {
-                                modalHeight = HomeModalSize.medium.height  // medium
+                            if homeModalManager.modalHeight < HomeModalSize.small.height + dragOffset {
+                                homeModalManager.modalHeight = HomeModalSize.small.height  // small
+                            } else if homeModalManager.modalHeight < HomeModalSize.medium.height + dragOffset {
+                                homeModalManager.modalHeight = HomeModalSize.medium.height  // medium
                             } else {
-                                modalHeight = HomeModalSize.large.height  // large
+                                homeModalManager.modalHeight = HomeModalSize.large.height  // large
                             }
                         }
                 )

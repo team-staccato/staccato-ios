@@ -18,6 +18,7 @@ struct StaccatoDetailView: View {
     @EnvironmentObject var homeViewModel: HomeViewModel
     @Environment(StaccatoAlertManager.self) var alertManager
     @Environment(NavigationState.self) var navigationState
+    @Environment(HomeModalManager.self) var homeModalManager
     
     @ObservedObject var viewModel: StaccatoDetailViewModel
     
@@ -69,6 +70,13 @@ struct StaccatoDetailView: View {
                         }
                     }
                 }
+                
+                .onChange(of: isCommentFocused) { oldValue, newValue in
+                    withAnimation {
+                        if newValue { homeModalManager.modalHeight = HomeModalSize.large.height }
+                    }
+                }
+                
                 .onTapGesture {
                     isCommentFocused = false
                 }

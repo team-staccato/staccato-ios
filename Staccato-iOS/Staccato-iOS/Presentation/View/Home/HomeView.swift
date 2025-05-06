@@ -73,15 +73,10 @@ struct HomeView: View {
                 showUpdateAlert = AppVersionCheckManager.shared.isUpdateAvailable(appStoreVersion: appStoreVersion)
             }
 
-            locationAuthorizationManager.checkLocationAuthorization()
+            locationAuthorizationManager.checkAndRequestLocationAuthorization()
             STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
             mypageViewModel.fetchProfile()
-        }
-        .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
-            if newValue {
-                STLocationManager.shared.updateLocationForOneSec()
-            }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()

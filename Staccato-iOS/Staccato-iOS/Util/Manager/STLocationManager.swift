@@ -21,26 +21,9 @@ class STLocationManager: NSObject {
         set { locationManager.delegate = newValue }
     }
 
-    var hasLocationAuthorization: Bool = false
-
     override init() {
         super.init()
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-        locationManager.delegate = self
-        updateAuthorizationStatus()
-    }
-
-}
-
-
-// MARK: - CLLocationManager Delegate
-
-extension STLocationManager: CLLocationManagerDelegate {
-
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        // 권한 상태 변경 시 처리
-        checkLocationAuthorization()
-        updateAuthorizationStatus()
     }
 
 }
@@ -50,7 +33,11 @@ extension STLocationManager: CLLocationManagerDelegate {
 
 extension STLocationManager {
 
-    func checkLocationAuthorization() {
+    func hasLocationAuthorization() -> Bool {
+        return locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse
+    }
+    
+    func checkAndRequestLocationAuthorization() {
         let status = locationManager.authorizationStatus
 
         switch status {
@@ -71,11 +58,6 @@ extension STLocationManager {
         @unknown default:
             break
         }
-    }
-
-    private func updateAuthorizationStatus() {
-        let status = locationManager.authorizationStatus
-        hasLocationAuthorization = (status == .authorizedAlways || status == .authorizedWhenInUse)
     }
 
     private func showAlertToOpenSettings() {
@@ -107,7 +89,7 @@ extension STLocationManager {
 
     /// 현재 위치를 업데이트합니다.
     func updateLocationForOneSec() {
-        checkLocationAuthorization()
+        checkAndRequestLocationAuthorization()
         locationManager.startUpdatingLocation()
 
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.1) { [weak self] in

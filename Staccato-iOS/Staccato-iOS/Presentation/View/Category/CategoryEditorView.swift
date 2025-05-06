@@ -69,8 +69,10 @@ struct CategoryEditorView: View {
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
         .staccatoModalBar(
-            title: "카테고리 만들기",
-            subtitle: "스타카토를 담을 카테고리를 만들어 보세요!"
+            title:
+                self.vm.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",
+            subtitle: 
+                self.vm.editorType == . create ? "스타카토를 담을 카테고리를 만들어 보세요!" : "스타카토를 담을 카테고리를 수정해 보세요!"
         )
 
         .sheet(isPresented: $vm.isPeriodSheetPresented) {

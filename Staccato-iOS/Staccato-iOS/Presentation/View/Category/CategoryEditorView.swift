@@ -53,10 +53,8 @@ struct CategoryEditorView: View {
                         switch vm.editorType {
                         case .create:
                             await vm.createCategory()
-                            dismiss()
                         case .modify:
                             await vm.modifyCategory()
-                            dismiss()
                         }
                     }
                 }
@@ -87,14 +85,11 @@ struct CategoryEditorView: View {
             Text(vm.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
 
-        .alert("카테고리 생성 성공", isPresented: $vm.uploadSuccess) {
-            Button("확인") {
+        .onChange(of: vm.uploadSuccess) { _, uploadSuccess in
+            if uploadSuccess {
                 dismiss()
             }
-        } message: {
-            Text("카테고리 생성에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
         }
-
     }
 }
 

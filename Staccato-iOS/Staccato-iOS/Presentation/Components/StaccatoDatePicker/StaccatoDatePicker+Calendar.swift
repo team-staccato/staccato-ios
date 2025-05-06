@@ -38,10 +38,11 @@ extension StaccatoDatePicker {
     }
 
     var calendarGrid: some View {
-        ForEach(monthDates, id: \.self) { date in
+        ForEach(Array(monthDates.enumerated()), id: \.offset) { index, date in
             if let date {
                 Button {
                     selectDate(date)
+                    print(date)
                 } label: {
                     ZStack {
                         cellBackground(for: date)

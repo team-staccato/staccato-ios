@@ -73,7 +73,7 @@ extension HomeViewModel {
     
     func moveCamera(to coordinate: CLLocationCoordinate2D, zoom: Float = 15.0) {
         withAnimation {
-            cameraPosition = GMSCameraPosition.camera(withTarget: coordinate, zoom: 13)
+            cameraPosition = GMSCameraPosition.camera(withTarget: coordinate, zoom: 15)
         }
     }
     

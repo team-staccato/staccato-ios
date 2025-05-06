@@ -13,7 +13,7 @@ struct StaccatoCollectionCell: View {
 
     private let staccato: StaccatoModel
 
-    let width: CGFloat = (ScreenUtils.width - 16 - 8) / 2
+    let width: CGFloat = (ScreenUtils.width - 32 - 8) / 2
 
     init(_ staccato: StaccatoModel, width: CGFloat) {
         self.staccato = staccato

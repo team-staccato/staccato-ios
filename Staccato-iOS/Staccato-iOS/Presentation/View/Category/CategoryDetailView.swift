@@ -21,6 +21,8 @@ struct CategoryDetailView: View {
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
 
+    let horizontalInset: CGFloat = 16
+
     init(_ categoryId: Int64, _ categoryViewModel: CategoryViewModel) {
         self.categoryId = categoryId
         self.viewModel = categoryViewModel
@@ -37,6 +39,7 @@ struct CategoryDetailView: View {
 
                 Spacer()
             }
+            .frame(width: ScreenUtils.width)
         }
         .background(.staccatoWhite)
 
@@ -90,8 +93,8 @@ extension CategoryDetailView {
         ZStack(alignment: .bottomLeading) {
             KFImage(URL(string: viewModel.categoryDetail?.categoryThumbnailUrl ?? ""))
                 .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 240, alignment: .center)
+                .scaledToFill()
+                .frame(width: ScreenUtils.width, height: ScreenUtils.width * 0.67, alignment: .center)
                 .clipped()
 
             Rectangle()
@@ -111,7 +114,7 @@ extension CategoryDetailView {
                         .foregroundStyle(.staccatoWhite)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, horizontalInset)
             .padding(.bottom, 14)
         }
     }
@@ -144,14 +147,13 @@ extension CategoryDetailView {
 
     private var staccatoCollectionSection: some View {
         let staccatos = viewModel.categoryDetail?.staccatos ?? []
-        let horizontalInset: CGFloat = 16
-        let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset - 8) / 2
+        let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset * 2 - 8) / 2
         let columns = [
             GridItem(.fixed(columnWidth), spacing: 8),
             GridItem(.fixed(columnWidth))
         ]
 
-        return VStack {
+        return VStack(spacing: 19) {
             HStack {
                 Text("스타카토")
                     .typography(.title2)
@@ -196,4 +198,5 @@ extension CategoryDetailView {
                 .multilineTextAlignment(.center)
         }
     }
+
 }

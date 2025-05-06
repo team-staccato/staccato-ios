@@ -147,7 +147,7 @@ extension SignInView {
                 viewModel.validateText(nickName: text)
                 if !viewModel.isValid {
                     shakeAnimation()
-                    validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
+                    validationMessage = "닉네임은 한글, 영어, 숫자, 띄어쓰기 마침표(.), 밑줄(_)만 사용할 수 있어요."
                 } else {
                     validationMessage = ""
                 }

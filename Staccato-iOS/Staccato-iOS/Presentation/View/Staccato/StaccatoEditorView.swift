@@ -361,6 +361,7 @@ extension StaccatoEditorView {
                     homeViewModel.fetchStaccatos()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)
+                    homeViewModel.fetchStaccatos()
                 }
             }
         }

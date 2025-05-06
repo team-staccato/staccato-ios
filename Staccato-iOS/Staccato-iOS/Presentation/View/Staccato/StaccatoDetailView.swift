@@ -112,10 +112,13 @@ struct StaccatoDetailView: View {
         }
 
         .sheet(isPresented: $isStaccatoModifySheetPresented) {
+            viewModel.getStaccatoDetail(staccatoId)
+        } content: {
             if let staccatoDetail = viewModel.staccatoDetail {
                 StaccatoEditorView(staccato: staccatoDetail)
             }
         }
+
     }
 }
 

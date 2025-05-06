@@ -186,7 +186,7 @@ private extension StaccatoDetailView {
             viewModel.postShareLink()
         } label: {
             if isShareLinkLoading {
-                ProgressView("링크 생성중")
+                ProgressView()
             } else {
                 Image(StaccatoIcon.squareAndArrowUp)
                     .foregroundStyle(.gray3)

@@ -120,7 +120,7 @@ class StaccatoEditorViewModel {
             latitude: self.selectedPlace?.coordinate.latitude ?? 0.0,
             longitude: self.selectedPlace?.coordinate.longitude ?? 0.0,
             visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
-            categoryID: selectedCategoryId,
+            categoryId: selectedCategoryId,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
 

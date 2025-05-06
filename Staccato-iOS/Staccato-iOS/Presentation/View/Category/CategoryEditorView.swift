@@ -65,13 +65,13 @@ struct CategoryEditorView: View {
             }
             .animation(.easeIn(duration: 0.15), value: vm.isPeriodSettingActive)
         }
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
         .staccatoModalBar(
             title: "카테고리 만들기",
             subtitle: "스타카토를 담을 카테고리를 만들어 보세요!"
         )
-        .ignoresSafeArea(.all, edges: .bottom)
 
         .sheet(isPresented: $vm.isPeriodSheetPresented) {
             StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)

@@ -52,6 +52,7 @@ struct StaccatoEditorView: View {
             viewModel.getCategoryList()
         }
 
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
 

@@ -52,6 +52,7 @@ class StaccatoEditorViewModel {
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
         getPhotos(urls: staccato.staccatoImageUrls)
+        getCategoryList(selectedCategoryId: staccato.categoryId)
 
         self.title = staccato.staccatoTitle
         self.selectedPlace = StaccatoPlaceModel(
@@ -60,7 +61,6 @@ class StaccatoEditorViewModel {
             coordinate: CLLocationCoordinate2D(staccato.latitude, staccato.longitude)
         )
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
-        self.selectedCategory = self.categories.first(where: { $0.categoryId == staccato.categoryId })
     }
 
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {
@@ -132,7 +132,7 @@ class StaccatoEditorViewModel {
         }
     }
 
-    func getCategoryList() {
+    func getCategoryList(selectedCategoryId: Int64? = nil) {
         Task {
             do {
                 let categoryList = try await STService.shared.categoryService.getCategoryList(
@@ -144,6 +144,10 @@ class StaccatoEditorViewModel {
                 }
 
                 self.categories = categories
+
+                if let selectedCategoryId {
+                    self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
+                }
             } catch {
                 self.catchError = true
                 self.errorMessage = error.localizedDescription

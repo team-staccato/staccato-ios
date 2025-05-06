@@ -48,9 +48,6 @@ struct StaccatoEditorView: View {
                 saveButton
             }
         }
-        .onAppear {
-            viewModel.getCategoryList()
-        }
 
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)

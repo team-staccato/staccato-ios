@@ -151,12 +151,10 @@ extension STLocationManager {
         let subThoroughfare = placemark.subThoroughfare ?? ""
         let thoroughfare = placemark.thoroughfare ?? ""
         let locality = placemark.locality ?? ""
-        let postalCode = placemark.postalCode ?? ""
         let country = placemark.country ?? ""
 
         if countryCode == "KR" || countryCode == "CN" || countryCode == "JP" {
             // Eastern-style spaced address
-            if !postalCode.isEmpty { parts.append("[\(postalCode)]") }
             if !country.isEmpty { parts.append(country) }
             if !thoroughfare.isEmpty || !subThoroughfare.isEmpty {
                 parts.append("\(thoroughfare) \(subThoroughfare)".trimmingCharacters(in: .whitespaces))
@@ -174,9 +172,6 @@ extension STLocationManager {
             }
             if let adminArea = placemark.administrativeArea {
                 parts.append(adminArea)
-            }
-            if !postalCode.isEmpty {
-                parts.append(postalCode)
             }
             if !country.isEmpty {
                 parts.append(country)

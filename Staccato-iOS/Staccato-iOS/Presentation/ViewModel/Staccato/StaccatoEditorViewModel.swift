@@ -46,6 +46,7 @@ class StaccatoEditorViewModel {
     init(selectedCategory: CategoryModel? = nil) {
         self.editorMode = .create
         self.selectedCategory = selectedCategory
+        self.selectedDate = .now
         getCategoryList()
     }
 

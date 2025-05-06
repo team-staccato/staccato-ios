@@ -157,6 +157,10 @@ extension CategoryEditorView {
         .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem)
 
         .fullScreenCover(isPresented: $vm.showCamera) {
+            Task {
+                try await vm.uploadImage()
+            }
+        } content: {
             CameraView(selectedImage: $vm.selectedPhoto)
                 .background(.staccatoBlack)
         }

@@ -42,7 +42,6 @@ extension StaccatoDatePicker {
             if let date {
                 Button {
                     selectDate(date)
-                    print(date)
                 } label: {
                     ZStack {
                         cellBackground(for: date)

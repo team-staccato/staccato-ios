@@ -65,7 +65,6 @@ struct HomeView: View {
             }
         }
         .ignoresSafeArea(.keyboard)
-        .edgesIgnoringSafeArea(.bottom)
         .onAppear() {
             // 앱 버전체크 // TODO: 리팩토링
             AppVersionCheckManager.shared.fetchAppStoreVersion { version in

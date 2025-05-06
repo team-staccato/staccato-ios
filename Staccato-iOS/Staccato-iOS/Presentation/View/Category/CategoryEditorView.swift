@@ -90,7 +90,7 @@ struct CategoryEditorView: View {
                 dismiss()
             }
         } message: {
-            Text("이미지 업로드에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
+            Text("카테고리 생성에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
         }
 
     }

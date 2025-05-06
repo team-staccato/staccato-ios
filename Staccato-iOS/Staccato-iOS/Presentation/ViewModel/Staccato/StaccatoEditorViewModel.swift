@@ -41,6 +41,8 @@ class StaccatoEditorViewModel {
     var categories: [CategoryModel] = []
     var selectedCategory: CategoryModel?
 
+    var uploadSuccess = false
+
     init(selectedCategory: CategoryModel? = nil) {
         self.editorMode = .create
         self.selectedCategory = selectedCategory
@@ -96,6 +98,7 @@ class StaccatoEditorViewModel {
 
         do {
             try await STService.shared.staccatoService.createStaccato(request)
+            self.uploadSuccess = true
         } catch {
             self.catchError = true
             self.errorMessage = error.localizedDescription
@@ -122,6 +125,7 @@ class StaccatoEditorViewModel {
 
         do {
             try await STService.shared.staccatoService.modifyStaccato(staccatoId, requestBody: request)
+            self.uploadSuccess = true
         } catch {
             self.catchError = true
             self.errorMessage = error.localizedDescription
@@ -157,7 +161,7 @@ class StaccatoEditorViewModel {
 }
 
 extension StaccatoEditorViewModel {
-    enum StaccatoEditorMode {
+    enum StaccatoEditorMode: Equatable {
         case modify(id: Int64)
         case create
     }

@@ -28,7 +28,7 @@ jobs:
         if: ${{ !contains(steps.get-issue.outputs.issue_json, '"name": "feat"') }}
         run: |
           echo "라벨이 없거나 feat 라벨이 빠져있어 자동 추가합니다"
-          gh issue edit "$NUMBER" --add-label "feat,feature"
+          gh issue edit "$NUMBER" --add-label "feat"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
@@ -37,7 +37,7 @@ jobs:
       - name: 프로젝트 자동 추가
         uses: actions/add-to-project@v1
         with:
-          project-url: https://github.com/orgs/ORG_NAME/projects/PROJECT_NUMBER
+          project-url: https://github.com/orgs/team-staccato/projects/1
           github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
 
       - name: 프로젝트 카드 상태를 To do로 설정

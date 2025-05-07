@@ -1,0 +1,99 @@
+name: 자동 이슈 설정
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+
+jobs:
+  setup-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 이슈 정보 가져오기
+        id: get-issue
+        run: |
+          ISSUE_JSON=$(gh issue view "$NUMBER" --json labels,milestone,projects --jq '.')
+          echo "issue_json=$ISSUE_JSON" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+
+      - name: 라벨 자동 추가 (없을 경우만)
+        run: |
+          LABELS=$(gh issue view "$NUMBER" --json labels --jq '.labels[].name')
+          if ! echo "$LABELS" | grep -q "feat"; then
+            echo "라벨이 없거나 feat 라벨이 빠져있어 자동 추가합니다"
+            gh issue edit "$NUMBER" --add-label "feat"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+
+      - name: 프로젝트 자동 추가
+        uses: actions/add-to-project@v1
+        with:
+          project-url: https://github.com/orgs/team-staccato/projects/1
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+
+      - name: 프로젝트 카드 상태를 To do로 설정
+        run: |
+          ISSUE_ID=$(gh api graphql -f query='
+            query {
+              repository(owner: "${{ github.repository_owner }}", name: "${{ github.event.repository.name }}") {
+                issue(number: ${{ github.event.issue.number }}) {
+                  id
+                }
+              }
+            }
+          ' --jq '.data.repository.issue.id')
+
+          # 필드 ID 가져오기
+          PROJECT_ID="PVT_PROJECT_ID"  # 숫자가 아님, GraphQL ID여야 함
+          STATUS_FIELD_ID="STATUS_FIELD_ID"
+          TODO_OPTION_ID="TODO_OPTION_ID"
+
+          # 필드 업데이트
+          gh api graphql -f query='
+            mutation {
+              updateProjectV2ItemFieldValue(
+                input: {
+                  projectId: "'$PROJECT_ID'"
+                  itemId: "'$ISSUE_ID'"
+                  fieldId: "'$STATUS_FIELD_ID'"
+                  value: { singleSelectOptionId: "'$TODO_OPTION_ID'" }
+                }
+              ) {
+                projectV2Item {
+                  id
+                }
+              }
+            }
+          '
+        env:
+          GH_TOKEN: ${{ secrets.ADD_TO_PROJECT_PAT }}
+
+      - name: 마일스톤 자동 할당 (없을 경우만)
+        run: |
+          MILESTONE=$(gh issue view "$NUMBER" --json milestone --jq '.milestone.title // ""')
+          if [ -z "$MILESTONE" ]; then
+            echo "마일스톤이 없어 자동 할당합니다"
+            # milestone-action 로직 대신 직접 마일스톤 할당
+            gh issue edit "$NUMBER" --milestone "YOUR_DEFAULT_MILESTONE"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+
+      - name: 디버그 로그
+        run: |
+          echo "Workflow started"
+          echo "Issue Number: ${{ github.event.issue.number }}"

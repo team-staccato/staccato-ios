@@ -80,8 +80,14 @@ jobs:
           GH_TOKEN: ${{ secrets.ADD_TO_PROJECT_PAT }}
 
       - name: 마일스톤 자동 할당 (없을 경우만)
-        if: ${{ !contains(steps.get-issue.outputs.issue_json, '"milestone":') || contains(steps.get-issue.outputs.issue_json, '"milestone": null') }}
-        uses: benelan/milestone-action@v3
-        with:
-          farthest: false
-          overwrite: false
+        run: |
+          MILESTONE=$(gh issue view "$NUMBER" --json milestone --jq '.milestone.title // ""')
+          if [ -z "$MILESTONE" ]; then
+            echo "마일스톤이 없어 자동 할당합니다"
+            # milestone-action 로직 대신 직접 마일스톤 할당
+            gh issue edit "$NUMBER" --milestone "YOUR_DEFAULT_MILESTONE"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}

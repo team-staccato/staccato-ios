@@ -17,6 +17,7 @@ struct CategoryListView: View {
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
     @State private var isSortMenuPresented: Bool = false
+    @State private var onSpotFilter: Bool = false
     @State private var isCreateCategoryModalPresented = false
 
 
@@ -86,16 +87,33 @@ private extension CategoryListView {
 
     var titleHStack: some View {
         VStack(alignment: .leading) {
-            Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
-                .typography(.title1)
+            HStack {
+                Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
+                    .typography(.title1)
+
+                Spacer()
+
+                categoryAddButton
+            }
             
             HStack {
                 categorySortButton
                 Spacer()
-                categoryAddButton
+                categoryFilterButton
             }
         }
         .frame(maxWidth: .infinity)
+    }
+
+    var categoryAddButton: some View {
+        Button("추가") {
+            isCreateCategoryModalPresented = true
+        }
+        .buttonStyle(.staccatoCapsule(
+            icon: .folderFillBadgePlus,
+            font: .body3,
+            iconSpacing: 4)
+        )
     }
 
     var categorySortButton: some View {
@@ -128,15 +146,21 @@ private extension CategoryListView {
         }
     }
 
-    var categoryAddButton: some View {
-        Button("추가") {
-            isCreateCategoryModalPresented = true
+    var categoryFilterButton: some View {
+        Button {
+            onSpotFilter.toggle()
+            viewModel.filterSelection = onSpotFilter ? .term : .all
+        } label: {
+            HStack {
+                Image(.line3HorizontalDecrease)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                Text("기간 있는 카테고리만")
+                    .typography(.body4)
+            }
+            .foregroundStyle(onSpotFilter ? .accent : .gray3)
         }
-        .buttonStyle(.staccatoCapsule(
-            icon: .folderFillBadgePlus,
-            font: .body3,
-            iconSpacing: 4)
-        )
     }
 
 

@@ -16,7 +16,7 @@ struct CategoryListView: View {
     @StateObject private var viewModel = CategoryViewModel()
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
-    @State private var isSortFilterMenuPresented: Bool = false
+    @State private var isSortMenuPresented: Bool = false
     @State private var isCreateCategoryModalPresented = false
 
 
@@ -90,7 +90,7 @@ private extension CategoryListView {
                 .typography(.title1)
             
             HStack {
-                categorySortFilterButton
+                categorySortButton
                 Spacer()
                 categoryAddButton
             }
@@ -98,16 +98,16 @@ private extension CategoryListView {
         .frame(maxWidth: .infinity)
     }
 
-    var categorySortFilterButton: some View {
+    var categorySortButton: some View {
         Button {
-            isSortFilterMenuPresented.toggle()
+            isSortMenuPresented.toggle()
         } label: {
             HStack(spacing: 4) {
                 Image(.sliderHorizontal3)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 12, height: 12)
-                Text("정렬/필터")
+                Text(viewModel.sortSelection.text)
                     .typography(.body3)
                 Image(.arrowtriangleDownFill)
                     .resizable()
@@ -117,14 +117,13 @@ private extension CategoryListView {
             .foregroundStyle(.gray3)
         }
         .popover(
-            isPresented: $isSortFilterMenuPresented,
+            isPresented: $isSortMenuPresented,
             attachmentAnchor: .point(.bottom),
             arrowEdge: .top
         ) {
-            CategoryListSortFilterView(
+            CategoryListSortView(
                 sortSelection: $viewModel.sortSelection,
-                filterSelection: $viewModel.filterSelection,
-                isPresented: $isSortFilterMenuPresented)
+                isPresented: $isSortMenuPresented)
             .presentationCompactAdaptation(.popover)
         }
     }

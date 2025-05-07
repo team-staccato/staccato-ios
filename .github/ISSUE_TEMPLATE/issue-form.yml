@@ -1,0 +1,26 @@
+name: '이슈 생성'
+description: '이슈 생성과 함께 이슈 필드가 자동으로 채워집니다.'
+title: '이슈 제목'
+body:
+  - type: input
+    id: dueDate
+    attributes:
+      label: '🗓️ 마감일'
+      placeholder: '2025-05-07'
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: '📝 상세 내용'
+      description: '진행할 이슈와 작업 항목을 작성해주세요.'
+      value: |
+        ## 📌 Issue
+        <!-- 이슈 설명 -->
+
+        ## ✅ Todo
+        <!-- 진행할 작업 -->
+        - [ ] todo!
+    validations:
+      required: false

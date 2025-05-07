@@ -3,6 +3,7 @@ name: 자동 이슈 설정
 on:
   issues:
     types: [opened]
+  workflow_dispatch:
 
 jobs:
   setup-issue:

@@ -30,7 +30,7 @@ jobs:
           if ! echo "$LABELS" | grep -q "feat"; then
             echo "라벨이 없거나 feat 라벨이 빠져있어 자동 추가합니다"
             gh issue edit "$NUMBER" --add-label "feat"
-    fi
+          fi
   env:
     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     GH_REPO: ${{ github.repository }}

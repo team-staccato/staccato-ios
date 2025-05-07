@@ -28,7 +28,7 @@ struct CategoryListCell: View {
         if let colorType = CategoryColorType(rawValue: categoryInfo.title) {
             self.colorType = colorType
         } else {
-            self.colorType = .green
+            self.colorType = .gray
         }
     }
     

@@ -86,7 +86,7 @@ private extension CategoryListView {
     // MARK: - TitleView
 
     var titleHStack: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 9) {
             HStack {
                 Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
                     .typography(.title1)

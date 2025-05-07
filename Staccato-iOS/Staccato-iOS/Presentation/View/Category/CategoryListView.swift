@@ -39,7 +39,6 @@ struct CategoryListView: View {
                         .padding(.bottom, 12)
                         .padding(.horizontal, 18)
                     categoryList
-                        .padding(.horizontal, 18)
                 }
                 .background(Color.staccatoWhite)
                 .frame(maxWidth: .infinity)
@@ -146,13 +145,18 @@ private extension CategoryListView {
 
     var categoryList: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(viewModel.categories, id: \.id) { categoryInfo in
+            LazyVStack(spacing: 0) {
+                ForEach(Array(viewModel.categories.enumerated()), id: \.element.id) { index, categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
                         navigationState.navigate(to: .categoryDetail(categoryInfo.categoryId))
                     } label: {
                         CategoryListCell(categoryInfo)
+                    }
+                    
+                    // 마지막 항목에는 Divider 추가하지 않음
+                    if index < viewModel.categories.count - 1 {
+                        Divider()
                     }
                 }
             }

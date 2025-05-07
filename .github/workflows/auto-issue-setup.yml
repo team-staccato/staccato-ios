@@ -1,0 +1,32 @@
+name: 자동 이슈 설정
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  setup-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: 이슈에 라벨 추가
+        run: |
+          gh issue edit "$NUMBER" --add-label "feat,feature"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+
+      - name: 이슈를 프로젝트에 추가
+        uses: actions/add-to-project@v1
+        with:
+          project-url: https://github.com/orgs/ORG_NAME/projects/PROJECT_NUMBER
+          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+
+      - name: 마일스톤 자동 할당
+        uses: benelan/milestone-action@v3
+        with:
+          farthest: false
+          overwrite: false

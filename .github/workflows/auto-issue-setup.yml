@@ -25,14 +25,16 @@ jobs:
           NUMBER: ${{ github.event.issue.number }}
 
       - name: 라벨 자동 추가 (없을 경우만)
-        if: ${{ !contains(steps.get-issue.outputs.issue_json, '"name": "feat"') }}
         run: |
-          echo "라벨이 없거나 feat 라벨이 빠져있어 자동 추가합니다"
-          gh issue edit "$NUMBER" --add-label "feat"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.issue.number }}
+          LABELS=$(gh issue view "$NUMBER" --json labels --jq '.labels[].name')
+          if ! echo "$LABELS" | grep -q "feat"; then
+            echo "라벨이 없거나 feat 라벨이 빠져있어 자동 추가합니다"
+            gh issue edit "$NUMBER" --add-label "feat"
+    fi
+  env:
+    GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    GH_REPO: ${{ github.repository }}
+    NUMBER: ${{ github.event.issue.number }}
 
       - name: 프로젝트 자동 추가
         uses: actions/add-to-project@v1

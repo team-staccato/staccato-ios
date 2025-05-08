@@ -1,11 +1,20 @@
 //
-//  HomeModalSize.swift
+//  HomeModalManager.swift
 //  Staccato-iOS
 //
-//  Created by 김유림 on 2/4/25.
+//  Created by 김유림 on 5/7/25.
 //
 
-import Foundation
+import SwiftUI
+import Observation
+
+@Observable
+class HomeModalManager {
+
+    var modalHeight: CGFloat = HomeModalSize.medium.height
+
+}
+
 
 enum HomeModalSize: CaseIterable {
     

@@ -25,7 +25,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         
         // 초기 위치를 서울시청으로 함
         let seoulCityhall = CLLocationCoordinate2D(latitude: 37.5664056, longitude: 126.9778222)
-        let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 13)
+        let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 15)
         mapView.camera = camera
 
         return mapView
@@ -73,7 +73,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
             print("❌ GMSMapView Location Optional Binding Failed")
             return
         }
-        let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 13)
+        let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 15)
         parent.mapView.animate(to: camera)
     }
 
@@ -83,7 +83,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
             parent.mapView.isMyLocationEnabled = true
 
             if let coordinate = manager.location?.coordinate {
-                let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: 13)
+                let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: 15)
                 parent.mapView.animate(to: camera)
             }
         } else {

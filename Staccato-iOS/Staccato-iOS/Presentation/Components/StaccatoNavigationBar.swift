@@ -82,7 +82,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
                     HStack(spacing: 16) {
                         trailingButtons
                     }
-                    .padding(.trailing, 10)
+                    .padding(.trailing, 16)
                     .typography(.body2)
                     .foregroundStyle(.gray5)
                 }

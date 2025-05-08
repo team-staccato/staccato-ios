@@ -62,7 +62,7 @@ extension CategoryDetailModel {
 extension CategoryDetailModel {
     func toCategoryModel() -> CategoryModel {
         return CategoryModel(
-            id: UUID(),
+            id: self.categoryId,
             categoryId: self.categoryId,
             thumbNailURL: self.categoryThumbnailUrl,
             title: self.categoryTitle,

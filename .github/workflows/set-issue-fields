@@ -1,0 +1,93 @@
+name: Issue Management
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  manage-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check assignee
+        id: check-assignee
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set assignee if not present
+        if: ${{ fromJson(steps.check-assignee.outputs.data).assignees == '' }}
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/assignees
+          body: '{"assignees":["${{ github.event.issue.user.login }}"]}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check labels
+        id: check-labels
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set label if not present
+        if: ${{ fromJson(steps.check-labels.outputs.data).labels == [] }}
+        uses: octokit/request-action@v2.x
+        with:
+          route: POST /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels
+          body: '{"labels":["feat"]}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check project cards
+        id: check-projects
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const response = await github.rest.projects.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            return {
+              projects: response.data
+            }
+
+      - name: Add project if not assigned
+        if: ${{ steps.check-projects.outputs.projects == [] }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const projectURL = "https://github.com/orgs/team-staccato/projects/2";
+            const projectId = projectURL.split('/').pop();
+            await github.rest.projects.attachToCard({
+              project_id: projectId,
+              content_id: context.issue.id,
+              content_type: "Issue"
+            });
+            // Status 필드를 변경하는 로직은 여기 구현되어야 합니다.
+            // GitHub Projects의 Status 필드를 보는 방법에 대한 구체적인 사용법은 GitHub의 Projects API를 확인하세요.
+
+      - name: Set milestone
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const milestones = await github.rest.issues.listMilestones({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'due_date',
+              direction: 'desc'
+            });
+
+            if (milestones.data.length > 0 && context.issue.milestone == null) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                milestone: milestones.data[0].number
+              });
+            }

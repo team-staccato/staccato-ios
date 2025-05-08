@@ -40,7 +40,7 @@ jobs:
       - name: 프로젝트 자동 추가
         uses: actions/add-to-project@v1
         with:
-          project-url: https://github.com/orgs/team-staccato/projects/2
+          project-url: https://github.com/orgs/team-staccato/projects/1
           github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
 
       - name: 프로젝트 카드 상태를 To do로 설정

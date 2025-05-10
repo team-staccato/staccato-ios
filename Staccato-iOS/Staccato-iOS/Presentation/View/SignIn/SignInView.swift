@@ -5,12 +5,12 @@ struct SignInView: View {
     @Environment(StaccatoAlertManager.self) var alertManager
     @State private var nickName: String = ""
     @State private var validationMessage: String?
-    @State private var isChanging: Bool = false
+    @State private var isLoading: Bool = false
     @State private var shakeOffset: CGFloat = 0
     @State private var validationTask: Task<Void, Never>?
     
     private var isButtonDisabled: Bool {
-        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChanging
+        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading
     }
     
     var body: some View {
@@ -99,7 +99,10 @@ struct SignInView: View {
 extension SignInView {
 
     private func login() {
+        isLoading = true
         Task {
+            defer { isLoading = false }
+            
             do {
                 let _ = try await viewModel.login(nickName: nickName)
             } catch let error as NetworkError {

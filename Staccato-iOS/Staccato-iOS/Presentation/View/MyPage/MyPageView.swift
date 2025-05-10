@@ -11,6 +11,7 @@ import PhotosUI
 struct MyPageView: View {
     
     @EnvironmentObject private var viewModel: MyPageViewModel
+    @EnvironmentObject private var signinViewModel: SignInViewModel
     
     @State var copyButtonPressed = false
     @State var isPhotoInputPresented = false
@@ -239,6 +240,10 @@ extension MyPageView {
                 }
             }
             .padding(.top, 12)
+#if DEBUG
+            Spacer()
+            logoutButton
+#endif
         }
     }
 }
@@ -253,4 +258,36 @@ extension MyPageView {
             }
         }
     }
+}
+
+
+// MARK: - 디버깅용 코드
+
+extension MyPageView {
+
+    var logoutButton: some View {
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing, spacing: 10) {
+                Button {
+                    print("\n========================================\n✅ 복구코드: \(viewModel.profile?.code ?? "없음")\n====================로그아웃====================")
+                    UIPasteboard.general.string = viewModel.profile?.code ?? ""
+                    signinViewModel.logout()
+                } label: {
+                    Text("로그아웃")
+                        .typography(.title2)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 8)
+                }
+                .background(RoundedRectangle(cornerRadius: 2).stroke(.red))
+
+                Text("복구코드는 복사되며 콘솔창에도 프린트됩니다.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray4)
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+
 }

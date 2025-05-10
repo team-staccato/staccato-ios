@@ -18,6 +18,7 @@ struct MyPageView: View {
     @State var isPhotoPickerPresented = false
     
     @State private var photoItem: PhotosPickerItem?
+    @State private var capturedImage: UIImage?
     @State private var selectedPhoto: UIImage?
     @State private var showToast = false
     
@@ -129,10 +130,12 @@ extension MyPageView {
         .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
         
         .fullScreenCover(isPresented: $showCamera) {
-            CameraView(selectedImage: $selectedPhoto)
+            CameraView(selectedImage: $capturedImage)
                 .background(.staccatoBlack)
         }
-        
+        .onChange(of: capturedImage, { _, newValue in
+            loadTransferable(from: newValue)
+        })
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
         }
@@ -253,6 +256,12 @@ extension MyPageView {
                 viewModel.uploadProfileImage(image!)
                 selectedPhoto = image
             }
+        }
+    }
+    private func loadTransferable(from image: UIImage?) {
+        Task {
+            viewModel.uploadProfileImage(image!)
+            selectedPhoto = image
         }
     }
 }

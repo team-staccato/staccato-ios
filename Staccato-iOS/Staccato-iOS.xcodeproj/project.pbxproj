@@ -17,6 +17,8 @@
 
 /* Begin PBXFileReference section */
 		137153882D26CDCA00EABE10 /* Staccato-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Staccato-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		79B4A8512DC8E828008CAD72 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = "/Users/kangjaeheok/staccato-ios/Staccato-iOS/Staccato-iOS/Support/Config/Debug.xcconfig"; sourceTree = "<absolute>"; };
+		79B4A8522DC8E828008CAD72 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = "/Users/kangjaeheok/staccato-ios/Staccato-iOS/Staccato-iOS/Support/Config/Release.xcconfig"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -168,8 +170,7 @@
 /* Begin XCBuildConfiguration section */
 		137153942D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config/Debug.xcconfig;
+			baseConfigurationReference = 79B4A8512DC8E828008CAD72 /* Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -233,8 +234,7 @@
 		};
 		137153952D26CDCC00EABE10 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config/Release.xcconfig;
+			baseConfigurationReference = 79B4A8522DC8E828008CAD72 /* Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -291,8 +291,7 @@
 		};
 		137153972D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config/Debug.xcconfig;
+			baseConfigurationReference = 79B4A8512DC8E828008CAD72 /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -338,14 +337,13 @@
 		};
 		137153982D26CDCC00EABE10 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
-			baseConfigurationReferenceRelativePath = Support/Config/Release.xcconfig;
+			baseConfigurationReference = 79B4A8522DC8E828008CAD72 /* Release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Staccato-iOS/Preview Content\"";
@@ -372,7 +370,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.teamstaccato.staccato-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "staccato-iOS-release";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "staccato-iOS-dev";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;

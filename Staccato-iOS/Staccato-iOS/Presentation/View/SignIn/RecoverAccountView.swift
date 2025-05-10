@@ -14,6 +14,7 @@ struct RecoverAccountView: View {
     
     @State private var code: String = ""
     @State private var errorMessage: String?
+    @State private var isLoading: Bool = false
     
     var body: some View {
         VStack {
@@ -46,12 +47,12 @@ struct RecoverAccountView: View {
             
             Spacer()
             
-            Button("시작하기") {
+            Button("불러오기") {
                 login()
             }
             .buttonStyle(.staccatoFullWidth)
             .padding(.vertical)
-            .disabled(code.count != 36)
+            .disabled(code.count != 36 || isLoading)
         }
         .alert(isPresented: Binding<Bool>(
             get: { errorMessage != nil },
@@ -89,6 +90,8 @@ struct RecoverAccountView: View {
 extension RecoverAccountView {
     private func login() {
         Task {
+            defer { isLoading = false }
+            
             do {
                 let _ = try await viewModel.login(withCode: code)
             } catch let error as NetworkError {

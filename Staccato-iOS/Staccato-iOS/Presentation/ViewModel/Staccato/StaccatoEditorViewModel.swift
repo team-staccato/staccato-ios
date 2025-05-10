@@ -41,15 +41,19 @@ class StaccatoEditorViewModel {
     var categories: [CategoryModel] = []
     var selectedCategory: CategoryModel?
 
+    var uploadSuccess = false
+
     init(selectedCategory: CategoryModel? = nil) {
         self.editorMode = .create
         self.selectedCategory = selectedCategory
+        self.selectedDate = .now
         getCategoryList()
     }
 
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
         getPhotos(urls: staccato.staccatoImageUrls)
+        getCategoryList(selectedCategoryId: staccato.categoryId)
 
         self.title = staccato.staccatoTitle
         self.selectedPlace = StaccatoPlaceModel(
@@ -58,7 +62,6 @@ class StaccatoEditorViewModel {
             coordinate: CLLocationCoordinate2D(staccato.latitude, staccato.longitude)
         )
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
-        self.selectedCategory = self.categories.first(where: { $0.categoryId == staccato.categoryId })
     }
 
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {
@@ -96,6 +99,7 @@ class StaccatoEditorViewModel {
 
         do {
             try await STService.shared.staccatoService.createStaccato(request)
+            self.uploadSuccess = true
         } catch {
             self.catchError = true
             self.errorMessage = error.localizedDescription
@@ -116,19 +120,20 @@ class StaccatoEditorViewModel {
             latitude: self.selectedPlace?.coordinate.latitude ?? 0.0,
             longitude: self.selectedPlace?.coordinate.longitude ?? 0.0,
             visitedAt: self.selectedDate?.formattedAsISO8601 ?? "",
-            categoryID: selectedCategoryId,
+            categoryId: selectedCategoryId,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
 
         do {
             try await STService.shared.staccatoService.modifyStaccato(staccatoId, requestBody: request)
+            self.uploadSuccess = true
         } catch {
             self.catchError = true
             self.errorMessage = error.localizedDescription
         }
     }
 
-    func getCategoryList() {
+    func getCategoryList(selectedCategoryId: Int64? = nil) {
         Task {
             do {
                 let categoryList = try await STService.shared.categoryService.getCategoryList(
@@ -140,6 +145,10 @@ class StaccatoEditorViewModel {
                 }
 
                 self.categories = categories
+
+                if let selectedCategoryId {
+                    self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
+                }
             } catch {
                 self.catchError = true
                 self.errorMessage = error.localizedDescription
@@ -157,7 +166,7 @@ class StaccatoEditorViewModel {
 }
 
 extension StaccatoEditorViewModel {
-    enum StaccatoEditorMode {
+    enum StaccatoEditorMode: Equatable {
         case modify(id: Int64)
         case create
     }

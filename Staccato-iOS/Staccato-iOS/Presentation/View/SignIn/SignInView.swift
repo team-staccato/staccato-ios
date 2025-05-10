@@ -38,8 +38,13 @@ struct SignInView: View {
                             if nickName.count > 10 {
                                 nickName = String(nickName.prefix(10))
                             } else {
-                                isChanging = true
-                                debounceValidation(text: nickName)
+                                viewModel.validateText(nickName: nickName)
+                                if !viewModel.isValid {
+                                    shakeAnimation()
+                                    validationMessage = "닉네임은 한글, 영어, 숫자, 띄어쓰기 마침표(.), 밑줄(_)만 사용할 수 있어요."
+                                } else {
+                                    validationMessage = ""
+                                }
                             }
                         }
                     
@@ -128,30 +133,6 @@ extension SignInView {
                 withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
                     shakeOffset = value
                 }
-            }
-        }
-    }
-}
-
-//MARK: Debounce
-extension SignInView {
-    private func debounceValidation(text: String) {
-        isChanging = true
-        validationTask?.cancel()
-        
-        validationTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000)
-            if Task.isCancelled { return }
-            
-            await MainActor.run {
-                viewModel.validateText(nickName: text)
-                if !viewModel.isValid {
-                    shakeAnimation()
-                    validationMessage = "닉네임은 한글, 영어, 숫자, 띄어쓰기 마침표(.), 밑줄(_)만 사용할 수 있어요."
-                } else {
-                    validationMessage = ""
-                }
-                isChanging = false
             }
         }
     }

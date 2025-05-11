@@ -49,7 +49,9 @@ final class CategoryViewModel: ObservableObject {
             )
             
             let categories = categoryList.categories.map { CategoryModel(from: $0) }
-            self.categories = categories
+            withAnimation {
+                self.categories = categories
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 //
-//  CategoryListSortFilterView.swift
+//  CategoryListSortView.swift
 //  Staccato-iOS
 //
 //  Created by 김유림 on 3/10/25.
@@ -7,32 +7,22 @@
 
 import SwiftUI
 
-struct CategoryListSortFilterView: View {
+struct CategoryListSortView: View { // TODO: 리팩토링: 컴포넌트화하기
     
     @Binding var sortSelection: CategoryListSortType
-    @Binding var filterSelection: CategoryListFilterType
     @Binding var isPresented: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            
-            // MARK: - Sort Section
             makeHeader(text: "정렬")
-            
-            Divider()
-            
+
+            makeDivider(height: 3)
+
             sortOptions
-            
-            thickDivider
-            
-            makeHeader(text: "필터")
-            
-            Divider()
-            
-            filterOptions
-            
         }
         .background(Color(uiColor: .staccatoWhite))
+        .frame(minWidth: 180)
+        .padding(.vertical, 4)
     }
     
 }
@@ -40,10 +30,10 @@ struct CategoryListSortFilterView: View {
 
 // MARK: - UI Components
 
-extension CategoryListSortFilterView {
-    
+extension CategoryListSortView {
+
     // MARK: - Header, Divider
-    
+
     func makeHeader(text: String) -> some View {
         HStack {
             Text(text)
@@ -54,17 +44,17 @@ extension CategoryListSortFilterView {
             Spacer()
         }
     }
-    
-    var thickDivider: some View {
+
+    func makeDivider(height: CGFloat) -> some View {
         Rectangle()
-            .frame(height: 8)
+            .frame(height: height)
             .frame(maxWidth: .infinity)
             .foregroundStyle(.gray1)
     }
-    
-    
+
+
     // MARK: - Options
-    
+
     var sortOptions: some View {
         ForEach(Array(CategoryListSortType.allCases.enumerated()), id: \.element.id) { index, type in
             Button {
@@ -94,35 +84,5 @@ extension CategoryListSortFilterView {
             
         }
     }
-    
-    var filterOptions: some View {
-        ForEach(Array(CategoryListFilterType.allCases.enumerated()), id: \.element.id) { index, type in
-            Button {
-                filterSelection = type
-                isPresented = false
-            } label: {
-                HStack {
-                    Image(.checkmark)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 10, height: 10)
-                        .opacity(filterSelection == type ? 1 : 0)
-                    
-                    Text(type.text)
-                        .typography(.body3)
-                }
-                .foregroundStyle(.primary)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .hoverEffect()
-            
-            if index < CategoryListFilterType.allCases.count - 1 {
-                Divider()
-            }
-        }
-    }
-    
+
 }

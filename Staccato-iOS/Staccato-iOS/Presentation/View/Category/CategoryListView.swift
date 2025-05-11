@@ -16,7 +16,8 @@ struct CategoryListView: View {
     @StateObject private var viewModel = CategoryViewModel()
     @State private var selectedCategory: CategoryModel?
     @State private var isDetailPresented: Bool = false
-    @State private var isSortFilterMenuPresented: Bool = false
+    @State private var isSortMenuPresented: Bool = false
+    @State private var onSpotFilter: Bool = false
     @State private var isCreateCategoryModalPresented = false
 
 
@@ -39,7 +40,6 @@ struct CategoryListView: View {
                         .padding(.bottom, 12)
                         .padding(.horizontal, 18)
                     categoryList
-                        .padding(.horizontal, 18)
                 }
                 .background(Color.staccatoWhite)
                 .frame(maxWidth: .infinity)
@@ -86,48 +86,23 @@ private extension CategoryListView {
     // MARK: - TitleView
 
     var titleHStack: some View {
-        VStack(alignment: .leading) {
-            Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
-                .typography(.title1)
+        VStack(alignment: .leading, spacing: 9) {
+            HStack {
+                Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
+                    .typography(.title1)
+
+                Spacer()
+
+                categoryAddButton
+            }
             
             HStack {
-                categorySortFilterButton
+                categorySortButton
                 Spacer()
-                categoryAddButton
+                categoryFilterButton
             }
         }
         .frame(maxWidth: .infinity)
-    }
-
-    var categorySortFilterButton: some View {
-        Button {
-            isSortFilterMenuPresented.toggle()
-        } label: {
-            HStack(spacing: 4) {
-                Image(.sliderHorizontal3)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 12, height: 12)
-                Text("정렬/필터")
-                    .typography(.body3)
-                Image(.arrowtriangleDownFill)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 6, height: 6)
-            }
-            .foregroundStyle(.gray3)
-        }
-        .popover(
-            isPresented: $isSortFilterMenuPresented,
-            attachmentAnchor: .point(.bottom),
-            arrowEdge: .top
-        ) {
-            CategoryListSortFilterView(
-                sortSelection: $viewModel.sortSelection,
-                filterSelection: $viewModel.filterSelection,
-                isPresented: $isSortFilterMenuPresented)
-            .presentationCompactAdaptation(.popover)
-        }
     }
 
     var categoryAddButton: some View {
@@ -141,18 +116,70 @@ private extension CategoryListView {
         )
     }
 
+    var categorySortButton: some View {
+        Button {
+            isSortMenuPresented.toggle()
+        } label: {
+            HStack(spacing: 4) {
+                Image(.sliderHorizontal3)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                Text(viewModel.sortSelection.text)
+                    .typography(.body3)
+                Image(.arrowtriangleDownFill)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 6, height: 6)
+            }
+            .foregroundStyle(.gray3)
+        }
+        .popover(
+            isPresented: $isSortMenuPresented,
+            attachmentAnchor: .point(.bottom),
+            arrowEdge: .top
+        ) {
+            CategoryListSortView(
+                sortSelection: $viewModel.sortSelection,
+                isPresented: $isSortMenuPresented)
+            .presentationCompactAdaptation(.popover)
+        }
+    }
+
+    var categoryFilterButton: some View {
+        Button {
+            onSpotFilter.toggle()
+            viewModel.filterSelection = onSpotFilter ? .term : .all
+        } label: {
+            HStack {
+                Image(.line3HorizontalDecrease)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 12, height: 12)
+                Text("기간 있는 카테고리만")
+                    .typography(.body4)
+            }
+            .foregroundStyle(onSpotFilter ? .accent : .gray3)
+        }
+    }
+
 
     // MARK: - List
 
     var categoryList: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(viewModel.categories, id: \.id) { categoryInfo in
+            LazyVStack(spacing: 0) {
+                ForEach(Array(viewModel.categories.enumerated()), id: \.element.id) { index, categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
                         navigationState.navigate(to: .categoryDetail(categoryInfo.categoryId))
                     } label: {
                         CategoryListCell(categoryInfo)
+                    }
+                    
+                    // 마지막 항목에는 Divider 추가하지 않음
+                    if index < viewModel.categories.count - 1 {
+                        Divider()
                     }
                 }
             }

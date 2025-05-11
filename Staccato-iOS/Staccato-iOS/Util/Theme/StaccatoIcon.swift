@@ -23,6 +23,7 @@ enum StaccatoIcon: String {
     case folderFill = "folder.fill"
     case folderFillBadgePlus = "folder.fill.badge.plus"
     case sliderHorizontal3 = "slider.horizontal.3"
+    case line3HorizontalDecrease = "line.3.horizontal.decrease"
     case arrowtriangleDownFill = "arrowtriangle.down.fill"
     case checkmark = "checkmark"
     case photoBadgeExclamationmark = "photo.badge.exclamationmark"

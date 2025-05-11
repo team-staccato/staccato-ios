@@ -21,7 +21,7 @@ enum CategoryListFilterType: CaseIterable, Identifiable {
     var serverKey: String? {
         switch self {
         case .all: return nil
-        case .term: return "TERM"
+        case .term: return "WITH_TERM"
         }
     }
     

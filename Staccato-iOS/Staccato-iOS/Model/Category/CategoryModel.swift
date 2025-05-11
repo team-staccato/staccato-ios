@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct CategoryModel: Identifiable {
+struct CategoryModel: Equatable {
     
-    let id: UUID
+    let id: Int64
     
     let categoryId: Int64
     
@@ -29,7 +29,7 @@ struct CategoryModel: Identifiable {
 extension CategoryModel {
     
     init(from dto: CategoryResponse) {
-        self.id = UUID()
+        self.id = dto.categoryId
         self.categoryId = dto.categoryId
         self.thumbNailURL = dto.categoryThumbnailUrl
         self.title = dto.categoryTitle

@@ -89,13 +89,18 @@ struct StaccatoDetailView: View {
                         .confirmCancelAlert(
                             title: "삭제하시겠습니까?",
                             message: "삭제를 누르면 복구할 수 없습니다") {
-                                viewModel.delteStaccato(staccatoId)
-                                navigationState.dismiss()
-                                // TODO: deleteStaccato 메소드 내부로 옮겨서 성공했을 경우만 실행하기
-                                if let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
-                                    homeViewModel.staccatos.remove(at: indexToRemove)
+                                Task {
+                                    do {
+                                        try await viewModel.deleteStaccato(staccatoId)
+                                        if let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
+                                            homeViewModel.staccatos.remove(at: indexToRemove)
+                                        }
+                                        navigationState.dismiss()
+                                    } catch {
+                                        print("삭제 실패: \(error.localizedDescription)")
+                                        navigationState.dismiss()
+                                    }
                                 }
-                                
                             }
                     )
                 }

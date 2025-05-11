@@ -25,7 +25,7 @@ struct CategoryListCell: View {
         self.categoryInfo = categoryInfo
         
         // TODO: 바인딩 수정 (title -> color)
-        if let colorType = CategoryColorType(rawValue: categoryInfo.title) {
+        if let colorType = CategoryColorType.fromServerKey(categoryInfo.title) {
             self.colorType = colorType
         } else {
             self.colorType = .gray

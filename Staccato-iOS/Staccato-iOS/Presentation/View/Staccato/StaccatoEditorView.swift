@@ -51,7 +51,6 @@ struct StaccatoEditorView: View {
             }
         }
         .onAppear {
-            viewModel.getCategoryList()
             if STLocationManager.shared.hasLocationAuthorization() {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
                     self.viewModel.selectedPlace = place
@@ -59,12 +58,15 @@ struct StaccatoEditorView: View {
             }
         }
 
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
 
         .staccatoModalBar(
-            title: "스타카토 기록하기",
-            subtitle: "기억하고 싶은 순간을 남겨보세요!"
+            title:
+                viewModel.editorMode == .create ? "스타카토 기록하기" : "스타카토 수정하기",
+            subtitle: 
+                viewModel.editorMode == .create ? "기억하고 싶은 순간을 남겨보세요!" : "기억하고 싶은 순간을 수정해 보세요!"
         )
         .sheet(isPresented: $viewModel.showPlaceSearchSheet) {
             GMSPlaceSearchViewController { place in
@@ -157,6 +159,12 @@ extension StaccatoEditorView {
             CameraView(cameraMode: .multiple, imageList: self.$viewModel.photos)
                 .background(.black)
         }
+
+        .onChange(of: viewModel.uploadSuccess, { _, uploadSuccess in
+            if uploadSuccess {
+                dismiss()
+            }
+        })
 
         .onChange(of: viewModel.photoItem) { _, newValue in
             Task {
@@ -373,10 +381,9 @@ extension StaccatoEditorView {
                 case .create:
                     await viewModel.createStaccato()
                     homeViewModel.fetchStaccatos()
-                    dismiss()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)
-                    dismiss()
+                    homeViewModel.fetchStaccatos()
                 }
             }
         }

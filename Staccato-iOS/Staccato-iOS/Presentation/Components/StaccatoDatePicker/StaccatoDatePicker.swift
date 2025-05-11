@@ -76,9 +76,9 @@ extension StaccatoDatePicker {
 
             HStack(spacing: 40) {
                 Button {
-                    guard let addMonth = Calendar.current.date(byAdding: .month, value: -1, to: selectedMonth) else { return }
+                    guard let subtractMonth = Calendar.current.date(byAdding: .month, value: -1, to: selectedMonth) else { return }
 
-                    selectedMonth = addMonth
+                    selectedMonth = subtractMonth
                 } label: {
                     Image(.chevronLeft)
                 }

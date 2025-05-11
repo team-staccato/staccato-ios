@@ -23,8 +23,6 @@
 		137153B72D26EFEA00EABE10 /* Exceptions for "Staccato-iOS" folder in "Staccato-iOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Support/Config/Debug.xcconfig,
-				Support/Config/Release.xcconfig,
 				Support/Info.plist,
 			);
 			target = 137153872D26CDCA00EABE10 /* Staccato-iOS */;

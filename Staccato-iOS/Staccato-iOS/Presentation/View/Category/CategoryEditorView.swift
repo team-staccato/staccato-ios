@@ -53,10 +53,8 @@ struct CategoryEditorView: View {
                         switch vm.editorType {
                         case .create:
                             await vm.createCategory()
-                            dismiss()
                         case .modify:
                             await vm.modifyCategory()
-                            dismiss()
                         }
                     }
                 }
@@ -65,13 +63,15 @@ struct CategoryEditorView: View {
             }
             .animation(.easeIn(duration: 0.15), value: vm.isPeriodSettingActive)
         }
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
         .staccatoModalBar(
-            title: "카테고리 만들기",
-            subtitle: "스타카토를 담을 카테고리를 만들어 보세요!"
+            title:
+                self.vm.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",
+            subtitle: 
+                self.vm.editorType == . create ? "스타카토를 담을 카테고리를 만들어 보세요!" : "스타카토를 담을 카테고리를 수정해 보세요!"
         )
-        .ignoresSafeArea(.all, edges: .bottom)
 
         .sheet(isPresented: $vm.isPeriodSheetPresented) {
             StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
@@ -85,14 +85,11 @@ struct CategoryEditorView: View {
             Text(vm.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
 
-        .alert("카테고리 생성 성공", isPresented: $vm.uploadSuccess) {
-            Button("확인") {
+        .onChange(of: vm.uploadSuccess) { _, uploadSuccess in
+            if uploadSuccess {
                 dismiss()
             }
-        } message: {
-            Text("이미지 업로드에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
         }
-
     }
 }
 
@@ -160,6 +157,10 @@ extension CategoryEditorView {
         .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem)
 
         .fullScreenCover(isPresented: $vm.showCamera) {
+            Task {
+                try await vm.uploadImage()
+            }
+        } content: {
             CameraView(selectedImage: $vm.selectedPhoto)
                 .background(.staccatoBlack)
         }

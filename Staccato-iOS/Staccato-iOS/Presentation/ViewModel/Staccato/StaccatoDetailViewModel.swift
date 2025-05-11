@@ -47,8 +47,17 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    func deleteStaccato(_ staccatoId: Int64) async throws {
-        try await STService.shared.staccatoService.deleteStaccato(staccatoId)
+    @MainActor
+    func deleteStaccato(_ staccatoId: Int64, isSuccess: @escaping ((Bool) -> Void)) {
+        Task {
+            do {
+                try await STService.shared.staccatoService.deleteStaccato(staccatoId)
+                isSuccess(true)
+            } catch {
+                print("Error deleting staccato: \(error.localizedDescription)")
+                isSuccess(false)
+            }
+        }
     }
 
     func postStaccatoFeeling(_ feeling: FeelingType?, isSuccess: @escaping ((Bool) -> Void)) {

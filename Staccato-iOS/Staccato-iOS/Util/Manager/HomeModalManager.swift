@@ -9,7 +9,7 @@ import SwiftUI
 import Observation
 
 @Observable
-class HomeModalManager {
+final class HomeModalManager {
 
     var modalHeight: CGFloat = ModalSize.medium.height // 실시간으로 반영되는 사이즈
     private var modalSize: ModalSize = .medium // 이전으로 되돌리기 위해 기억하는 사이즈

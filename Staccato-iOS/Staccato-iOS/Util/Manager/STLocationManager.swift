@@ -10,7 +10,7 @@ import SwiftUI
 import Observation
 
 @Observable
-class STLocationManager: NSObject {
+final class STLocationManager: NSObject {
 
     static let shared = STLocationManager()
 

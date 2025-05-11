@@ -24,8 +24,8 @@ extension NetworkError {
             switch self {
             case .invalidURL:
                 return "❌ 유효하지 않은 URL입니다."
-            case .badRequest:
-                return "❌ 잘못된 요청입니다. (400 Bad Request)"
+            case .badRequest(let error):
+                return "❌ 잘못된 요청입니다. (400 Bad Request)\n\(error)"
             case .unauthorized:
                 return "❌ 인증이 필요합니다. (401 Unauthorized)"
             case .forbidden:

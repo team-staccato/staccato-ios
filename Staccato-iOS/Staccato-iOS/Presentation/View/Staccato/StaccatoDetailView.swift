@@ -18,6 +18,7 @@ struct StaccatoDetailView: View {
     @EnvironmentObject var homeViewModel: HomeViewModel
     @Environment(StaccatoAlertManager.self) var alertManager
     @Environment(NavigationState.self) var navigationState
+    @Environment(HomeModalManager.self) var homeModalManager
     
     @ObservedObject var viewModel: StaccatoDetailViewModel
     
@@ -69,6 +70,13 @@ struct StaccatoDetailView: View {
                         }
                     }
                 }
+                
+                .onChange(of: isCommentFocused) { oldValue, newValue in
+                    withAnimation {
+                        if newValue { homeModalManager.updateSize(to: .large) }
+                    }
+                }
+                
                 .onTapGesture {
                     isCommentFocused = false
                 }
@@ -111,11 +119,14 @@ struct StaccatoDetailView: View {
             }
         }
 
-        .sheet(isPresented: $isStaccatoModifySheetPresented) {
+        .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
+            viewModel.getStaccatoDetail(staccatoId)
+        } content: {
             if let staccatoDetail = viewModel.staccatoDetail {
                 StaccatoEditorView(staccato: staccatoDetail)
             }
         }
+
     }
 }
 
@@ -186,7 +197,7 @@ private extension StaccatoDetailView {
             viewModel.postShareLink()
         } label: {
             if isShareLinkLoading {
-                ProgressView("링크 생성중")
+                ProgressView()
             } else {
                 Image(StaccatoIcon.squareAndArrowUp)
                     .foregroundStyle(.gray3)

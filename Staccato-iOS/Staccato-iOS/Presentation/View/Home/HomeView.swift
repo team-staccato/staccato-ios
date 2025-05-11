@@ -19,8 +19,7 @@ struct HomeView: View {
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: 모달 크기
-    @State private var modalHeight: CGFloat = HomeModalSize.medium.height
-    @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
+    @Environment(HomeModalManager.self) var homeModalManager
 
     // NOTE: 화면 전환, Alert 매니저
     @Environment(NavigationState.self) var navigationState
@@ -42,8 +41,9 @@ struct HomeView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             mapView
+                .background(Color.red)
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40)
+                .padding(.bottom, homeModalManager.modalHeight - 40)
 
             myPageButton
                 .padding(10)
@@ -54,7 +54,7 @@ struct HomeView: View {
 
             staccatoAddButton
                 .padding(.trailing, 12)
-                .padding(.bottom, modalHeight - 20)
+                .padding(.bottom, homeModalManager.modalHeight - 20)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
 
             categoryListModal
@@ -63,6 +63,7 @@ struct HomeView: View {
                 StaccatoAlertView()
             }
         }
+        .ignoresSafeArea(.keyboard)
         .onAppear() {
             // 앱 버전체크 // TODO: 리팩토링
             AppVersionCheckManager.shared.fetchAppStoreVersion { version in
@@ -73,15 +74,10 @@ struct HomeView: View {
                 showUpdateAlert = AppVersionCheckManager.shared.isUpdateAvailable(appStoreVersion: appStoreVersion)
             }
 
-            locationAuthorizationManager.checkLocationAuthorization()
+            locationAuthorizationManager.checkAndRequestLocationAuthorization()
             STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
             mypageViewModel.fetchProfile()
-        }
-        .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
-            if newValue {
-                STLocationManager.shared.updateLocationForOneSec()
-            }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()
@@ -107,9 +103,9 @@ struct HomeView: View {
 
 // MARK: - UI Components
 
-extension HomeView {
+private extension HomeView {
 
-    private var myPageButton: some View {
+    var myPageButton: some View {
         Button {
             isMyPagePresented = true
         } label: {
@@ -139,7 +135,7 @@ extension HomeView {
         }
     }
 
-    private var myLocationButton: some View {
+    var myLocationButton: some View {
         Button {
             STLocationManager.shared.updateLocationForOneSec()
         } label: {
@@ -154,7 +150,7 @@ extension HomeView {
         .shadow(radius: 2)
     }
 
-    private var staccatoAddButton: some View {
+    var staccatoAddButton: some View {
         Button {
             isCreateStaccatoModalPresented = true
         } label: {
@@ -170,31 +166,23 @@ extension HomeView {
         .shadow(radius: 4, y: 4)
     }
 
-    private var categoryListModal: some View {
+    var categoryListModal: some View {
         VStack {
             Spacer()
 
             CategoryListView(navigationState)
-                .frame(height: modalHeight)
+                .frame(height: homeModalManager.modalHeight)
                 .background(Color.staccatoWhite)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
                 .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // 드래그 중에 모달의 높이를 변경
-                            let newHeight = max(100, modalHeight - value.translation.height)
-                            modalHeight = newHeight
+                            let newHeight: CGFloat = homeModalManager.modalHeight - value.translation.height
+                            homeModalManager.updateHeight(to: max(100, newHeight))
                         }
                         .onEnded { value in
-                            // 드래그 종료 후, 모달의 최종 높이를 설정
-                            if modalHeight < HomeModalSize.small.height + dragOffset {
-                                modalHeight = HomeModalSize.small.height  // small
-                            } else if modalHeight < HomeModalSize.medium.height + dragOffset {
-                                modalHeight = HomeModalSize.medium.height  // medium
-                            } else {
-                                modalHeight = HomeModalSize.large.height  // large
-                            }
+                            homeModalManager.setFinalSize(translationAmount: value.translation.height)
                         }
                 )
         }

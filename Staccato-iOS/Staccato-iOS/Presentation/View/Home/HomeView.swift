@@ -20,7 +20,6 @@ struct HomeView: View {
 
     // NOTE: 모달 크기
     @Environment(HomeModalManager.self) var homeModalManager
-    @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
 
     // NOTE: 화면 전환, Alert 매니저
     @Environment(NavigationState.self) var navigationState
@@ -179,19 +178,11 @@ extension HomeView {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // 드래그 중에 모달의 높이를 변경
-                            let newHeight = max(100, homeModalManager.modalHeight - value.translation.height)
-                            homeModalManager.modalHeight = newHeight
+                            let newHeight: CGFloat = homeModalManager.modalHeight - value.translation.height
+                            homeModalManager.updateHeight(to: max(100, newHeight))
                         }
                         .onEnded { value in
-                            // 드래그 종료 후, 모달의 최종 높이를 설정
-                            if homeModalManager.modalHeight < HomeModalSize.small.height + dragOffset {
-                                homeModalManager.modalHeight = HomeModalSize.small.height  // small
-                            } else if homeModalManager.modalHeight < HomeModalSize.medium.height + dragOffset {
-                                homeModalManager.modalHeight = HomeModalSize.medium.height  // medium
-                            } else {
-                                homeModalManager.modalHeight = HomeModalSize.large.height  // large
-                            }
+                            homeModalManager.setFinalSize(translationAmount: value.translation.height)
                         }
                 )
         }

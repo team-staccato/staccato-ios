@@ -73,7 +73,7 @@ struct StaccatoDetailView: View {
                 
                 .onChange(of: isCommentFocused) { oldValue, newValue in
                     withAnimation {
-                        if newValue { homeModalManager.modalHeight = HomeModalSize.large.height }
+                        if newValue { homeModalManager.updateSize(to: .large) }
                     }
                 }
                 

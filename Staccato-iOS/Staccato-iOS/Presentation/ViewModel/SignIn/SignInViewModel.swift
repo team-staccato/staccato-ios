@@ -57,3 +57,15 @@ extension SignInViewModel {
     }
 
 }
+
+
+// MARK: - 디버깅용 코드
+
+extension SignInViewModel {
+
+    func logout() {
+        AuthTokenManager.shared.clearToken()
+        isLoggedIn = false
+    }
+
+}

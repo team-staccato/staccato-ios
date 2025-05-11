@@ -15,13 +15,13 @@ struct CategoryDetailView: View {
     @Environment(StaccatoAlertManager.self) var alertManager
     @EnvironmentObject var homeViewModel: HomeViewModel
 
-    let categoryId: Int64
+    private let categoryId: Int64
     @ObservedObject var viewModel: CategoryViewModel
 
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
 
-    let horizontalInset: CGFloat = 16
+    private let horizontalInset: CGFloat = 16
 
     init(_ categoryId: Int64, _ categoryViewModel: CategoryViewModel) {
         self.categoryId = categoryId
@@ -85,11 +85,11 @@ struct CategoryDetailView: View {
 
 }
 
-// MARK: - UI Comonents
+// MARK: - UI Components
 
-extension CategoryDetailView {
+private extension CategoryDetailView {
 
-    private var headerSection: some View {
+    var headerSection: some View {
         ZStack(alignment: .bottomLeading) {
             KFImage(URL(string: viewModel.categoryDetail?.categoryThumbnailUrl ?? ""))
                 .resizable()
@@ -119,7 +119,7 @@ extension CategoryDetailView {
         }
     }
 
-    private var linearGradient: LinearGradient {
+    var linearGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(stops: [
                 .init(color: Color.staccatoBlack.opacity(0.2), location: 0.0),
@@ -132,7 +132,7 @@ extension CategoryDetailView {
     }
 
     @ViewBuilder
-    private var descriptionSection: some View {
+    var descriptionSection: some View {
         if let description = viewModel.categoryDetail?.description {
             VStack(spacing: 16) {
                 Text(description)
@@ -145,7 +145,7 @@ extension CategoryDetailView {
         }
     }
 
-    private var staccatoCollectionSection: some View {
+    var staccatoCollectionSection: some View {
         let staccatos = viewModel.categoryDetail?.staccatos ?? []
         let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset * 2 - 8) / 2
         let columns = [
@@ -185,7 +185,7 @@ extension CategoryDetailView {
         .padding(.horizontal, horizontalInset)
     }
 
-    private var emptyCollection: some View {
+    var emptyCollection: some View {
         VStack(spacing: 10) {
             Image(.staccatoCharacter)
                 .resizable()

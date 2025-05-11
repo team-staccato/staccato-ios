@@ -107,7 +107,7 @@ extension STLocationManager {
         }
 
         let geocoder = CLGeocoder()
-        let location = CLLocation(coordinate.latitude, coordinate.longitude)
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
         
         geocoder.reverseGeocodeLocation(location) { (placemarks, error) in
             guard let placemark = placemarks?.first else {

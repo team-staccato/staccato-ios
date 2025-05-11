@@ -103,9 +103,9 @@ struct HomeView: View {
 
 // MARK: - UI Components
 
-extension HomeView {
+private extension HomeView {
 
-    private var myPageButton: some View {
+    var myPageButton: some View {
         Button {
             isMyPagePresented = true
         } label: {
@@ -135,7 +135,7 @@ extension HomeView {
         }
     }
 
-    private var myLocationButton: some View {
+    var myLocationButton: some View {
         Button {
             STLocationManager.shared.updateLocationForOneSec()
         } label: {
@@ -150,7 +150,7 @@ extension HomeView {
         .shadow(radius: 2)
     }
 
-    private var staccatoAddButton: some View {
+    var staccatoAddButton: some View {
         Button {
             isCreateStaccatoModalPresented = true
         } label: {
@@ -166,7 +166,7 @@ extension HomeView {
         .shadow(radius: 4, y: 4)
     }
 
-    private var categoryListModal: some View {
+    var categoryListModal: some View {
         VStack {
             Spacer()
 

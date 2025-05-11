@@ -16,6 +16,7 @@ struct Staccato_iOSApp: App {
 
     private let navigationState = NavigationState()
     private let alertManager = StaccatoAlertManager()
+    private let homeModalManager = HomeModalManager()
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var mypageViewModel = MyPageViewModel()
     @StateObject private var signInViewModel: SignInViewModel
@@ -33,6 +34,7 @@ struct Staccato_iOSApp: App {
             Group {
                 if signInViewModel.isLoggedIn {
                     HomeView()
+                        .environment(homeModalManager)
                         .environmentObject(homeViewModel)
                         .environmentObject(mypageViewModel)
                 } else {

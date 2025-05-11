@@ -17,6 +17,8 @@ struct StaccatoEditorView: View {
     @State private var viewModel: StaccatoEditorViewModel
 
     @FocusState var isTitleFocused: Bool
+    
+    @State private var showLocationAlert: Bool = false
 
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
@@ -48,6 +50,13 @@ struct StaccatoEditorView: View {
                 saveButton
             }
         }
+        .onAppear {
+            if STLocationManager.shared.hasLocationAuthorization() {
+                STLocationManager.shared.getCurrentPlaceInfo { place in
+                    self.viewModel.selectedPlace = place
+                }
+            }
+        }
 
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
@@ -71,7 +80,17 @@ struct StaccatoEditorView: View {
         } message: {
             Text(viewModel.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
+
+        .alert("위치 권한 필요", isPresented: $showLocationAlert) {
+            Button("설정 열기") {
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
+            Button("취소", role: .cancel) {}
+        } message: {
+            Text("Staccato 사용을 위해 설정에서 위치 접근 권한을 허용해주세요.")
+        }
     }
+
 }
 
 #Preview("Create") {
@@ -297,10 +316,13 @@ extension StaccatoEditorView {
                 .padding(.bottom, 10)
 
             Button("현재 위치의 주소 불러오기") {
-                STLocationManager.shared.getCurrentPlaceInfo { place in
-                    self.viewModel.selectedPlace = place
+                if STLocationManager.shared.hasLocationAuthorization() {
+                    STLocationManager.shared.getCurrentPlaceInfo { place in
+                        self.viewModel.selectedPlace = place
+                    }
+                } else {
+                    showLocationAlert = true
                 }
-
             }
             .buttonStyle(.staccatoCapsule(icon: .location,
                                           font: .body4,

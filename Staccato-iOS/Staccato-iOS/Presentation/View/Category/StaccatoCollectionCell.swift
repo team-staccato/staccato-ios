@@ -13,7 +13,7 @@ struct StaccatoCollectionCell: View {
 
     private let staccato: StaccatoModel
 
-    let width: CGFloat = (ScreenUtils.width - 16 - 8) / 2
+    private let width: CGFloat = (ScreenUtils.width - 32 - 8) / 2
 
     init(_ staccato: StaccatoModel, width: CGFloat) {
         self.staccato = staccato
@@ -36,7 +36,9 @@ struct StaccatoCollectionCell: View {
                 HStack(spacing: 4) {
                     Image(.calendar)
 
-                    Text(staccato.visitedAt)
+                    let date = Date(fromISOString: staccato.visitedAt)
+                    let dateStr = date?.formattedAsRequestDate
+                    Text(dateStr ?? "")
                 }
                 .typography(.body4)
             }
@@ -52,7 +54,7 @@ extension StaccatoCollectionCell {
     private var linearGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(stops: [
-                .init(color: Color.staccatoBlack.opacity(0), location: 0.0),
+                .init(color: Color.staccatoBlack.opacity(0.1), location: 0.0),
                 .init(color: Color.staccatoBlack.opacity(0.5), location: 0.65),
                 .init(color: Color.staccatoBlack.opacity(0.7), location: 1.0)
             ]),

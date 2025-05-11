@@ -59,7 +59,7 @@ class StaccatoEditorViewModel {
         self.selectedPlace = StaccatoPlaceModel(
             name: staccato.placeName,
             address: staccato.address,
-            coordinate: CLLocationCoordinate2D(staccato.latitude, staccato.longitude)
+            coordinate: CLLocationCoordinate2D(latitude: staccato.latitude, longitude: staccato.longitude)
         )
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
     }

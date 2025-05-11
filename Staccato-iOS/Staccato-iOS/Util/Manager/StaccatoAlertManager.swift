@@ -10,7 +10,7 @@ import Foundation
 // MARK: - Alert Manager
 
 @Observable
-class StaccatoAlertManager {
+final class StaccatoAlertManager {
 
     var isPresented = false
     private(set) var configuration: StaccatoAlertConfiguration?

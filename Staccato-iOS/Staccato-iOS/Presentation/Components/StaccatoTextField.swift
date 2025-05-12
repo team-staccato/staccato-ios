@@ -85,7 +85,7 @@ struct StaccatoTextFieldStyle: TextFieldStyle {
 
             Spacer()
         }
-        .frame(height: 45)
+        .frame(minHeight: 45)
         .background(
             RoundedRectangle(cornerRadius: 5)
                 .foregroundStyle(.gray1)

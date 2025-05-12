@@ -126,8 +126,8 @@ struct StaccatoDetailView: View {
                 StaccatoEditorView(staccato: staccatoDetail)
             }
         }
-
     }
+
 }
 
 

@@ -24,13 +24,22 @@ final class HomeModalManager {
     }
     
     func setFinalSize(translationAmount: CGFloat) {
-        if translationAmount < -10 { // 위로 10 이상 드래그한 경우
+        // 위로 10 이상 드래그한 경우
+        if translationAmount < -10 {
             modalSize = modalSize.upperSize
-        } else if translationAmount > 10 { // 아래로 10 이상 드래그한 경우
+        }
+        
+        // 아래로 10 이상 드래그한 경우
+        else if translationAmount > 10 {
             modalSize = modalSize.lowerSize
+            dismissKeyboard() // small, medium 사이즈에서 키보드 비활성화
         }
 
         modalHeight = modalSize.height
+    }
+    
+    private func dismissKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
     enum ModalSize: CaseIterable {

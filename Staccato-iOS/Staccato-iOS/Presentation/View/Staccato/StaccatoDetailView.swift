@@ -306,18 +306,20 @@ private extension StaccatoDetailView {
         let placeholder = "코멘트 입력하기"
         
         return HStack(spacing: 6) {
-            TextField("", text: $commentText)
+            TextField("", text: $commentText, axis: .vertical)
+                .focused($isCommentFocused)
+                .lineLimit(4)
                 .textFieldStyle(StaccatoTextFieldStyle())
-                .overlay(alignment: .topLeading) {
+
+                .overlay(alignment: .leading) {
                     if !isCommentFocused && commentText.isEmpty {
                         Text(placeholder)
-                            .padding(12)
+                            .padding(.leading, 15)
                             .typography(.body1)
                             .foregroundStyle(.gray3)
                     }
                 }
-                .focused($isCommentFocused)
-            
+
             Button {
                 viewModel.postComment(commentText)
                 commentText.removeAll()
@@ -380,25 +382,24 @@ private extension StaccatoDetailView {
                 }
             }()
             
-            return ZStack {
-                Rectangle()
-                    .foregroundStyle(.gray1)
-                    .clipShape(RoundedCornerShape(corners: corners, radius: 10))
-                
-                Text(comment.content)
-                    .typography(.body3)
-                    .foregroundStyle(.staccatoBlack)
-                    .lineLimit(.max)
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-            }
+            return Text(comment.content)
+                .typography(.body3)
+                .foregroundStyle(.staccatoBlack)
+                .lineLimit(.max)
+                .multilineTextAlignment(.leading)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedCornerShape(corners: corners, radius: 10)
+                        .foregroundStyle(.gray1)
+                )
         }
         
         // actual comment view
         return Group {
             if isFromUser {
                 HStack(alignment: .top, spacing: 6) {
+                    Spacer()
                     VStack(alignment: .trailing, spacing: 6) {
                         nicknameText
                         commentView
@@ -413,6 +414,7 @@ private extension StaccatoDetailView {
                         nicknameText
                         commentView
                     }
+                    Spacer()
                 }
                 .padding(.trailing, 24)
             }

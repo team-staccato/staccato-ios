@@ -308,14 +308,14 @@ private extension StaccatoDetailView {
         return HStack(spacing: 6) {
             TextField("", text: $commentText, axis: .vertical)
                 .focused($isCommentFocused)
-                .lineLimit(4)
                 .textFieldStyle(StaccatoTextFieldStyle())
+                .lineLimit(4)
 
                 .overlay(alignment: .leading) {
                     if !isCommentFocused && commentText.isEmpty {
                         Text(placeholder)
                             .padding(.leading, 15)
-                            .typography(.body1)
+                            .typography(.body2)
                             .foregroundStyle(.gray3)
                     }
                 }

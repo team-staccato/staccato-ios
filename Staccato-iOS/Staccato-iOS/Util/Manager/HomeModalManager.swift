@@ -24,13 +24,13 @@ final class HomeModalManager {
     }
     
     func setFinalSize(translationAmount: CGFloat) {
-        // 위로 10 이상 드래그한 경우
-        if translationAmount < -10 {
+        // 위로 5 이상 드래그한 경우
+        if translationAmount < -5 {
             modalSize = modalSize.upperSize
         }
         
-        // 아래로 10 이상 드래그한 경우
-        else if translationAmount > 10 {
+        // 아래로 5 이상 드래그한 경우
+        else if translationAmount > 5 {
             modalSize = modalSize.lowerSize
             dismissKeyboard() // small, medium 사이즈에서 키보드 비활성화
         }

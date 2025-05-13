@@ -5,12 +5,12 @@ struct SignInView: View {
     @Environment(StaccatoAlertManager.self) var alertManager
     @State private var nickName: String = ""
     @State private var validationMessage: String?
-    @State private var isChanging: Bool = false
+    @State private var isLoading: Bool = false
     @State private var shakeOffset: CGFloat = 0
     @State private var validationTask: Task<Void, Never>?
     
     private var isButtonDisabled: Bool {
-        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isChanging
+        nickName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading
     }
     
     var body: some View {
@@ -38,8 +38,13 @@ struct SignInView: View {
                             if nickName.count > 10 {
                                 nickName = String(nickName.prefix(10))
                             } else {
-                                isChanging = true
-                                debounceValidation(text: nickName)
+                                viewModel.validateText(nickName: nickName)
+                                if !viewModel.isValid {
+                                    shakeAnimation()
+                                    validationMessage = "닉네임은 한글, 영어, 숫자, 띄어쓰기 마침표(.), 밑줄(_)만 사용할 수 있어요."
+                                } else {
+                                    validationMessage = ""
+                                }
                             }
                         }
                     
@@ -94,7 +99,10 @@ struct SignInView: View {
 extension SignInView {
 
     private func login() {
+        isLoading = true
         Task {
+            defer { isLoading = false }
+            
             do {
                 let _ = try await viewModel.login(nickName: nickName)
             } catch let error as NetworkError {
@@ -128,30 +136,6 @@ extension SignInView {
                 withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
                     shakeOffset = value
                 }
-            }
-        }
-    }
-}
-
-//MARK: Debounce
-extension SignInView {
-    private func debounceValidation(text: String) {
-        isChanging = true
-        validationTask?.cancel()
-        
-        validationTask = Task {
-            try? await Task.sleep(nanoseconds: 300_000_000)
-            if Task.isCancelled { return }
-            
-            await MainActor.run {
-                viewModel.validateText(nickName: text)
-                if !viewModel.isValid {
-                    shakeAnimation()
-                    validationMessage = "한글, 영어, 마침표, 언더바(_)만 사용 가능합니다"
-                } else {
-                    validationMessage = ""
-                }
-                isChanging = false
             }
         }
     }

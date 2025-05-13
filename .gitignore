@@ -127,6 +127,4 @@ iOSInjectionProject/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
-Config.xcconfig
-Release.xcconfig
-Debug.xcconfig
+*.xcconfig

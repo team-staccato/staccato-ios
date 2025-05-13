@@ -77,7 +77,7 @@ struct StaccatoTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<_Label>) -> some View {
         HStack {
             configuration
-                .typography(.body1)
+                .typography(.body2)
                 .foregroundStyle(.staccatoBlack)
                 .padding(12)
                 .autocorrectionDisabled()
@@ -85,7 +85,7 @@ struct StaccatoTextFieldStyle: TextFieldStyle {
 
             Spacer()
         }
-        .frame(height: 45)
+        .frame(minHeight: 45)
         .background(
             RoundedRectangle(cornerRadius: 5)
                 .foregroundStyle(.gray1)

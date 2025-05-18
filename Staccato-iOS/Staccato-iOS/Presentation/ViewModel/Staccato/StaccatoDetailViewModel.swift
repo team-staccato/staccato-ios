@@ -47,12 +47,15 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    func delteStaccato(_ staccatoId: Int64) {
+    @MainActor
+    func deleteStaccato(_ staccatoId: Int64, isSuccess: @escaping ((Bool) -> Void)) {
         Task {
             do {
                 try await STService.shared.staccatoService.deleteStaccato(staccatoId)
+                isSuccess(true)
             } catch {
                 print("Error deleting staccato: \(error.localizedDescription)")
+                isSuccess(false)
             }
         }
     }

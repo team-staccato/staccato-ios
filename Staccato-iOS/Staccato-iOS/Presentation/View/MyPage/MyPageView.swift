@@ -19,38 +19,41 @@ struct MyPageView: View {
     @State var isPhotoPickerPresented = false
     
     @State private var photoItem: PhotosPickerItem?
+    @State private var capturedImage: UIImage?
     @State private var selectedPhoto: UIImage?
     @State private var showToast = false
     
     var body: some View {
-        VStack {
-            profileImageSection
-                .padding(.bottom, 24)
-                .padding(.top, 35)
-            
-            userNameSection
-                .padding(.bottom, 16)
-            
-            recoveryCodeCopyButton
-                .padding(.bottom, 40)
-            
-            Divider()
-            
-            menuSection
-            
-            Spacer()
-        }
-        .staccatoModalBar(title: "마이페이지", titlePosition: .center)
-        .overlay(
-            Group {
-                if showToast {
-                    toastMessage
-                }
-            },
-            alignment: .bottom
-        )
-        .onAppear {
-            viewModel.fetchProfile()
+        NavigationView {
+            VStack {
+                profileImageSection
+                    .padding(.bottom, 24)
+                    .padding(.top, 35)
+                
+                userNameSection
+                    .padding(.bottom, 16)
+                
+                recoveryCodeCopyButton
+                    .padding(.bottom, 40)
+                
+                Divider()
+                
+                menuSection
+                
+                Spacer()
+            }
+            .staccatoModalBar(title: "마이페이지", titlePosition: .center)
+            .overlay(
+                Group {
+                    if showToast {
+                        toastMessage
+                    }
+                },
+                alignment: .bottom
+            )
+            .onAppear {
+                viewModel.fetchProfile()
+            }
         }
     }
 }
@@ -80,6 +83,7 @@ extension MyPageView {
                         case .success(let image):
                             image
                                 .resizable()
+                                .scaledToFill()
                                 .clipShape(Circle())
                         case .failure:
                             Image(.personCircleFill)
@@ -127,10 +131,12 @@ extension MyPageView {
         .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
         
         .fullScreenCover(isPresented: $showCamera) {
-            CameraView(selectedImage: $selectedPhoto)
+            CameraView(selectedImage: $capturedImage)
                 .background(.staccatoBlack)
         }
-        
+        .onChange(of: capturedImage, { _, newValue in
+            loadTransferable(from: newValue)
+        })
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
         }
@@ -176,7 +182,6 @@ extension MyPageView {
             .padding(.bottom, 50)
             .transition(.opacity)
     }
-
     
     private var menuSection: some View {
         VStack {
@@ -256,6 +261,12 @@ extension MyPageView {
                 viewModel.uploadProfileImage(image!)
                 selectedPhoto = image
             }
+        }
+    }
+    private func loadTransferable(from image: UIImage?) {
+        Task {
+            viewModel.uploadProfileImage(image!)
+            selectedPhoto = image
         }
     }
 }

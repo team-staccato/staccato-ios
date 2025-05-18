@@ -79,6 +79,6 @@ struct EmbedWebView: View {
                 ProgressView()
             }
         }
-        .staccatoNavigationBar(title: title, titlePosition: .center)
+        .staccatoModalBar(title: title, titlePosition: .center)
     }
 }

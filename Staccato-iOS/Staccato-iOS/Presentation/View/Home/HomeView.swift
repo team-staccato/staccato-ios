@@ -13,27 +13,25 @@ import Kingfisher
 struct HomeView: View {
 
     // MARK: - Properties
+
     //NOTE: View, ViewModel
-    @EnvironmentObject var viewModel: HomeViewModel
-    @EnvironmentObject var mypageViewModel: MyPageViewModel
+    @EnvironmentObject private var viewModel: HomeViewModel
+    @EnvironmentObject private var mypageViewModel: MyPageViewModel
     private let mapView = GMSMapViewRepresentable()
 
-    // NOTE: 모달 크기
-    @Environment(HomeModalManager.self) var homeModalManager
-
-    // NOTE: 화면 전환, Alert 매니저
-    @Environment(NavigationState.self) var navigationState
-    @Environment(StaccatoAlertManager.self) var alertManager
-    @State private var isMyPagePresented = false
-
-    // NOTE: 위치 접근 권한
+    // NOTE: Managers
+    @Environment(HomeModalManager.self) private var homeModalManager
+    @Environment(NavigationState.self) private var navigationState
+    @Environment(StaccatoAlertManager.self) private var alertManager
     @State private var locationAuthorizationManager = STLocationManager.shared
 
-    // NOTE: Staccato Create Modal
-    @State private var isCreateStaccatoModalPresented = false
-
-    // NOTE: 앱 업데이트 Alert 여부
+    // NOTE: UI Visibility
     @State private var showUpdateAlert = false
+    @State private var isMyPagePresented = false
+    @State private var isCreateStaccatoModalPresented = false
+    private var isStaccatoAddButtonVisible: Bool {
+        homeModalManager.modalSize != .large
+    }
 
 
     // MARK: - Body
@@ -51,10 +49,12 @@ struct HomeView: View {
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .topTrailing)
 
-            staccatoAddButton
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                .padding(.trailing, 12)
-                .padding(.bottom, (homeModalManager.modalHeight - ScreenUtils.safeAreaInsets.bottom) + 12)
+            if isStaccatoAddButtonVisible {
+                staccatoAddButton
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(.trailing, 12)
+                    .padding(.bottom, (homeModalManager.modalHeight - ScreenUtils.safeAreaInsets.bottom) + 12)
+            }
 
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)

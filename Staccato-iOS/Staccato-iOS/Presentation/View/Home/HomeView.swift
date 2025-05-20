@@ -43,7 +43,6 @@ struct HomeView: View {
             mapView
                 .background(Color.red)
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, homeModalManager.modalHeight - 40)
 
             myPageButton
                 .padding(10)

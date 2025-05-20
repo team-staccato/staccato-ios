@@ -52,9 +52,9 @@ struct HomeView: View {
                 .frame(maxWidth: .infinity, alignment: .topTrailing)
 
             staccatoAddButton
-                .padding(.trailing, 12)
-                .padding(.bottom, homeModalManager.modalHeight - 20)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                .padding(.trailing, 12)
+                .padding(.bottom, (homeModalManager.modalHeight - ScreenUtils.safeAreaInsets.bottom) + 12)
 
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)

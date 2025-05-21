@@ -43,6 +43,11 @@ struct CategoryEditorView: View {
 
                     periodSettingSection
                         .padding(.bottom, 24)
+
+                    if vm.editorType == .create {
+                        shareSettingSection
+                            .padding(.bottom, 24)
+                    }
                 }
                 .padding(.horizontal, 4)
 
@@ -239,7 +244,7 @@ extension CategoryEditorView {
                     .toggleStyle(StaccatoToggleStyle())
             }
 
-            Text("'여행'과 같은 카테고리라면 기간을 선택할 수 있어요.")
+            Text("여행처럼 시작일과 종료일을 설정할 수 있어요.")
                 .typography(.body4)
                 .foregroundStyle(.gray3)
                 .padding(.bottom, 12)
@@ -261,4 +266,26 @@ extension CategoryEditorView {
             }
         }
     }
+
+    // MARK: Share Setting Section
+    private var shareSettingSection: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text("카테고리 공유")
+                    .foregroundStyle(.staccatoBlack)
+                    .typography(.title2)
+
+                Spacer()
+
+                Toggle("", isOn: $vm.isShareSettingActive)
+                    .toggleStyle(StaccatoToggleStyle())
+            }
+
+            Text("친구들을 초대해 함께 카테고리를 채워보세요.")
+                .typography(.body4)
+                .foregroundStyle(.gray3)
+                .padding(.bottom, 12)
+        }
+    }
+
 }

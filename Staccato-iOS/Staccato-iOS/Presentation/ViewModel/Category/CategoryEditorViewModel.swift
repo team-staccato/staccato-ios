@@ -11,6 +11,7 @@ import PhotosUI
 
 @Observable
 final class CategoryEditorViewModel {
+
     // MARK: - Photo Related
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
@@ -30,6 +31,9 @@ final class CategoryEditorViewModel {
     var selectedStartDate: Date?
     var selectedEndDate: Date?
     var isPeriodSheetPresented = false
+
+    // MARK: - Share
+    var isShareSettingActive = false
 
     // MARK: - Alert
     var catchError = false
@@ -165,8 +169,10 @@ final class CategoryEditorViewModel {
         }
     }
 
+    // MARK: - Editor Type
     enum CategoryEditorType {
         case modify
         case create
     }
+
 }

@@ -85,6 +85,11 @@ struct CategoryEditorView: View {
             StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
         }
 
+        .sheet(isPresented: $vm.isColorPalettePresented) {
+            colorPaletteModal
+                .presentationDetents([.height(410)])
+        }
+
         .alert(vm.errorTitle ?? "", isPresented: $vm.catchError) {
             Button("확인") {
                 vm.catchError = false
@@ -235,30 +240,70 @@ extension CategoryEditorView {
 
     // MARK: Color Setting Section
     private var colorSettingSection: some View {
-        VStack(alignment: .leading) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("카테고리 색상 선택")
-                        .typography(.title2)
-                        .foregroundStyle(.staccatoBlack)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("카테고리 색상 선택")
+                    .typography(.title2)
+                    .foregroundStyle(.staccatoBlack)
+                
+                Text("지도 위에서 보여질 마커의 색을 선택해주세요.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+            }
 
-                    Text("지도 위에서 보여질 마커의 색을 선택해주세요.")
-                        .typography(.body4)
-                        .foregroundStyle(.gray3)
-                }
+            Spacer()
 
-                Spacer()
+            Button {
+                vm.isColorPalettePresented = true
+            } label: {
+                vm.categoryColor.markerImage
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 26,height: 32)
+            }
+            .padding(.trailing, 10)
+            .padding(.top, 3)
+        }
+    }
+    
+    private var colorPaletteModal: some View {
+        let spacing = (ScreenUtils.width - 48 - 28 * 6) / 5
+        let columns = Array(repeating: GridItem(.flexible(), spacing: spacing), count: 6)
+        vm.categoryColorTemp = vm.categoryColor
 
-                Button {
-                    print("🎨 색상 팔레트 띄우기")
-                } label: {
-                    vm.categoryColor.markerImage
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 32)
+        return VStack(alignment: .leading) {
+            Text("색상을 선택해 주세요")
+                .typography(.title2)
+                .foregroundStyle(.staccatoBlack)
+                .padding(.bottom, 24)
+
+            LazyVGrid(columns: columns, spacing: spacing) {
+                ForEach(CategoryColorType.allCases, id: \.self) { colorType in
+                    ZStack {
+                        Circle()
+                            .fill(colorType.color)
+                            .frame(width: 28, height: 28)
+                            .onTapGesture {
+                                vm.categoryColorTemp = colorType
+                            }
+                        if vm.categoryColorTemp == colorType {
+                            Image(StaccatoIcon.checkmark)
+                                .font(.system(size: 20, weight: .heavy))
+                                .foregroundColor(.white)
+                        }
+                    }
                 }
             }
+
+            Spacer()
+
+            Button("확인") {
+                vm.categoryColor = vm.categoryColorTemp
+                vm.isColorPalettePresented = false
+            }
+            .buttonStyle(.staccatoFullWidth)
         }
+        .padding(24)
     }
 
     // MARK: Period Setting Section

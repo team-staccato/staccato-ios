@@ -9,17 +9,17 @@ import SwiftUI
 
 enum CategoryColorType: CaseIterable {
 
-    case pink, pinkLight
-    case red, RedLight
-    case orange, orangeLight
-    case yellow, yellowLight
-    case green, greenLight
-    case mint, mintLight
-    case blue, blueLight
-    case staccatoBlue, staccatoBlueLight
-    case purple, purpleLight
-    case brown, brownLight
-    case gray, grayLight
+    case pinkLight, pink
+    case RedLight, red
+    case orangeLight, orange
+    case yellowLight, yellow
+    case greenLight, green
+    case mintLight, mint
+    case blueLight, blue
+    case staccatoBlueLight, staccatoBlue
+    case purpleLight, purple
+    case brownLight, brown
+    case grayLight, gray
 
     static func fromServerKey(_ key: String) -> CategoryColorType? {
         return allCases.first { $0.serverKey == key }

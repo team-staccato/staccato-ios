@@ -29,6 +29,7 @@ final class CategoryEditorViewModel {
     // MARK: - Color
     var isColorPalettePresented = false
     var categoryColor: CategoryColorType = .grayLight
+    var categoryColorTemp: CategoryColorType = .grayLight
 
     // MARK: - Period
     var isPeriodSettingActive = false

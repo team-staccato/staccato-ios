@@ -30,7 +30,7 @@ struct StaccatoToggleStyle: ToggleStyle {
                 .foregroundStyle(.staccatoWhite)
                 .padding(2)
         }
-        .frame(width: 48, height: 20)
+        .frame(width: 43, height: 20)
         .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
         .onTapGesture {
             configuration.isOn.toggle()

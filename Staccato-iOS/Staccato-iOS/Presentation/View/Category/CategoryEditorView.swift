@@ -263,21 +263,22 @@ extension CategoryEditorView {
 
     // MARK: Period Setting Section
     private var periodSettingSection: some View {
-        VStack(alignment: .leading) {
+        VStack {
             HStack {
-                Text("기간 설정")
-                    .foregroundStyle(.staccatoBlack)
-                    .typography(.title2)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("기간 설정")
+                        .foregroundStyle(.staccatoBlack)
+                        .typography(.title2)
+                    Text("여행처럼 시작일과 종료일을 설정할 수 있어요.")
+                        .typography(.body4)
+                        .foregroundStyle(.gray3)
+                }
 
                 Spacer()
 
                 Toggle("", isOn: $vm.isPeriodSettingActive)
                     .toggleStyle(StaccatoToggleStyle())
             }
-
-            Text("여행처럼 시작일과 종료일을 설정할 수 있어요.")
-                .typography(.body4)
-                .foregroundStyle(.gray3)
 
             if vm.isPeriodSettingActive {
                 Button {
@@ -299,21 +300,32 @@ extension CategoryEditorView {
 
     // MARK: Share Setting Section
     private var shareSettingSection: some View {
-        VStack(alignment: .leading) {
-            HStack {
+        HStack {
+            VStack(alignment: .leading, spacing: 0) {
                 Text("카테고리 공유")
                     .foregroundStyle(.staccatoBlack)
                     .typography(.title2)
+                    .padding(.bottom, 5)
 
-                Spacer()
+                Text("친구들을 초대해 함께 카테고리를 채워보세요.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+                    .padding(.bottom, 3)
 
-                Toggle("", isOn: $vm.isShareSettingActive)
-                    .toggleStyle(StaccatoToggleStyle())
+                HStack(spacing: 3) {
+                    Image(StaccatoIcon.infoCircle)
+                        .resizable()
+                        .frame(width: 9, height: 9)
+                    Text("한 번 설정하면 변경할 수 없어요")
+                        .typography(.body5)
+                }
+                .foregroundStyle(.staccatoBlue70)
             }
 
-            Text("친구들을 초대해 함께 카테고리를 채워보세요.")
-                .typography(.body4)
-                .foregroundStyle(.gray3)
+            Spacer()
+
+            Toggle("", isOn: $vm.isShareSettingActive)
+                .toggleStyle(StaccatoToggleStyle())
         }
     }
 

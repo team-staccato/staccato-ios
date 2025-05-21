@@ -35,6 +35,7 @@ enum StaccatoIcon: String {
     // MARK: - Category Creation/Update
     case camera = "camera"
     case xCircleFill = "x.circle.fill"
+    case infoCircle = "info.circle"
 
     // MARK: - Staccato Creation/Update
     case location = "location"

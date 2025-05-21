@@ -41,6 +41,9 @@ struct CategoryEditorView: View {
                     descriptionInputSection
                         .padding(.bottom, 24)
 
+                    colorSettingSection
+                        .padding(.bottom, 24)
+
                     periodSettingSection
                         .padding(.bottom, 24)
 
@@ -230,6 +233,34 @@ extension CategoryEditorView {
         }
     }
 
+    // MARK: Color Setting Section
+    private var colorSettingSection: some View {
+        VStack(alignment: .leading) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("카테고리 색상 선택")
+                        .typography(.title2)
+                        .foregroundStyle(.staccatoBlack)
+
+                    Text("지도 위에서 보여질 마커의 색을 선택해주세요.")
+                        .typography(.body4)
+                        .foregroundStyle(.gray3)
+                }
+
+                Spacer()
+
+                Button {
+                    print("🎨 색상 팔레트 띄우기")
+                } label: {
+                    vm.categoryColor.markerImage
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 32)
+                }
+            }
+        }
+    }
+
     // MARK: Period Setting Section
     private var periodSettingSection: some View {
         VStack(alignment: .leading) {
@@ -247,7 +278,6 @@ extension CategoryEditorView {
             Text("여행처럼 시작일과 종료일을 설정할 수 있어요.")
                 .typography(.body4)
                 .foregroundStyle(.gray3)
-                .padding(.bottom, 12)
 
             if vm.isPeriodSettingActive {
                 Button {
@@ -284,7 +314,6 @@ extension CategoryEditorView {
             Text("친구들을 초대해 함께 카테고리를 채워보세요.")
                 .typography(.body4)
                 .foregroundStyle(.gray3)
-                .padding(.bottom, 12)
         }
     }
 

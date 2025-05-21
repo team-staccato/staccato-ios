@@ -16,7 +16,7 @@ enum CategoryColorType: CaseIterable {
     case green, greenLight
     case mint, mintLight
     case blue, blueLight
-    case staccatoBlue, staccatoBlueLight
+    case indigo, indigoLight
     case purple, purpleLight
     case brown, brownLight
     case gray, grayLight
@@ -41,8 +41,8 @@ enum CategoryColorType: CaseIterable {
         case .mintLight: return .markerMintLight
         case .blue: return .markerBlue
         case .blueLight: return .markerBlueLight
-        case .staccatoBlue: return .staccatoBlue
-        case .staccatoBlueLight: return .markerStaccatoBlueLight
+        case .indigo: return .markerIndigo
+        case .indigoLight: return .markerIndigoLight
         case .purple: return .markerPurple
         case .purpleLight: return .markerPurpleLight
         case .brown: return .markerBrown
@@ -61,7 +61,7 @@ enum CategoryColorType: CaseIterable {
         case .greenLight: return .markerTxtGreenLight
         case .mintLight: return .markerTxtMintLight
         case .blueLight: return .markerTxtBlueLight
-        case .staccatoBlueLight: return .markerTxtStaccatoBlueLight
+        case .indigoLight: return .markerTxtIndigoLight
         case .purpleLight: return .markerTxtPurpleLight
         case .brownLight: return .markerTxtBrownLight
         case .grayLight: return .markerTxtGrayLight
@@ -69,31 +69,30 @@ enum CategoryColorType: CaseIterable {
         }
     }
 
-    // TODO: 명세 나오면 수정하기
     var serverKey: String {
         switch self {
-        case .pink: return "PINK"
-        case .pinkLight: return "PINK_LIGHT"
-        case .red: return "RED"
-        case .RedLight: return "RED_LIGHT"
-        case .orange: return "ORANGE"
-        case .orangeLight: return "ORANGE_LIGHT"
-        case .yellow: return "YELLOW"
-        case .yellowLight: return "YELLOW_LIGHT"
-        case .green: return "GREEN"
-        case .greenLight: return "GREEN_LIGHT"
-        case .mint: return "MINT"
-        case .mintLight: return "MINT_LIGHT"
-        case .blue: return "BLUE"
-        case .blueLight: return "BLUE_LIGHT"
-        case .staccatoBlue: return "STACCATO_BLUE"
-        case .staccatoBlueLight: return "STACCATO_BLUE_LIGHT"
-        case .purple: return "PURPLE"
-        case .purpleLight: return "PURPLE_LIGHT"
-        case .brown: return "BROWN"
-        case .brownLight: return "BROWN_LIGHT"
-        case .gray: return "GRAY"
-        case .grayLight: return "GRAY_LIGHT"
+        case .pink: return "pink"
+        case .pinkLight: return "light_pink"
+        case .red: return "red"
+        case .RedLight: return "light_red"
+        case .orange: return "orange"
+        case .orangeLight: return "light_orange"
+        case .yellow: return "yellow"
+        case .yellowLight: return "light_yellow"
+        case .green: return "green"
+        case .greenLight: return "light_green"
+        case .mint: return "mint"
+        case .mintLight: return "light_mint"
+        case .blue: return "blue"
+        case .blueLight: return "light_blue"
+        case .indigo: return "indigo"
+        case .indigoLight: return "light_indigo"
+        case .purple: return "purple"
+        case .purpleLight: return "light_purple"
+        case .brown: return "brown"
+        case .brownLight: return "light_brown"
+        case .gray: return "gray"
+        case .grayLight: return "light_gray"
         }
     }
 

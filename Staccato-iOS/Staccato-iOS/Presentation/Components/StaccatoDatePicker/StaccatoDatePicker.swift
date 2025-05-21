@@ -53,9 +53,9 @@ struct StaccatoDatePicker: View {
 extension StaccatoDatePicker {
     private var titleText: String {
         guard let startDate else { return "날짜를 선택해주세요." }
-        guard let endDate else { return "\(startDate.formattedAsMonthAndDay)~"}
+        guard let endDate else { return "\(startDate.formattedAsMonthAndDayKR)~"}
 
-        return "\(startDate.formattedAsMonthAndDay)~\(endDate.formattedAsMonthAndDay)"
+        return "\(startDate.formattedAsMonthAndDayKR)~\(endDate.formattedAsMonthAndDayKR)"
     }
 
     private var selectMonthSection: some View {

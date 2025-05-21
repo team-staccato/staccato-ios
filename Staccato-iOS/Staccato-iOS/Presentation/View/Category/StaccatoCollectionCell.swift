@@ -11,11 +11,11 @@ import Kingfisher
 
 struct StaccatoCollectionCell: View {
 
-    private let staccato: StaccatoModel
+    private let staccato: CategoryDetailModel.StaccatoModel
 
     private let width: CGFloat = (ScreenUtils.width - 32 - 8) / 2
 
-    init(_ staccato: StaccatoModel, width: CGFloat) {
+    init(_ staccato: CategoryDetailModel.StaccatoModel, width: CGFloat) {
         self.staccato = staccato
     }
 

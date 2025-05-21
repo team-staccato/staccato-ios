@@ -13,27 +13,35 @@ struct CategoryDetailModel {
     let categoryThumbnailUrl: String?
     let categoryTitle: String
     let description: String?
+    let categoryColor: String
     let startAt: String?
     let endAt: String?
-    let mates: [MateResponse]
+    let isShared: Bool
+    let members: [MemberModel]
     let staccatos: [StaccatoModel]
     
+    
+    struct MemberModel: Decodable {
+        let memberId: Int64
+        let nickname: String
+        let memberImageUrl: String?
+        let memberRole: String
+    }
+
+    struct StaccatoModel: Identifiable {
+
+        let id: Int64
+
+        let staccatoId: Int64
+        let staccatoTitle: String
+        let staccatoImageUrl: String?
+        let visitedAt: String
+
+    }
 }
 
 
-struct StaccatoModel: Identifiable {
-    
-    let id: UUID
-    
-    let staccatoId: Int64
-    let staccatoTitle: String
-    let staccatoImageUrl: String?
-    let visitedAt: String
-    
-}
-
-
-// MARK: - Initializer
+// MARK: - Mapping: DTO -> Domain Model
 
 extension CategoryDetailModel {
     
@@ -42,23 +50,42 @@ extension CategoryDetailModel {
         self.categoryThumbnailUrl = dto.categoryThumbnailUrl
         self.categoryTitle = dto.categoryTitle
         self.description = dto.description
+        self.categoryColor = dto.categoryColor
         self.startAt = dto.startAt
         self.endAt = dto.endAt
-        self.mates = dto.mates
-        self.staccatos = dto.staccatos.map {
-            StaccatoModel(
-                id: UUID(),
-                staccatoId: $0.staccatoId,
-                staccatoTitle: $0.staccatoTitle,
-                staccatoImageUrl: $0.staccatoImageUrl,
-                visitedAt: $0.visitedAt
-            )
-        }
+        self.isShared = dto.isShared
+        self.members = dto.members.map { CategoryDetailModel.MemberModel(from: $0) }
+        self.staccatos = dto.staccatos.map {CategoryDetailModel.StaccatoModel(from: $0) }
     }
-    
+
 }
 
-// MARK: Type Casting
+extension CategoryDetailModel.MemberModel {
+
+    init(from dto: GetCategoryDetailResponse.MemberResponse) {
+        self.memberId = dto.memberId
+        self.nickname = dto.nickname
+        self.memberImageUrl = dto.memberImageUrl
+        self.memberRole = dto.memberRole
+    }
+
+}
+
+extension CategoryDetailModel.StaccatoModel {
+
+    init(from dto: GetCategoryDetailResponse.StaccatoResponse) {
+        self.id = dto.staccatoId
+        self.staccatoId = dto.staccatoId
+        self.staccatoTitle = dto.staccatoTitle
+        self.staccatoImageUrl = dto.staccatoImageUrl
+        self.visitedAt = dto.visitedAt
+    }
+
+}
+
+
+// MARK: - Mapping: CategoryDetail -> Category
+
 extension CategoryDetailModel {
     func toCategoryModel() -> CategoryModel {
         return CategoryModel(
@@ -66,8 +93,18 @@ extension CategoryDetailModel {
             categoryId: self.categoryId,
             thumbNailURL: self.categoryThumbnailUrl,
             title: self.categoryTitle,
+            categoryColor: self.categoryColor,
             startAt: self.startAt,
-            endAt: self.endAt
+            endAt: self.endAt,
+            isShared: self.isShared,
+            members: self.members.map {
+                CategoryModel.MemberModel(
+                    memberId: $0.memberId,
+                    nickname: $0.nickname,
+                    membrImageUrl: $0.memberImageUrl
+                )
+            },
+            staccatoCount: self.staccatos.count
         )
     }
 }

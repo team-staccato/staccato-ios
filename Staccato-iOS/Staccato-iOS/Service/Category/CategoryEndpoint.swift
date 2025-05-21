@@ -21,7 +21,7 @@ extension CategoryEndpoint: APIEndpoint {
     var path: String {
         switch self {
         case .getCategoryList, .createCategory:
-            return "/categories"
+            return "/v3/categories"
         case .getCategoryDetail(let categoryId),
              .deleteCategory(let categoryId),
              .modifyCategory(_, let categoryId):

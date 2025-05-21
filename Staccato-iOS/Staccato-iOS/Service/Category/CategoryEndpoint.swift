@@ -20,11 +20,12 @@ extension CategoryEndpoint: APIEndpoint {
 
     var path: String {
         switch self {
-        case .getCategoryList, .createCategory:
+        case .getCategoryList, .createCategory: 
             return "/v3/categories"
-        case .getCategoryDetail(let categoryId),
-             .deleteCategory(let categoryId),
-             .modifyCategory(_, let categoryId):
+        case .getCategoryDetail(let categoryId):
+            return "/v3/categories/\(categoryId)"
+        case .deleteCategory(let categoryId),
+                .modifyCategory(_, let categoryId):
             return "/categories/\(categoryId)"
         }
     }

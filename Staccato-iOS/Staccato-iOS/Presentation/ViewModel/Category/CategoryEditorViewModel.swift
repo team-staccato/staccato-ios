@@ -133,10 +133,11 @@ final class CategoryEditorViewModel {
     }
 
     func modifyCategory() async {
-        let query = ModifyCategoryRequestQuery(
+        let query = PutCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
             description: self.categoryDescription,
+            categoryColor: self.categoryColor.serverKey,
             startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
             endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
         )
@@ -144,7 +145,7 @@ final class CategoryEditorViewModel {
         guard let id = self.id else { return }
 
         do {
-            try await STService.shared.categoryService.modifyCategory(id: id, query)
+            try await STService.shared.categoryService.putCategory(id: id, query)
             self.uploadSuccess = true
             try await categoryViewModel.getCategoryList()
             await categoryViewModel.getCategoryDetail(id)

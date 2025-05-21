@@ -10,7 +10,7 @@ import Alamofire
 enum CategoryEndpoint {
     case getCategoryList(_ query: GetCategoryListRequestQuery)
     case getCategoryDetail(_ categoryId: Int64)
-    case createCategory(_ query: CreateCategoryRequestQuery)
+    case postCategory(_ requestBody: PostCategoryRequest)
 
     case modifyCategory(_ query: ModifyCategoryRequestQuery, id: Int64)
     case deleteCategory(_ categoryId: Int64)
@@ -20,8 +20,10 @@ extension CategoryEndpoint: APIEndpoint {
 
     var path: String {
         switch self {
-        case .getCategoryList, .createCategory:
+        case .getCategoryList:
             return "/categories"
+        case .postCategory:
+            return "/v3/categories"
         case .getCategoryDetail(let categoryId),
              .deleteCategory(let categoryId),
              .modifyCategory(_, let categoryId):
@@ -34,7 +36,7 @@ extension CategoryEndpoint: APIEndpoint {
         case .modifyCategory: return .put
         case .getCategoryList, .getCategoryDetail:
             return .get
-        case .createCategory:
+        case .postCategory:
             return .post
         case .deleteCategory:
             return .delete
@@ -45,7 +47,7 @@ extension CategoryEndpoint: APIEndpoint {
         switch self {
         case .getCategoryList, .getCategoryDetail, .deleteCategory:
             return URLEncoding.queryString
-        case .createCategory, .modifyCategory:
+        case .postCategory, .modifyCategory:
             return JSONEncoding.default
         }
     }
@@ -61,8 +63,8 @@ extension CategoryEndpoint: APIEndpoint {
                 params["sort"] = sort
             }
             return params.isEmpty ? nil : params
-        case .createCategory(let query):
-            return query.toDictionary()
+        case .postCategory(let requestBody):
+            return requestBody.toDictionary()
         case .modifyCategory(let query, _):
             return query.toDictionary()
         default:

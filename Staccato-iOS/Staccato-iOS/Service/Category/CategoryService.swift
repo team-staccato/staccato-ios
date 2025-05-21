@@ -13,7 +13,7 @@ protocol CategoryServiceProtocol {
 
     func getCategoryDetail(_ categoryId: Int64) async throws -> GetCategoryDetailResponse
 
-    func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse
+    func postCategory(_ requestBody: PostCategoryRequest) async throws -> PostCategoryResponse
 
     func modifyCategory(id: Int64, _ query: ModifyCategoryRequestQuery) async throws
 
@@ -44,10 +44,10 @@ class CategoryService: CategoryServiceProtocol {
     }
 
     @discardableResult
-    func createCategory(_ query: CreateCategoryRequestQuery) async throws -> CreateCategoryResponse {
+    func postCategory(_ requestBody: PostCategoryRequest) async throws -> PostCategoryResponse {
         guard let categoryId = try await NetworkService.shared.request(
-            endpoint: CategoryEndpoint.createCategory(query),
-            responseType: CreateCategoryResponse.self
+            endpoint: CategoryEndpoint.postCategory(requestBody),
+            responseType: PostCategoryResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed
         }

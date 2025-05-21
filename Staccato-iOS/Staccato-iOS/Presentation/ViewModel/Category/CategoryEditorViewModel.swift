@@ -112,16 +112,18 @@ final class CategoryEditorViewModel {
     }
 
     func createCategory() async {
-        let query = CreateCategoryRequestQuery(
+        let body = PostCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
             description: self.categoryDescription,
-            startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
-            endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
+            categoryColor: self.categoryColor.serverKey,
+            startAt: self.selectedStartDate?.formattedAsRequestDate,
+            endAt: self.selectedEndDate?.formattedAsRequestDate,
+            isShared: self.isShareSettingActive
         )
 
         do {
-            try await STService.shared.categoryService.createCategory(query)
+            try await STService.shared.categoryService.postCategory(body)
             try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
         } catch {

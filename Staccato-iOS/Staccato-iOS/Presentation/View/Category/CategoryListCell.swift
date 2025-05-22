@@ -106,7 +106,7 @@ private extension CategoryListCell {
     var peopleWithStack: some View {
         HStack(spacing: -5) {
             ForEach(categoryInfo.members, id: \.self) { member in
-                if let profileStr = member.membrImageUrl,
+                if let profileStr = member.memberImageUrl,
                    let profileURL = URL(string: profileStr) {
                     KFImage(profileURL)
                         .resizable()

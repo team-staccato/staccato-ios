@@ -101,7 +101,7 @@ extension CategoryDetailModel {
                 CategoryModel.MemberModel(
                     memberId: $0.memberId,
                     nickname: $0.nickname,
-                    membrImageUrl: $0.memberImageUrl
+                    memberImageUrl: $0.memberImageUrl
                 )
             },
             staccatoCount: self.staccatos.count

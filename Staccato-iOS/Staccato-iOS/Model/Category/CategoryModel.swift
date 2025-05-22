@@ -24,7 +24,7 @@ struct CategoryModel: Equatable {
     struct MemberModel: Hashable {
         let memberId: Int64
         let nickname: String
-        let membrImageUrl: String?
+        let memberImageUrl: String?
     }
 
 }
@@ -54,7 +54,7 @@ extension CategoryModel.MemberModel {
     init(from dto:  GetCategoryListResponse.MemberResponse) {
         self.memberId = dto.memberId
         self.nickname = dto.nickname
-        self.membrImageUrl = dto.memberImageUrl
+        self.memberImageUrl = dto.memberImageUrl
     }
 
 }

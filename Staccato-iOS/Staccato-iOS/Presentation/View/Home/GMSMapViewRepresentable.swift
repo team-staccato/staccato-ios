@@ -13,6 +13,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 
     @EnvironmentObject var viewModel: HomeViewModel
     @Environment(NavigationState.self) var navigationState
+    @Environment(HomeModalManager.self) var homeModalManager
 
     private let mapView = GMSMapView()
 
@@ -23,10 +24,13 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         mapView.isMyLocationEnabled = true // 내위치 파란점으로 표시
         mapView.delegate = context.coordinator
         
-        // 초기 위치를 서울시청으로 함
-        let seoulCityhall = CLLocationCoordinate2D(latitude: 37.5664056, longitude: 126.9778222)
-        let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 15)
-        mapView.camera = camera
+        // 위치접근권한 없을 경우 초기 위치를 서울시청으로 함
+        if !STLocationManager.shared.hasLocationAuthorization() {
+            let seoulCityhall = CLLocationCoordinate2D(latitude: 37.5665851, longitude: 126.97820379999999)
+            let camera = GMSCameraPosition.camera(withTarget: seoulCityhall, zoom: 15)
+            
+            moveCamera(on: mapView, to: camera)
+        }
 
         return mapView
     }
@@ -34,9 +38,22 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     func updateUIView(_ uiView: GMSMapView, context: Context) {
         updateMarkers(to: uiView)
 
+        // 특정 좌표가 있으면 카메라 이동
         if let cameraPosition = viewModel.cameraPosition {
-            uiView.animate(to: cameraPosition)
+            moveCamera(on: uiView, to: cameraPosition)
+
+            Task {
+                viewModel.cameraPosition = nil
+            }
         }
+
+        // 모달 크기가 조정된 만큼 지도를 scroll
+        let currentSize = homeModalManager.modalSize
+        let previousSize = homeModalManager.previousModalSize
+        if currentSize != previousSize {
+            scrollMap(on: uiView, currentSize: currentSize, previousSize: previousSize)
+        }
+
 #if DEBUG
         print("GMSMapViewRepresentable updated")
 #endif
@@ -74,7 +91,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
             return
         }
         let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 15)
-        parent.mapView.animate(to: camera)
+        parent.moveCamera(on: parent.mapView, to: camera)
     }
 
     // 위치 접근 권한 바뀔 때 파란 점 표시 여부 업데이트 및 현위치로 이동
@@ -84,7 +101,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 
             if let coordinate = manager.location?.coordinate {
                 let camera = GMSCameraPosition.camera(withTarget: coordinate, zoom: 15)
-                parent.mapView.animate(to: camera)
+                parent.moveCamera(on: parent.mapView, to: camera)
             }
         } else {
             parent.mapView.isMyLocationEnabled = false
@@ -114,13 +131,13 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 
 private extension GMSMapViewRepresentable {
 
-    private func updateMarkers(to mapView: GMSMapView) {
+    func updateMarkers(to mapView: GMSMapView) {
         markStaccatos(to: mapView)
         removeMarkers(from: mapView)
     }
 
     /// 지도에 스타카토 마커를 추가합니다.
-    private func markStaccatos(to mapView: GMSMapView) {
+    func markStaccatos(to mapView: GMSMapView) {
         let staccatosToAdd = viewModel.staccatosToAdd
 
         guard !staccatosToAdd.isEmpty else { return }
@@ -147,7 +164,7 @@ private extension GMSMapViewRepresentable {
     }
 
     /// 스타카토 마커를 제거합니다.
-    private func removeMarkers(from mapView: GMSMapView) {
+    func removeMarkers(from mapView: GMSMapView) {
         let staccatosToRemove = viewModel.staccatosToRemove
 
         guard !staccatosToRemove.isEmpty else { return }
@@ -155,6 +172,28 @@ private extension GMSMapViewRepresentable {
         for staccato in staccatosToRemove {
             viewModel.displayedMarkers[staccato.id]?.map = nil
             viewModel.displayedMarkers.removeValue(forKey: staccato.id)
+        }
+    }
+
+    /// 카메라 좌표를 이동하며, 모달이 올라온 만큼 지도를 화면 중앙으로 scroll합니다.
+    func moveCamera(on mapView: GMSMapView, to cameraPosition: GMSCameraPosition) {
+        let deltaY =  (homeModalManager.modalSize.height - ScreenUtils.safeAreaInsets.top) / 2
+        Task {
+            mapView.camera = cameraPosition
+            mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
+        }
+    }
+
+    /// 모달 크기가 조정된 만큼 지도를 scroll합니다.
+    func scrollMap(
+        on mapView: GMSMapView,
+        currentSize: HomeModalManager.ModalSize,
+        previousSize: HomeModalManager.ModalSize
+    ) {
+        let deltaY = (currentSize.height - previousSize.height) / 2
+        Task {
+            mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
+            homeModalManager.previousModalSize = currentSize
         }
     }
 

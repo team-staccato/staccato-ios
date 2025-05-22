@@ -12,8 +12,9 @@ import Observation
 final class HomeModalManager {
 
     var modalHeight: CGFloat = ModalSize.medium.height // 실시간으로 반영되는 사이즈
-    private var modalSize: ModalSize = .medium // 이전으로 되돌리기 위해 기억하는 사이즈
-    
+    var modalSize: ModalSize = .medium // 최신 사이즈
+    var previousModalSize: ModalSize = .medium // 모달 크기가 조정될 때 지도를 scroll할 deltaY를 계산하기 위해 기억하는 사이즈
+
     func updateHeight(to height: CGFloat) {
         modalHeight = height
     }

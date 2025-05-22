@@ -41,8 +41,16 @@ struct CategoryEditorView: View {
                     descriptionInputSection
                         .padding(.bottom, 24)
 
+                    colorSettingSection
+                        .padding(.bottom, 24)
+
                     periodSettingSection
                         .padding(.bottom, 24)
+
+                    if vm.editorType == .create {
+                        shareSettingSection
+                            .padding(.bottom, 24)
+                    }
                 }
                 .padding(.horizontal, 4)
 
@@ -75,6 +83,11 @@ struct CategoryEditorView: View {
 
         .sheet(isPresented: $vm.isPeriodSheetPresented) {
             StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
+        }
+
+        .sheet(isPresented: $vm.isColorPalettePresented) {
+            colorPaletteModal
+                .presentationDetents([.height(410)])
         }
 
         .alert(vm.errorTitle ?? "", isPresented: $vm.catchError) {
@@ -227,24 +240,92 @@ extension CategoryEditorView {
         }
     }
 
+    // MARK: Color Setting Section
+    private var colorSettingSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("카테고리 색상 선택")
+                    .typography(.title2)
+                    .foregroundStyle(.staccatoBlack)
+                
+                Text("지도 위에서 보여질 마커의 색을 선택해주세요.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+            }
+
+            Spacer()
+
+            Button {
+                vm.isColorPalettePresented = true
+            } label: {
+                vm.categoryColor.markerImage
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 26,height: 32)
+            }
+            .padding(.trailing, 10)
+            .padding(.top, 3)
+        }
+    }
+    
+    private var colorPaletteModal: some View {
+        let spacing = (ScreenUtils.width - 48 - 28 * 6) / 5
+        let columns = Array(repeating: GridItem(.flexible(), spacing: spacing), count: 6)
+        vm.categoryColorTemp = vm.categoryColor
+
+        return VStack(alignment: .leading) {
+            Text("색상을 선택해 주세요")
+                .typography(.title2)
+                .foregroundStyle(.staccatoBlack)
+                .padding(.bottom, 24)
+
+            LazyVGrid(columns: columns, spacing: spacing) {
+                ForEach(CategoryColorType.allCases, id: \.self) { colorType in
+                    ZStack {
+                        Circle()
+                            .fill(colorType.color)
+                            .frame(width: 28, height: 28)
+                            .onTapGesture {
+                                vm.categoryColorTemp = colorType
+                            }
+                        if vm.categoryColorTemp == colorType {
+                            Image(StaccatoIcon.checkmark)
+                                .font(.system(size: 20, weight: .heavy))
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+            }
+
+            Spacer()
+
+            Button("확인") {
+                vm.categoryColor = vm.categoryColorTemp
+                vm.isColorPalettePresented = false
+            }
+            .buttonStyle(.staccatoFullWidth)
+        }
+        .padding(24)
+    }
+
     // MARK: Period Setting Section
     private var periodSettingSection: some View {
-        VStack(alignment: .leading) {
+        VStack {
             HStack {
-                Text("기간 설정")
-                    .foregroundStyle(.staccatoBlack)
-                    .typography(.title2)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("기간 설정")
+                        .foregroundStyle(.staccatoBlack)
+                        .typography(.title2)
+                    Text("여행처럼 시작일과 종료일을 설정할 수 있어요.")
+                        .typography(.body4)
+                        .foregroundStyle(.gray3)
+                }
 
                 Spacer()
 
                 Toggle("", isOn: $vm.isPeriodSettingActive)
                     .toggleStyle(StaccatoToggleStyle())
             }
-
-            Text("'여행'과 같은 카테고리라면 기간을 선택할 수 있어요.")
-                .typography(.body4)
-                .foregroundStyle(.gray3)
-                .padding(.bottom, 12)
 
             if vm.isPeriodSettingActive {
                 Button {
@@ -263,4 +344,36 @@ extension CategoryEditorView {
             }
         }
     }
+
+    // MARK: Share Setting Section
+    private var shareSettingSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("카테고리 공유")
+                    .foregroundStyle(.staccatoBlack)
+                    .typography(.title2)
+                    .padding(.bottom, 5)
+
+                Text("친구들을 초대해 함께 카테고리를 채워보세요.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+                    .padding(.bottom, 3)
+
+                HStack(spacing: 3) {
+                    Image(StaccatoIcon.infoCircle)
+                        .resizable()
+                        .frame(width: 9, height: 9)
+                    Text("한 번 설정하면 변경할 수 없어요")
+                        .typography(.body5)
+                }
+                .foregroundStyle(.staccatoBlue70)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $vm.isShareSettingActive)
+                .toggleStyle(StaccatoToggleStyle())
+        }
+    }
+
 }

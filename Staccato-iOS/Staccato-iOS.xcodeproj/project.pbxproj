@@ -64,6 +64,7 @@
 			children = (
 				1371538A2D26CDCA00EABE10 /* Staccato-iOS */,
 				137153892D26CDCA00EABE10 /* Products */,
+				150463252DDC55B30031C30C /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,6 +74,15 @@
 				137153882D26CDCA00EABE10 /* Staccato-iOS.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		150463252DDC55B30031C30C /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				79B4A8512DC8E828008CAD72 /* Debug.xcconfig */,
+				79B4A8522DC8E828008CAD72 /* Release.xcconfig */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -170,7 +180,8 @@
 /* Begin XCBuildConfiguration section */
 		137153942D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79B4A8512DC8E828008CAD72 /* Debug.xcconfig */;
+			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
+			baseConfigurationReferenceRelativePath = Support/Config/Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -234,7 +245,8 @@
 		};
 		137153952D26CDCC00EABE10 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79B4A8522DC8E828008CAD72 /* Release.xcconfig */;
+			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
+			baseConfigurationReferenceRelativePath = Support/Config/Release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -291,7 +303,8 @@
 		};
 		137153972D26CDCC00EABE10 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79B4A8512DC8E828008CAD72 /* Debug.xcconfig */;
+			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
+			baseConfigurationReferenceRelativePath = Support/Config/Debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -337,7 +350,8 @@
 		};
 		137153982D26CDCC00EABE10 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 79B4A8522DC8E828008CAD72 /* Release.xcconfig */;
+			baseConfigurationReferenceAnchor = 1371538A2D26CDCA00EABE10 /* Staccato-iOS */;
+			baseConfigurationReferenceRelativePath = Support/Config/Release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

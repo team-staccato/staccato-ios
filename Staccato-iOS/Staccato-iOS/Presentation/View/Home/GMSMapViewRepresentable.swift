@@ -42,7 +42,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         if let cameraPosition = viewModel.cameraPosition {
             moveCamera(on: uiView, to: cameraPosition)
 
-            DispatchQueue.main.async {
+            Task {
                 viewModel.cameraPosition = nil
             }
         }
@@ -178,7 +178,7 @@ private extension GMSMapViewRepresentable {
     /// 카메라 좌표를 이동하며, 모달이 올라온 만큼 지도를 화면 중앙으로 scroll합니다.
     func moveCamera(on mapView: GMSMapView, to cameraPosition: GMSCameraPosition) {
         let deltaY =  (homeModalManager.modalSize.height - ScreenUtils.safeAreaInsets.top) / 2
-        DispatchQueue.main.async {
+        Task {
             mapView.camera = cameraPosition
             mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
         }
@@ -191,7 +191,7 @@ private extension GMSMapViewRepresentable {
         previousSize: HomeModalManager.ModalSize
     ) {
         let deltaY = (currentSize.height - previousSize.height) / 2
-        DispatchQueue.main.async {
+        Task {
             mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
             homeModalManager.previousModalSize = currentSize
         }

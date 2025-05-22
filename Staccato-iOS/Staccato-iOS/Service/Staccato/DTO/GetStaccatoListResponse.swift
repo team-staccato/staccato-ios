@@ -17,6 +17,8 @@ struct StaccatoLocationResponse: Decodable {
     
     let staccatoId: Int64
     
+    let staccatoColor: String
+    
     let latitude: Double
     
     let longitude: Double

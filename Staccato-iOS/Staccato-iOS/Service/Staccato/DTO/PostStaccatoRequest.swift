@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CreateStaccatoRequest: Encodable {
+struct PostStaccatoRequest: Encodable {
     var staccatoTitle: String
     var placeName: String
     var address: String

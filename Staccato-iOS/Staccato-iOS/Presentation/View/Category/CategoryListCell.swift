@@ -90,12 +90,7 @@ private extension CategoryListCell {
                 ThumbnailImageView(url: url)
             } else {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray1)
-                        .stroke(.gray2, lineWidth: 1)
-                    Text("이미지 없음")
-                        .typography(.body5)
-                        .foregroundStyle(.gray2)
+                    Image(.categoryThumbnailDefault)
                 }
             }
         }

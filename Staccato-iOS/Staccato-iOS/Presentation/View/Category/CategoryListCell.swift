@@ -10,28 +10,22 @@ import SwiftUI
 import Kingfisher
 
 struct CategoryListCell: View {
-    
+
     var categoryInfo: CategoryModel
     var colorType: CategoryColorType
     @State private var isLoading = true
     @State private var image: Image?
-    
-    // TODO: categoryInfo로 대체
-    var peopleThumbnails: [String] = ["https://picsum.photos/200", "https://picsum.photos/200","https://picsum.photos/200"]
-    var extraPeopleCount: Int = 10
-    
-    
+
     init(_ categoryInfo: CategoryModel) {
         self.categoryInfo = categoryInfo
-        
-        // TODO: 바인딩 수정 (title -> color)
-        if let colorType = CategoryColorType.fromServerKey(categoryInfo.title) {
+
+        if let colorType = CategoryColorType.fromServerKey(categoryInfo.categoryColor) {
             self.colorType = colorType
         } else {
             self.colorType = .gray
         }
     }
-    
+
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
             thumbnailImage
@@ -54,36 +48,36 @@ struct CategoryListCell: View {
         .padding(.vertical, 13)
         .padding(.horizontal, 18)
     }
-    
+
 }
 
 
 // MARK: - UI Components
 
 private extension CategoryListCell {
-    
+
     var folderIcon: some View {
         colorType.folderIcon
     }
-    
+
     var labelStack: some View {
         VStack(alignment: .leading, spacing: 4) {
             periodLabel
             titleLabel
         }
     }
-    
+
     var titleLabel: some View {
         Text(categoryInfo.title)
             .typography(.title3)
             .foregroundColor(.staccatoBlack)
     }
-    
+
     @ViewBuilder
     var periodLabel: some View {
-        if let startAt: String = categoryInfo.startAt,
-           let endAt: String = categoryInfo.endAt {
-            Text(startAt + " - " + endAt)
+        if let period: String = periodString(startAt: categoryInfo.startAt,
+                                             endAt: categoryInfo.endAt) {
+            Text(period)
                 .typography(.body5)
                 .foregroundStyle(.gray3)
         }
@@ -108,11 +102,12 @@ private extension CategoryListCell {
         .frame(width: 86, height: 86)
         .clipShape(RoundedRectangle(cornerRadius: 4))
     }
-    
+
     var peopleWithStack: some View {
-        HStack(spacing: -7) {
-            ForEach(peopleThumbnails, id: \.self) { thumbnail in
-                if let profileURL = URL(string: thumbnail) {
+        HStack(spacing: -5) {
+            ForEach(categoryInfo.members, id: \.self) { member in
+                if let profileStr = member.memberImageUrl,
+                   let profileURL = URL(string: profileStr) {
                     KFImage(profileURL)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -126,8 +121,9 @@ private extension CategoryListCell {
                 }
             }
 
-            if extraPeopleCount > 0 {
-                Text("+\(extraPeopleCount)")
+            let peoplecount = categoryInfo.members.count
+            if peoplecount > 3 {
+                Text("+\(peoplecount - 3)")
                     .typography(.body5)
                     .foregroundStyle(colorType.textColor)
                     .background(
@@ -150,8 +146,7 @@ private extension CategoryListCell {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 10, height: 10)
-            // TODO: staccatoCount로 수정
-            Text(String(categoryInfo.categoryId))
+            Text(String(categoryInfo.staccatoCount))
                 .typography(.body5) // TODO: 폰트스타일 수정 후 point 12로 수정
         }
         .foregroundStyle(.gray3)
@@ -162,7 +157,9 @@ private extension CategoryListCell {
 
 // MARK: - Image Loading State
 
+// TODO: Staccato용으로 만들기
 private enum ImageLoadingState {
+
     case loading
     case loaded(Image)
     case failed
@@ -183,6 +180,7 @@ private enum ImageLoadingState {
             )
         }
     }
+
 }
 
 
@@ -212,10 +210,10 @@ private struct ImageLoadingErrorView: View {
 // MARK: - Thumbnail Image View
 
 private struct ThumbnailImageView: View {
-    
+
     private let url: URL
     @State private var loadingState: ImageLoadingState = .loading
-    
+
     init(url: URL) {
         self.url = url
     }
@@ -228,7 +226,7 @@ private struct ThumbnailImageView: View {
                 await loadImage()
             }
     }
-    
+
     @MainActor
     private func loadImage() async {
         do {
@@ -239,19 +237,23 @@ private struct ThumbnailImageView: View {
             print("😢 Failed to load thumbnail: \(error)")
         }
     }
-    
+
 }
 
 
-#Preview {
-    CategoryListCell(
-        CategoryModel(
-            id: 234,
-            categoryId: 234,
-            thumbNailURL: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcR0tFzso1HmfFFy1kXeevUflb-F0c5uHZeH5Iqj10Eyu-1FFkJlBuHroyURFRao_3Mmi0b6HaUNP2Vt_jA4pRu4DeckXegB-3yxeFbI084",
-            title: "제주도 가족 여행",
-            startAt: "2024.8.16",
-            endAt: "2024.8.20"
-        )
-    )
+// MARK: - Helper
+
+extension CategoryListCell {
+
+    func periodString(startAt: String?, endAt: String?) -> String? {
+        guard let startDate = Date.fromString(startAt),
+              let endDate = Date.fromString(endAt) else { return nil }
+        
+        if startDate.year == endDate.year {
+            return startDate.formattedAsFullDate + " - " + endDate.formattedAsMonthAndDayDot
+        } else {
+            return startDate.formattedAsFullDate + " - " + endDate.formattedAsFullDate
+        }
+    }
+
 }

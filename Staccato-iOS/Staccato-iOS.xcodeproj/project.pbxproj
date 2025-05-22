@@ -64,7 +64,7 @@
 			children = (
 				1371538A2D26CDCA00EABE10 /* Staccato-iOS */,
 				137153892D26CDCA00EABE10 /* Products */,
-				150464492DDC95DB0031C30C /* Recovered References */,
+				150463252DDC55B30031C30C /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -76,7 +76,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		150464492DDC95DB0031C30C /* Recovered References */ = {
+		150463252DDC55B30031C30C /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
 				79B4A8512DC8E828008CAD72 /* Debug.xcconfig */,

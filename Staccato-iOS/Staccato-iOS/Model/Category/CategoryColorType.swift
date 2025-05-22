@@ -9,17 +9,17 @@ import SwiftUI
 
 enum CategoryColorType: CaseIterable {
 
-    case pink, pinkLight
-    case red, RedLight
-    case orange, orangeLight
-    case yellow, yellowLight
-    case green, greenLight
-    case mint, mintLight
-    case blue, blueLight
-    case staccatoBlue, staccatoBlueLight
-    case purple, purpleLight
-    case brown, brownLight
-    case gray, grayLight
+    case pinkLight, pink
+    case RedLight, red
+    case orangeLight, orange
+    case yellowLight, yellow
+    case greenLight, green
+    case mintLight, mint
+    case blueLight, blue
+    case staccatoBlueLight, staccatoBlue
+    case purpleLight, purple
+    case brownLight, brown
+    case grayLight, gray
 
     static func fromServerKey(_ key: String) -> CategoryColorType? {
         return allCases.first { $0.serverKey == key }
@@ -107,6 +107,33 @@ enum CategoryColorType: CaseIterable {
                 .aspectRatio(contentMode: .fit)
                 .foregroundStyle(self.color)
                 .frame(width: 17, height: 17)
+        }
+    }
+
+    var markerImage: Image {
+        switch self {
+        case .pink: return Image(.markerPink)
+        case .pinkLight: return Image(.markerPinkLight)
+        case .red: return Image(.markerRed)
+        case .RedLight: return Image(.markerRedLight)
+        case .orange: return Image(.markerOrange)
+        case .orangeLight: return Image(.markerOrangeLight)
+        case .yellow: return Image(.markerYellow)
+        case .yellowLight: return Image(.markerYellowLight)
+        case .green: return Image(.markerGreen)
+        case .greenLight: return Image(.markerGreenLight)
+        case .mint: return Image(.markerMint)
+        case .mintLight: return Image(.markerMintLight)
+        case .blue: return Image(.markerBlue)
+        case .blueLight: return Image(.markerBlueLight)
+        case .staccatoBlue: return Image(.markerStaccatoBlue)
+        case .staccatoBlueLight: return Image(.markerStaccatoBlueLight)
+        case .purple: return Image(.markerPurple)
+        case .purpleLight: return Image(.markerPurpleLight)
+        case .brown: return Image(.markerBrown)
+        case .brownLight: return Image(.markerBrownLight)
+        case .gray: return Image(.markerGray)
+        case .grayLight: return Image(.markerGrayLight)
         }
     }
 

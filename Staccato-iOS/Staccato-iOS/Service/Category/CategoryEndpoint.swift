@@ -10,9 +10,8 @@ import Alamofire
 enum CategoryEndpoint {
     case getCategoryList(_ query: GetCategoryListRequestQuery)
     case getCategoryDetail(_ categoryId: Int64)
-    case createCategory(_ query: CreateCategoryRequestQuery)
-
-    case modifyCategory(_ query: ModifyCategoryRequestQuery, id: Int64)
+    case postCategory(_ requestBody: PostCategoryRequest)
+    case putCategory(_ query: PutCategoryRequest, id: Int64)
     case deleteCategory(_ categoryId: Int64)
 }
 
@@ -20,21 +19,24 @@ extension CategoryEndpoint: APIEndpoint {
 
     var path: String {
         switch self {
-        case .getCategoryList, .createCategory:
+        case .getCategoryList:
             return "/categories"
+        case .postCategory:
+            return "/v3/categories"
+        case .putCategory(_, let categoryId):
+            return "/v2/categories/\(categoryId)"
         case .getCategoryDetail(let categoryId),
-             .deleteCategory(let categoryId),
-             .modifyCategory(_, let categoryId):
+             .deleteCategory(let categoryId):
             return "/categories/\(categoryId)"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .modifyCategory: return .put
+        case .putCategory: return .put
         case .getCategoryList, .getCategoryDetail:
             return .get
-        case .createCategory:
+        case .postCategory:
             return .post
         case .deleteCategory:
             return .delete
@@ -45,7 +47,7 @@ extension CategoryEndpoint: APIEndpoint {
         switch self {
         case .getCategoryList, .getCategoryDetail, .deleteCategory:
             return URLEncoding.queryString
-        case .createCategory, .modifyCategory:
+        case .postCategory, .putCategory:
             return JSONEncoding.default
         }
     }
@@ -61,10 +63,10 @@ extension CategoryEndpoint: APIEndpoint {
                 params["sort"] = sort
             }
             return params.isEmpty ? nil : params
-        case .createCategory(let query):
-            return query.toDictionary()
-        case .modifyCategory(let query, _):
-            return query.toDictionary()
+        case .postCategory(let body):
+            return body.toDictionary()
+        case .putCategory(let body, _):
+            return body.toDictionary()
         default:
             return nil
         }

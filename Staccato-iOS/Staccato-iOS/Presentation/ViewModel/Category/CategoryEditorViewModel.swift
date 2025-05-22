@@ -11,6 +11,7 @@ import PhotosUI
 
 @Observable
 final class CategoryEditorViewModel {
+
     // MARK: - Photo Related
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
@@ -25,11 +26,19 @@ final class CategoryEditorViewModel {
     // MARK: - Description
     var categoryDescription = ""
 
+    // MARK: - Color
+    var isColorPalettePresented = false
+    var categoryColor: CategoryColorType = .grayLight
+    var categoryColorTemp: CategoryColorType = .grayLight
+
     // MARK: - Period
     var isPeriodSettingActive = false
     var selectedStartDate: Date?
     var selectedEndDate: Date?
     var isPeriodSheetPresented = false
+
+    // MARK: - Share
+    var isShareSettingActive = false
 
     // MARK: - Alert
     var catchError = false
@@ -103,16 +112,18 @@ final class CategoryEditorViewModel {
     }
 
     func createCategory() async {
-        let query = CreateCategoryRequestQuery(
+        let body = PostCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
             description: self.categoryDescription,
-            startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
-            endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
+            categoryColor: self.categoryColor.serverKey,
+            startAt: self.selectedStartDate?.formattedAsRequestDate,
+            endAt: self.selectedEndDate?.formattedAsRequestDate,
+            isShared: self.isShareSettingActive
         )
 
         do {
-            try await STService.shared.categoryService.createCategory(query)
+            try await STService.shared.categoryService.postCategory(body)
             try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
         } catch {
@@ -122,10 +133,11 @@ final class CategoryEditorViewModel {
     }
 
     func modifyCategory() async {
-        let query = ModifyCategoryRequestQuery(
+        let query = PutCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
             description: self.categoryDescription,
+            categoryColor: self.categoryColor.serverKey,
             startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
             endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
         )
@@ -133,7 +145,7 @@ final class CategoryEditorViewModel {
         guard let id = self.id else { return }
 
         do {
-            try await STService.shared.categoryService.modifyCategory(id: id, query)
+            try await STService.shared.categoryService.putCategory(id: id, query)
             self.uploadSuccess = true
             try await categoryViewModel.getCategoryList()
             await categoryViewModel.getCategoryDetail(id)
@@ -165,8 +177,10 @@ final class CategoryEditorViewModel {
         }
     }
 
+    // MARK: - Editor Type
     enum CategoryEditorType {
         case modify
         case create
     }
+
 }

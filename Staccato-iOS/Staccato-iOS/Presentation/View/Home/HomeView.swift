@@ -170,21 +170,30 @@ private extension HomeView {
         VStack {
             Spacer()
 
-            CategoryListView(navigationState)
-                .frame(height: homeModalManager.modalHeight)
-                .background(Color.staccatoWhite)
-                .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
-                .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            let newHeight: CGFloat = homeModalManager.modalHeight - value.translation.height
-                            homeModalManager.updateHeight(to: max(100, newHeight))
-                        }
-                        .onEnded { value in
-                            homeModalManager.setFinalSize(translationAmount: value.translation.height)
-                        }
-                )
+            VStack(spacing: 0) {
+                Capsule()
+                    .frame(width: 48, height: 3)
+                    .padding(.top, 10)
+                    .padding(.bottom, 5)
+                    .foregroundStyle(.gray2)
+
+                CategoryListView(navigationState)
+            }
+            .background(Color.staccatoWhite)
+            .frame(maxHeight: homeModalManager.modalHeight)
+            .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
+            .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
+
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let newHeight: CGFloat = homeModalManager.modalHeight - value.translation.height
+                        homeModalManager.updateHeight(to: max(100, newHeight))
+                    }
+                    .onEnded { value in
+                        homeModalManager.setFinalSize(translationAmount: value.translation.height)
+                    }
+            )
         }
     }
 

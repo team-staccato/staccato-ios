@@ -10,6 +10,7 @@ import SwiftUI
 struct CategoryListView: View {
 
     @Environment(NavigationState.self) var navigationState
+    @Environment(HomeModalManager.self) private var homeModalManager
     @EnvironmentObject var mypageViewModel: MyPageViewModel
     @Bindable var bindableNavigationState: NavigationState
     
@@ -31,27 +32,35 @@ struct CategoryListView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack {
-            modalTop
-            NavigationStack(path: $bindableNavigationState.path) {
-                VStack(spacing: 0) {
-                    titleHStack
-                        .padding(.top, 22)
-                        .padding(.bottom, 12)
+        NavigationStack(path: $bindableNavigationState.path) {
+            VStack(spacing: 0) {
+                titleSection
+                    .padding(.top, 8)
+                    .padding(.horizontal, 18)
+
+                if homeModalManager.modalSize != .small {
+                    filterSection
+                        .padding(.top, 20)
                         .padding(.horizontal, 18)
+
                     categoryList
+                        .padding(.top, 10)
                 }
-                .background(Color.staccatoWhite)
-                .frame(maxWidth: .infinity)
-                .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
-                    switch destination {
-                    case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
-                    case .categoryDetail(let categoryId): CategoryDetailView(categoryId, viewModel)
-                    case .categoryAdd: CategoryEditorView(categoryViewModel: viewModel)
-                    }
+
+                Spacer()
+            }
+            .background(Color.staccatoWhite)
+            .frame(maxWidth: .infinity)
+
+            .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
+                switch destination {
+                case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
+                case .categoryDetail(let categoryId): CategoryDetailView(categoryId, viewModel)
+                case .categoryAdd: CategoryEditorView(categoryViewModel: viewModel)
                 }
             }
         }
+
         .onAppear {
             do {
                 try viewModel.getCategoryList()
@@ -85,22 +94,21 @@ private extension CategoryListView {
 
     // MARK: - TitleView
 
-    var titleHStack: some View {
-        VStack(alignment: .leading, spacing: 9) {
-            HStack {
-                Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
-                    .typography(.title1)
+    var titleSection: some View {
+        HStack {
+            Text("\(mypageViewModel.profile?.nickname ?? "나")의 추억들")
+                .typography(.title1)
+            Spacer()
+            categoryAddButton
+        }
+        .frame(maxWidth: .infinity)
+    }
 
-                Spacer()
-
-                categoryAddButton
-            }
-            
-            HStack {
-                categorySortButton
-                Spacer()
-                categoryFilterButton
-            }
+    var filterSection: some View {
+        HStack {
+            categorySortButton
+            Spacer()
+            categoryFilterButton
         }
         .frame(maxWidth: .infinity)
     }

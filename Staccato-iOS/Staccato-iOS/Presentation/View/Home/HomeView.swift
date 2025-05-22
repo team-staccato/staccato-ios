@@ -58,6 +58,7 @@ struct HomeView: View {
 
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
+            
             if alertManager.isPresented {
                 StaccatoAlertView()
             }
@@ -155,11 +156,11 @@ private extension HomeView {
         } label: {
             Image(.plus)
                 .resizable()
-                .fontWeight(.bold)
-                .frame(width: 25, height: 25)
+                .fontWeight(.semibold)
+                .frame(width: 20, height: 20)
                 .foregroundStyle(.staccatoWhite)
         }
-        .frame(width: 48, height: 48)
+        .frame(width: 44, height: 44)
         .background(.accent)
         .clipShape(.circle)
         .shadow(radius: 4, y: 4)

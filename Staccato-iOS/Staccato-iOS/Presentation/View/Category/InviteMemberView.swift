@@ -58,9 +58,11 @@ private extension InviteMemberView {
             
             Spacer()
             
-            Text("\(viewModel.selectedMembers.count)")
-                .font(StaccatoFont.title3.font)
-                .foregroundStyle(Color.staccatoBlue)
+            if viewModel.selectedMembers.count > 0 {
+                Text("\(viewModel.selectedMembers.count)")
+                    .font(StaccatoFont.title3.font)
+                    .foregroundStyle(Color.staccatoBlue)
+            }
             
             Button {
                 dismiss()

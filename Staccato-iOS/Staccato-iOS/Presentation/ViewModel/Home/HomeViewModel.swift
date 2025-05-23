@@ -49,14 +49,7 @@ extension HomeViewModel {
             do {
                 let staccatoList = try await STService.shared.staccatoService.getStaccatoList()
                 
-                let locations: [StaccatoCoordinateModel] = staccatoList.staccatoLocationResponses.map {
-                    StaccatoCoordinateModel(
-                        id: $0.staccatoId,
-                        staccatoId: $0.staccatoId,
-                        latitude: $0.latitude,
-                        longitude: $0.longitude
-                    )
-                }
+                let locations: [StaccatoCoordinateModel] = staccatoList.staccatoLocationResponses.map { StaccatoCoordinateModel(from: $0) }
                 self.staccatos = Set(locations)
             } catch {
                 print("Error fetching staccatos: \(error.localizedDescription)")

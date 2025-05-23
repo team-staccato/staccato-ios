@@ -109,30 +109,30 @@ enum CategoryColorType: CaseIterable {
         }
     }
 
-    var markerImage: Image {
+    var markerImage: UIImage {
         switch self {
-        case .red: return Image(.markerRed)
-        case .RedLight: return Image(.markerRedLight)
-        case .orange: return Image(.markerOrange)
-        case .orangeLight: return Image(.markerOrangeLight)
-        case .yellow: return Image(.markerYellow)
-        case .yellowLight: return Image(.markerYellowLight)
-        case .green: return Image(.markerGreen)
-        case .greenLight: return Image(.markerGreenLight)
-        case .mint: return Image(.markerMint)
-        case .mintLight: return Image(.markerMintLight)
-        case .blue: return Image(.markerBlue)
-        case .blueLight: return Image(.markerBlueLight)
-        case .indigo: return Image(.markerIndigo)
-        case .indigoLight: return Image(.markerIndigoLight)
-        case .purple: return Image(.markerPurple)
-        case .purpleLight: return Image(.markerPurpleLight)
-        case .pink: return Image(.markerPink)
-        case .pinkLight: return Image(.markerPinkLight)
-        case .brown: return Image(.markerBrown)
-        case .brownLight: return Image(.markerBrownLight)
-        case .gray: return Image(.markerGray)
-        case .grayLight: return Image(.markerGrayLight)
+        case .red: return .markerRed
+        case .RedLight: return .markerRedLight
+        case .orange: return .markerOrange
+        case .orangeLight: return .markerOrangeLight
+        case .yellow: return .markerYellow
+        case .yellowLight: return .markerYellowLight
+        case .green: return .markerGreen
+        case .greenLight: return .markerGreenLight
+        case .mint: return .markerMint
+        case .mintLight: return .markerMintLight
+        case .blue: return .markerBlue
+        case .blueLight: return .markerBlueLight
+        case .indigo: return .markerIndigo
+        case .indigoLight: return .markerIndigoLight
+        case .purple: return .markerPurple
+        case .purpleLight: return .markerPurpleLight
+        case .pink: return .markerPink
+        case .pinkLight: return .markerPinkLight
+        case .brown: return .markerBrown
+        case .brownLight: return .markerBrownLight
+        case .gray: return .markerGray
+        case .grayLight: return .markerGrayLight
         }
     }
 

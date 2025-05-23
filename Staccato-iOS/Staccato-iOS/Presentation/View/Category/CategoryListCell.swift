@@ -90,12 +90,7 @@ private extension CategoryListCell {
                 ThumbnailImageView(url: url)
             } else {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray1)
-                        .stroke(.gray2, lineWidth: 1)
-                    Text("이미지 없음")
-                        .typography(.body5)
-                        .foregroundStyle(.gray2)
+                    Image(.categoryThumbnailDefault)
                 }
             }
         }
@@ -176,32 +171,9 @@ private enum ImageLoadingState {
             )
         case .failed:
             return AnyView(
-                ImageLoadingErrorView()
+                Image(.categoryThumbnailDefault)
             )
         }
-    }
-
-}
-
-
-// MARK: - Error View
-
-private struct ImageLoadingErrorView: View {
-
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color.gray1)
-                .stroke(.gray2, lineWidth: 1)
-            
-            Image(.photoBadgeExclamationmark)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(.gray2)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.gray1)
     }
 
 }

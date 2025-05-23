@@ -13,6 +13,7 @@ struct InviteMemberView: View {
     @EnvironmentObject private var viewModel: InviteMemberViewModel
     @Environment(\.dismiss) private var dismiss // TODO: - 고려 필요
     
+    @Binding var isPresented: Bool
     @State private var memberName: String = ""
     
     var body: some View {
@@ -35,9 +36,13 @@ struct InviteMemberView: View {
                 if !viewModel.searchMembers.isEmpty {
                     searchListView
                         .padding(.top, 17)
+                        .frame(height: 288)
                 }
             }
         }
+        .background(.staccatoWhite)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal, 16)
     }
 }
 
@@ -213,6 +218,8 @@ struct SearchMemberRow: View {
 
 // MARK: - Preview
 #Preview {
-    InviteMemberView()
+    @Previewable @State var isPresented: Bool = true
+    
+    InviteMemberView(isPresented: $isPresented)
         .environmentObject(InviteMemberViewModel())
 }

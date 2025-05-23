@@ -20,6 +20,7 @@ struct CategoryDetailView: View {
 
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
+    @State private var isInviteSheetPresented = false
 
     private let horizontalInset: CGFloat = 16
 
@@ -33,11 +34,15 @@ struct CategoryDetailView: View {
             VStack(spacing: 16) {
                 headerSection
 
-                descriptionSection
-
+                if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
+                    descriptionSection
+                }
+                
+                if viewModel.categoryDetail?.isShared ?? false {
+                    sharedMemberSection
+                }
+                
                 staccatoCollectionSection
-
-                Spacer()
             }
             .frame(width: ScreenUtils.width)
         }
@@ -140,11 +145,57 @@ private extension CategoryDetailView {
                     .foregroundStyle(.staccatoBlack)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
+                
+                Divider()
             }
-            Divider()
         }
     }
 
+    var sharedMemberSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("함께하는 사람들")
+                .typography(.title2)
+                .foregroundStyle(.staccatoBlack)
+                .padding(.leading, 4)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .top, spacing: 17) {
+                    inviteButton
+                    ForEach(viewModel.categoryDetail?.members ?? []) { member in
+                        CategoryDetailMemberCell(member: member)
+                    }
+                }
+                .padding(.vertical, 4)
+                .padding(.horizontal, 2)
+            }
+            
+            Divider()
+        }
+        .padding(.horizontal, horizontalInset)
+    }
+    
+    var inviteButton: some View {
+        Button {
+            isInviteSheetPresented = true
+        } label: {
+            Circle()
+                .fill(Color.white)
+                .stroke(Color.gray2, lineWidth: 1)
+                .frame(width: 40, height: 40)
+                .overlay {
+                    Image(.plus)
+                        .frame(width: 13, height: 13)
+                        .foregroundStyle(Color.staccatoBlack)
+                }
+        }
+        .fullScreenCover(isPresented: $isInviteSheetPresented) {
+            // TODO: - Background 애니메이션 수정 필요
+            InviteMemberView(isPresented: $isInviteSheetPresented)
+                .environmentObject(InviteMemberViewModel())
+                .presentationBackground(.black.opacity(0.2))
+        }
+    }
+    
     var staccatoCollectionSection: some View {
         let staccatos = viewModel.categoryDetail?.staccatos ?? []
         let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset * 2 - 8) / 2
@@ -198,5 +249,4 @@ private extension CategoryDetailView {
                 .multilineTextAlignment(.center)
         }
     }
-
 }

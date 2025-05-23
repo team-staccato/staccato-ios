@@ -21,11 +21,16 @@ struct CategoryDetailModel {
     let staccatos: [StaccatoModel]
     
     
-    struct MemberModel: Decodable {
-        let memberId: Int64
+    struct MemberModel: Identifiable {
+        let id: Int64
         let nickname: String
         let memberImageUrl: String?
-        let memberRole: String
+        let memberRole: Role
+        
+        enum Role: String {
+            case host
+            case invitee
+        }
     }
 
     struct StaccatoModel: Identifiable {
@@ -63,10 +68,13 @@ extension CategoryDetailModel {
 extension CategoryDetailModel.MemberModel {
 
     init(from dto: GetCategoryDetailResponse.MemberResponse) {
-        self.memberId = dto.memberId
+        self.id = dto.memberId
         self.nickname = dto.nickname
         self.memberImageUrl = dto.memberImageUrl
-        self.memberRole = dto.memberRole
+        switch dto.memberRole {
+        case "host": self.memberRole = .host
+        default: self.memberRole = .invitee
+        }
     }
 
 }
@@ -99,7 +107,7 @@ extension CategoryDetailModel {
             isShared: self.isShared,
             members: self.members.map {
                 CategoryModel.MemberModel(
-                    memberId: $0.memberId,
+                    memberId: $0.id,
                     nickname: $0.nickname,
                     memberImageUrl: $0.memberImageUrl
                 )

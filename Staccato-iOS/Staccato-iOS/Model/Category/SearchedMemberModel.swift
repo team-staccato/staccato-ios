@@ -22,8 +22,4 @@ struct SearchedMemberModel: Identifiable, Equatable {
         self.isSelected = isSelected
         self.isInvited = isInvited
     }
-    
-    static func == (_ lhs: SearchedMemberModel, _ rhs: SearchedMemberModel) -> Bool {
-        return lhs.id == rhs.id
-    }
 }

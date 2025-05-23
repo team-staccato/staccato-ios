@@ -13,7 +13,7 @@ struct CategoryDetailModel {
     let categoryThumbnailUrl: String?
     let categoryTitle: String
     let description: String?
-    let categoryColor: String
+    let categoryColor: CategoryColorType
     let startAt: String?
     let endAt: String?
     let isShared: Bool
@@ -50,7 +50,7 @@ extension CategoryDetailModel {
         self.categoryThumbnailUrl = dto.categoryThumbnailUrl
         self.categoryTitle = dto.categoryTitle
         self.description = dto.description
-        self.categoryColor = dto.categoryColor
+        self.categoryColor = CategoryColorType.fromServerKey(dto.categoryColor)
         self.startAt = dto.startAt
         self.endAt = dto.endAt
         self.isShared = dto.isShared

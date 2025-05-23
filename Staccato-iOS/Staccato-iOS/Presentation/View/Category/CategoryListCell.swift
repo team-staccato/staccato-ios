@@ -18,12 +18,7 @@ struct CategoryListCell: View {
 
     init(_ categoryInfo: CategoryModel) {
         self.categoryInfo = categoryInfo
-
-        if let colorType = CategoryColorType.fromServerKey(categoryInfo.categoryColor) {
-            self.colorType = colorType
-        } else {
-            self.colorType = .gray
-        }
+        self.colorType = categoryInfo.categoryColor
     }
 
     var body: some View {

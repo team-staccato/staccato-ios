@@ -58,6 +58,7 @@ final class CategoryEditorViewModel {
     ) {
         self.id = categoryDetail?.categoryId
         self.categoryViewModel = categoryViewModel
+        self.categoryColor = categoryDetail?.categoryColor ?? .gray
 
         if let imageURL = categoryDetail?.categoryThumbnailUrl {
             self.imageURL = imageURL

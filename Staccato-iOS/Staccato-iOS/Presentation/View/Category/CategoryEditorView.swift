@@ -41,8 +41,16 @@ struct CategoryEditorView: View {
                     descriptionInputSection
                         .padding(.bottom, 24)
 
+                    colorSettingSection
+                        .padding(.bottom, 24)
+
                     periodSettingSection
                         .padding(.bottom, 24)
+
+                    if vm.editorType == .create {
+                        shareSettingSection
+                            .padding(.bottom, 24)
+                    }
                 }
                 .padding(.horizontal, 4)
 
@@ -53,10 +61,8 @@ struct CategoryEditorView: View {
                         switch vm.editorType {
                         case .create:
                             await vm.createCategory()
-                            dismiss()
                         case .modify:
                             await vm.modifyCategory()
-                            dismiss()
                         }
                     }
                 }
@@ -65,16 +71,23 @@ struct CategoryEditorView: View {
             }
             .animation(.easeIn(duration: 0.15), value: vm.isPeriodSettingActive)
         }
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
         .staccatoModalBar(
-            title: "카테고리 만들기",
-            subtitle: "스타카토를 담을 카테고리를 만들어 보세요!"
+            title:
+                self.vm.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",
+            subtitle: 
+                self.vm.editorType == . create ? "스타카토를 담을 카테고리를 만들어 보세요!" : "스타카토를 담을 카테고리를 수정해 보세요!"
         )
-        .ignoresSafeArea(.all, edges: .bottom)
 
         .sheet(isPresented: $vm.isPeriodSheetPresented) {
             StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
+        }
+
+        .sheet(isPresented: $vm.isColorPalettePresented) {
+            colorPaletteModal
+                .presentationDetents([.height(410)])
         }
 
         .alert(vm.errorTitle ?? "", isPresented: $vm.catchError) {
@@ -85,14 +98,11 @@ struct CategoryEditorView: View {
             Text(vm.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
 
-        .alert("카테고리 생성 성공", isPresented: $vm.uploadSuccess) {
-            Button("확인") {
+        .onChange(of: vm.uploadSuccess) { _, uploadSuccess in
+            if uploadSuccess {
                 dismiss()
             }
-        } message: {
-            Text("이미지 업로드에 성공했습니다!\n이제 스타카토를 함께 쌓아나가보세요!")
         }
-
     }
 }
 
@@ -111,9 +121,11 @@ struct CategoryEditorView: View {
             categoryThumbnailUrl: "https://image.staccato.kr/web/share/happy.png",
             categoryTitle: "테스트카테고리",
             description: "이건 설명",
+            categoryColor: "GRAY",
             startAt: "2024-01-01",
             endAt: "2024-01-30",
-            mates: [],
+            isShared: true,
+            members: [],
             staccatos: []
         ),
         editorType: .modify,
@@ -160,6 +172,10 @@ extension CategoryEditorView {
         .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem)
 
         .fullScreenCover(isPresented: $vm.showCamera) {
+            Task {
+                try await vm.uploadImage()
+            }
+        } content: {
             CameraView(selectedImage: $vm.selectedPhoto)
                 .background(.staccatoBlack)
         }
@@ -224,24 +240,92 @@ extension CategoryEditorView {
         }
     }
 
+    // MARK: Color Setting Section
+    private var colorSettingSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("카테고리 색상 선택")
+                    .typography(.title2)
+                    .foregroundStyle(.staccatoBlack)
+                
+                Text("지도 위에서 보여질 마커의 색을 선택해주세요.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+            }
+
+            Spacer()
+
+            Button {
+                vm.isColorPalettePresented = true
+            } label: {
+                vm.categoryColor.markerImage
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 26,height: 32)
+            }
+            .padding(.trailing, 10)
+            .padding(.top, 3)
+        }
+    }
+    
+    private var colorPaletteModal: some View {
+        let spacing = (ScreenUtils.width - 48 - 28 * 6) / 5
+        let columns = Array(repeating: GridItem(.flexible(), spacing: spacing), count: 6)
+        vm.categoryColorTemp = vm.categoryColor
+
+        return VStack(alignment: .leading) {
+            Text("색상을 선택해 주세요")
+                .typography(.title2)
+                .foregroundStyle(.staccatoBlack)
+                .padding(.bottom, 24)
+
+            LazyVGrid(columns: columns, spacing: spacing) {
+                ForEach(CategoryColorType.allCases, id: \.self) { colorType in
+                    ZStack {
+                        Circle()
+                            .fill(colorType.color)
+                            .frame(width: 28, height: 28)
+                            .onTapGesture {
+                                vm.categoryColorTemp = colorType
+                            }
+                        if vm.categoryColorTemp == colorType {
+                            Image(StaccatoIcon.checkmark)
+                                .font(.system(size: 20, weight: .heavy))
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+            }
+
+            Spacer()
+
+            Button("확인") {
+                vm.categoryColor = vm.categoryColorTemp
+                vm.isColorPalettePresented = false
+            }
+            .buttonStyle(.staccatoFullWidth)
+        }
+        .padding(24)
+    }
+
     // MARK: Period Setting Section
     private var periodSettingSection: some View {
-        VStack(alignment: .leading) {
+        VStack {
             HStack {
-                Text("기간 설정")
-                    .foregroundStyle(.staccatoBlack)
-                    .typography(.title2)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("기간 설정")
+                        .foregroundStyle(.staccatoBlack)
+                        .typography(.title2)
+                    Text("여행처럼 시작일과 종료일을 설정할 수 있어요.")
+                        .typography(.body4)
+                        .foregroundStyle(.gray3)
+                }
 
                 Spacer()
 
                 Toggle("", isOn: $vm.isPeriodSettingActive)
                     .toggleStyle(StaccatoToggleStyle())
             }
-
-            Text("'여행'과 같은 카테고리라면 기간을 선택할 수 있어요.")
-                .typography(.body4)
-                .foregroundStyle(.gray3)
-                .padding(.bottom, 12)
 
             if vm.isPeriodSettingActive {
                 Button {
@@ -260,4 +344,36 @@ extension CategoryEditorView {
             }
         }
     }
+
+    // MARK: Share Setting Section
+    private var shareSettingSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("카테고리 공유")
+                    .foregroundStyle(.staccatoBlack)
+                    .typography(.title2)
+                    .padding(.bottom, 5)
+
+                Text("친구들을 초대해 함께 카테고리를 채워보세요.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray3)
+                    .padding(.bottom, 3)
+
+                HStack(spacing: 3) {
+                    Image(StaccatoIcon.infoCircle)
+                        .resizable()
+                        .frame(width: 9, height: 9)
+                    Text("한 번 설정하면 변경할 수 없어요")
+                        .typography(.body5)
+                }
+                .foregroundStyle(.staccatoBlue70)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $vm.isShareSettingActive)
+                .toggleStyle(StaccatoToggleStyle())
+        }
+    }
+
 }

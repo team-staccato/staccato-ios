@@ -11,6 +11,7 @@ import PhotosUI
 struct MyPageView: View {
     
     @EnvironmentObject private var viewModel: MyPageViewModel
+    @EnvironmentObject private var signinViewModel: SignInViewModel
     
     @State var copyButtonPressed = false
     @State var isPhotoInputPresented = false
@@ -18,38 +19,41 @@ struct MyPageView: View {
     @State var isPhotoPickerPresented = false
     
     @State private var photoItem: PhotosPickerItem?
+    @State private var capturedImage: UIImage?
     @State private var selectedPhoto: UIImage?
     @State private var showToast = false
     
     var body: some View {
-        VStack {
-            profileImageSection
-                .padding(.bottom, 24)
-                .padding(.top, 35)
-            
-            userNameSection
-                .padding(.bottom, 16)
-            
-            recoveryCodeCopyButton
-                .padding(.bottom, 40)
-            
-            Divider()
-            
-            menuSection
-            
-            Spacer()
-        }
-        .staccatoModalBar(title: "마이페이지", titlePosition: .center)
-        .overlay(
-            Group {
-                if showToast {
-                    toastMessage
-                }
-            },
-            alignment: .bottom
-        )
-        .onAppear {
-            viewModel.fetchProfile()
+        NavigationView {
+            VStack {
+                profileImageSection
+                    .padding(.bottom, 24)
+                    .padding(.top, 35)
+                
+                userNameSection
+                    .padding(.bottom, 16)
+                
+                recoveryCodeCopyButton
+                    .padding(.bottom, 40)
+                
+                Divider()
+                
+                menuSection
+                
+                Spacer()
+            }
+            .staccatoModalBar(title: "마이페이지", titlePosition: .center)
+            .overlay(
+                Group {
+                    if showToast {
+                        toastMessage
+                    }
+                },
+                alignment: .bottom
+            )
+            .onAppear {
+                viewModel.fetchProfile()
+            }
         }
     }
 }
@@ -79,6 +83,7 @@ extension MyPageView {
                         case .success(let image):
                             image
                                 .resizable()
+                                .scaledToFill()
                                 .clipShape(Circle())
                         case .failure:
                             Image(.personCircleFill)
@@ -126,10 +131,12 @@ extension MyPageView {
         .photosPicker(isPresented: $isPhotoPickerPresented, selection: $photoItem)
         
         .fullScreenCover(isPresented: $showCamera) {
-            CameraView(selectedImage: $selectedPhoto)
+            CameraView(selectedImage: $capturedImage)
                 .background(.staccatoBlack)
         }
-        
+        .onChange(of: capturedImage, { _, newValue in
+            loadTransferable(from: newValue)
+        })
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
         }
@@ -175,7 +182,6 @@ extension MyPageView {
             .padding(.bottom, 50)
             .transition(.opacity)
     }
-
     
     private var menuSection: some View {
         VStack {
@@ -239,6 +245,10 @@ extension MyPageView {
                 }
             }
             .padding(.top, 12)
+#if DEBUG
+            Spacer()
+            logoutButton
+#endif
         }
     }
 }
@@ -253,4 +263,42 @@ extension MyPageView {
             }
         }
     }
+    private func loadTransferable(from image: UIImage?) {
+        Task {
+            viewModel.uploadProfileImage(image!)
+            selectedPhoto = image
+        }
+    }
+}
+
+
+// MARK: - 디버깅용 코드
+
+extension MyPageView {
+
+    var logoutButton: some View {
+        HStack {
+            Spacer()
+            VStack(alignment: .trailing, spacing: 10) {
+                Button {
+                    print("\n========================================\n✅ 복구코드: \(viewModel.profile?.code ?? "없음")\n====================로그아웃====================")
+                    UIPasteboard.general.string = viewModel.profile?.code ?? ""
+                    signinViewModel.logout()
+                } label: {
+                    Text("로그아웃")
+                        .typography(.title2)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 8)
+                }
+                .background(RoundedRectangle(cornerRadius: 2).stroke(.red))
+
+                Text("복구코드는 복사되며 콘솔창에도 프린트됩니다.")
+                    .typography(.body4)
+                    .foregroundStyle(.gray4)
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+
 }

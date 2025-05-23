@@ -7,7 +7,8 @@
 
 import Foundation
 
-// Type Method
+// MARK: - String -> Date
+
 extension Date {
     static func fromString(_ dateString: String?, dateFormat: String = "yyyy-MM-dd") -> Date? {
         guard let dateString else { return nil }
@@ -40,26 +41,50 @@ extension Date {
     }
 }
 
+// MARK: - 자주 쓰이는 요소
+
 extension Date {
+
+    var year: Int {
+        let year = Calendar.current.component(.year, from: self)
+        return year
+    }
+
+}
+
+// MARK: - Formatted String
+
+extension Date {
+    /// yyyy-MM-dd
     var formattedAsRequestDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: self)
     }
 
+    /// yyyy. MM. dd
     var formattedAsFullDate: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy. MM. dd"
         return formatter.string(from: self)
     }
 
-    var formattedAsMonthAndDay: String {
+    /// MM. dd
+    var formattedAsMonthAndDayDot: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM. dd"
+        return formatter.string(from: self)
+    }
+
+    /// MM월 dd일
+    var formattedAsMonthAndDayKR: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MM월 dd일"
         formatter.locale = Locale(identifier: "ko_KR")
         return formatter.string(from: self)
     }
 
+    /// YYYY년 MM월
     var formattedAsYearAndMonth: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY년 MM월"
@@ -67,6 +92,7 @@ extension Date {
         return formatter.string(from: self)
     }
 
+    /// YYYY년 MM월 dd일 a h시
     var formattedAsFullDateWithHour: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "YYYY년 MM월 dd일 a h시"
@@ -74,6 +100,7 @@ extension Date {
         return formatter.string(from: self)
     }
 
+    /// yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
     var formattedAsISO8601: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

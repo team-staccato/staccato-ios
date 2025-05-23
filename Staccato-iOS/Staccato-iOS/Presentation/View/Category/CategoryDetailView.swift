@@ -15,11 +15,13 @@ struct CategoryDetailView: View {
     @Environment(StaccatoAlertManager.self) var alertManager
     @EnvironmentObject var homeViewModel: HomeViewModel
 
-    let categoryId: Int64
+    private let categoryId: Int64
     @ObservedObject var viewModel: CategoryViewModel
 
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
+
+    private let horizontalInset: CGFloat = 16
 
     init(_ categoryId: Int64, _ categoryViewModel: CategoryViewModel) {
         self.categoryId = categoryId
@@ -37,6 +39,7 @@ struct CategoryDetailView: View {
 
                 Spacer()
             }
+            .frame(width: ScreenUtils.width)
         }
         .background(.staccatoWhite)
 
@@ -82,16 +85,16 @@ struct CategoryDetailView: View {
 
 }
 
-// MARK: - UI Comonents
+// MARK: - UI Components
 
-extension CategoryDetailView {
+private extension CategoryDetailView {
 
-    private var headerSection: some View {
+    var headerSection: some View {
         ZStack(alignment: .bottomLeading) {
             KFImage(URL(string: viewModel.categoryDetail?.categoryThumbnailUrl ?? ""))
                 .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 240, alignment: .center)
+                .scaledToFill()
+                .frame(width: ScreenUtils.width, height: ScreenUtils.width * 0.67, alignment: .center)
                 .clipped()
 
             Rectangle()
@@ -111,12 +114,12 @@ extension CategoryDetailView {
                         .foregroundStyle(.staccatoWhite)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, horizontalInset)
             .padding(.bottom, 14)
         }
     }
 
-    private var linearGradient: LinearGradient {
+    var linearGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(stops: [
                 .init(color: Color.staccatoBlack.opacity(0.2), location: 0.0),
@@ -129,7 +132,7 @@ extension CategoryDetailView {
     }
 
     @ViewBuilder
-    private var descriptionSection: some View {
+    var descriptionSection: some View {
         if let description = viewModel.categoryDetail?.description {
             VStack(spacing: 16) {
                 Text(description)
@@ -142,16 +145,15 @@ extension CategoryDetailView {
         }
     }
 
-    private var staccatoCollectionSection: some View {
+    var staccatoCollectionSection: some View {
         let staccatos = viewModel.categoryDetail?.staccatos ?? []
-        let horizontalInset: CGFloat = 16
-        let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset - 8) / 2
+        let columnWidth: CGFloat = (ScreenUtils.width - horizontalInset * 2 - 8) / 2
         let columns = [
             GridItem(.fixed(columnWidth), spacing: 8),
             GridItem(.fixed(columnWidth))
         ]
 
-        return VStack {
+        return VStack(spacing: 19) {
             HStack {
                 Text("스타카토")
                     .typography(.title2)
@@ -183,7 +185,7 @@ extension CategoryDetailView {
         .padding(.horizontal, horizontalInset)
     }
 
-    private var emptyCollection: some View {
+    var emptyCollection: some View {
         VStack(spacing: 10) {
             Image(.staccatoCharacter)
                 .resizable()
@@ -196,4 +198,5 @@ extension CategoryDetailView {
                 .multilineTextAlignment(.center)
         }
     }
+
 }

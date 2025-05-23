@@ -7,7 +7,7 @@
 
 import Foundation
 
-class AppVersionCheckManager {
+final class AppVersionCheckManager {
 
     static let shared = AppVersionCheckManager()
     let appStoreURL = URL(string: "https://apps.apple.com/app/6741481784")!

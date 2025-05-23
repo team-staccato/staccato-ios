@@ -13,28 +13,25 @@ import Kingfisher
 struct HomeView: View {
 
     // MARK: - Properties
+
     //NOTE: View, ViewModel
-    @EnvironmentObject var viewModel: HomeViewModel
-    @EnvironmentObject var mypageViewModel: MyPageViewModel
+    @EnvironmentObject private var viewModel: HomeViewModel
+    @EnvironmentObject private var mypageViewModel: MyPageViewModel
     private let mapView = GMSMapViewRepresentable()
 
-    // NOTE: 모달 크기
-    @State private var modalHeight: CGFloat = HomeModalSize.medium.height
-    @State private var dragOffset: CGFloat = 120 / 640 * ScreenUtils.height
-
-    // NOTE: 화면 전환, Alert 매니저
-    @Environment(NavigationState.self) var navigationState
-    @Environment(StaccatoAlertManager.self) var alertManager
-    @State private var isMyPagePresented = false
-
-    // NOTE: 위치 접근 권한
+    // NOTE: Managers
+    @Environment(HomeModalManager.self) private var homeModalManager
+    @Environment(NavigationState.self) private var navigationState
+    @Environment(StaccatoAlertManager.self) private var alertManager
     @State private var locationAuthorizationManager = STLocationManager.shared
 
-    // NOTE: Staccato Create Modal
-    @State private var isCreateStaccatoModalPresented = false
-
-    // NOTE: 앱 업데이트 Alert 여부
+    // NOTE: UI Visibility
     @State private var showUpdateAlert = false
+    @State private var isMyPagePresented = false
+    @State private var isCreateStaccatoModalPresented = false
+    private var isStaccatoAddButtonVisible: Bool {
+        homeModalManager.modalSize != .large
+    }
 
 
     // MARK: - Body
@@ -42,8 +39,8 @@ struct HomeView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             mapView
+                .background(Color.red)
                 .edgesIgnoringSafeArea(.all)
-                .padding(.bottom, modalHeight - 40)
 
             myPageButton
                 .padding(10)
@@ -52,10 +49,12 @@ struct HomeView: View {
                 .padding(12)
                 .frame(maxWidth: .infinity, alignment: .topTrailing)
 
-            staccatoAddButton
-                .padding(.trailing, 12)
-                .padding(.bottom, modalHeight - 20)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+            if isStaccatoAddButtonVisible {
+                staccatoAddButton
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+                    .padding(.trailing, 12)
+                    .padding(.bottom, (homeModalManager.modalHeight - ScreenUtils.safeAreaInsets.bottom) + 12)
+            }
 
             categoryListModal
                 .edgesIgnoringSafeArea(.bottom)
@@ -63,6 +62,7 @@ struct HomeView: View {
                 StaccatoAlertView()
             }
         }
+        .ignoresSafeArea(.keyboard)
         .onAppear() {
             // 앱 버전체크 // TODO: 리팩토링
             AppVersionCheckManager.shared.fetchAppStoreVersion { version in
@@ -73,15 +73,10 @@ struct HomeView: View {
                 showUpdateAlert = AppVersionCheckManager.shared.isUpdateAvailable(appStoreVersion: appStoreVersion)
             }
 
-            locationAuthorizationManager.checkLocationAuthorization()
+            locationAuthorizationManager.checkAndRequestLocationAuthorization()
             STLocationManager.shared.updateLocationForOneSec()
             viewModel.fetchStaccatos()
             mypageViewModel.fetchProfile()
-        }
-        .onChange(of: locationAuthorizationManager.hasLocationAuthorization) { oldValue, newValue in
-            if newValue {
-                STLocationManager.shared.updateLocationForOneSec()
-            }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()
@@ -107,9 +102,9 @@ struct HomeView: View {
 
 // MARK: - UI Components
 
-extension HomeView {
+private extension HomeView {
 
-    private var myPageButton: some View {
+    var myPageButton: some View {
         Button {
             isMyPagePresented = true
         } label: {
@@ -139,7 +134,7 @@ extension HomeView {
         }
     }
 
-    private var myLocationButton: some View {
+    var myLocationButton: some View {
         Button {
             STLocationManager.shared.updateLocationForOneSec()
         } label: {
@@ -154,7 +149,7 @@ extension HomeView {
         .shadow(radius: 2)
     }
 
-    private var staccatoAddButton: some View {
+    var staccatoAddButton: some View {
         Button {
             isCreateStaccatoModalPresented = true
         } label: {
@@ -170,31 +165,23 @@ extension HomeView {
         .shadow(radius: 4, y: 4)
     }
 
-    private var categoryListModal: some View {
+    var categoryListModal: some View {
         VStack {
             Spacer()
 
             CategoryListView(navigationState)
-                .frame(height: modalHeight)
+                .frame(height: homeModalManager.modalHeight)
                 .background(Color.staccatoWhite)
                 .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
                 .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            // 드래그 중에 모달의 높이를 변경
-                            let newHeight = max(100, modalHeight - value.translation.height)
-                            modalHeight = newHeight
+                            let newHeight: CGFloat = homeModalManager.modalHeight - value.translation.height
+                            homeModalManager.updateHeight(to: max(100, newHeight))
                         }
                         .onEnded { value in
-                            // 드래그 종료 후, 모달의 최종 높이를 설정
-                            if modalHeight < HomeModalSize.small.height + dragOffset {
-                                modalHeight = HomeModalSize.small.height  // small
-                            } else if modalHeight < HomeModalSize.medium.height + dragOffset {
-                                modalHeight = HomeModalSize.medium.height  // medium
-                            } else {
-                                modalHeight = HomeModalSize.large.height  // large
-                            }
+                            homeModalManager.setFinalSize(translationAmount: value.translation.height)
                         }
                 )
         }

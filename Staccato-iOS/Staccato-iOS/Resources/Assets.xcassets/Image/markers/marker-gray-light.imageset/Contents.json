@@ -1,8 +1,19 @@
 {
   "images" : [
     {
-      "filename" : "marker-gray-light.png",
-      "idiom" : "universal"
+      "filename" : "marker-light-gray.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "marker-light-gray@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "marker-light-gray@3x.png",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
   "info" : {

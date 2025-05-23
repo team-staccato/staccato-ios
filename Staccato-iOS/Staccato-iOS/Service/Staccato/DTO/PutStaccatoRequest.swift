@@ -6,7 +6,7 @@
 //
 
 
-struct ModifyStaccatoRequest: Encodable {
+struct PutStaccatoRequest: Encodable {
     var staccatoTitle: String
     var placeName: String
     var address: String

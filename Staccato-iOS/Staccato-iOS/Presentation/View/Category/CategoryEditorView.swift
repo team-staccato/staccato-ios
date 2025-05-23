@@ -258,7 +258,7 @@ extension CategoryEditorView {
             Button {
                 vm.isColorPalettePresented = true
             } label: {
-                vm.categoryColor.markerImage
+                Image(uiImage: vm.categoryColor.markerImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 26,height: 32)

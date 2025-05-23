@@ -149,6 +149,7 @@ private extension GMSMapViewRepresentable {
                 longitude: staccato.longitude
             )
             marker.userData = staccato
+            marker.icon = CategoryColorType.fromServerKey(staccato.staccatoColor)?.markerImage
             marker.map = mapView
 
             if marker.map == nil {

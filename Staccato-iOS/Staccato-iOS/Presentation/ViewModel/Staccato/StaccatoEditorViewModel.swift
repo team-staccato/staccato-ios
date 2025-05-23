@@ -86,7 +86,7 @@ class StaccatoEditorViewModel {
             return
         }
 
-        let request = CreateStaccatoRequest(
+        let request = PostStaccatoRequest(
             staccatoTitle: self.title,
             placeName: self.selectedPlace?.name ?? "",
             address: self.selectedPlace?.address ?? "",
@@ -98,7 +98,7 @@ class StaccatoEditorViewModel {
         )
 
         do {
-            try await STService.shared.staccatoService.createStaccato(request)
+            try await STService.shared.staccatoService.postStaccato(request)
             self.uploadSuccess = true
         } catch {
             self.catchError = true
@@ -113,7 +113,7 @@ class StaccatoEditorViewModel {
             return
         }
 
-        let request = ModifyStaccatoRequest(
+        let request = PutStaccatoRequest(
             staccatoTitle: self.title,
             placeName: self.selectedPlace?.name ?? "",
             address: self.selectedPlace?.address ?? "",
@@ -125,7 +125,7 @@ class StaccatoEditorViewModel {
         )
 
         do {
-            try await STService.shared.staccatoService.modifyStaccato(staccatoId, requestBody: request)
+            try await STService.shared.staccatoService.putStaccato(staccatoId, requestBody: request)
             self.uploadSuccess = true
         } catch {
             self.catchError = true

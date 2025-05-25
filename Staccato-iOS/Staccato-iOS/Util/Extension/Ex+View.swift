@@ -8,17 +8,37 @@
 import SwiftUI
 
 extension View {
+    // 조건부 오버레이 (기본값: EmptyView)
     @ViewBuilder
     func overlayIf<T: View>(
         _ condition: Bool,
-        _ firstContent: () -> T,
-        _ secondContent: () -> T = { EmptyView() as! T},
+        _ content: () -> T,
         alignment: Alignment = .center
     ) -> some View {
         if condition {
-            self.overlay(alignment: alignment, content: firstContent)
+            self.overlay(alignment: alignment, content: content)
         } else {
-            self.overlay(alignment: alignment, content: secondContent)
+            self
         }
+    }
+    
+    @ViewBuilder
+    func overlayIf<T: View, U: View>(
+        _ condition: Bool,
+        _ first: () -> T,
+        _ second: () -> U,
+        _ alignment: Alignment = .center
+    ) -> some View {
+        if condition {
+            self.overlay(alignment: alignment, content: first)
+        } else {
+            self.overlay(alignment: alignment, content: second)
+        }
+    }
+}
+
+extension View {
+    func dismissKeyboardOnSwipe() -> some View {
+        self.modifier(KeyboardDismissModifier())
     }
 }

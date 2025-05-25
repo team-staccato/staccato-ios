@@ -26,7 +26,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Support/Info.plist,
-				Util/ScreenUtils.swift,
 			);
 			target = 137153872D26CDCA00EABE10 /* Staccato-iOS */;
 		};

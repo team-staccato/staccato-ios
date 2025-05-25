@@ -28,21 +28,38 @@ struct InviteMemberView: View {
                 .padding([.leading, .trailing], 16)
                 .presentationCornerRadius(5)
             
-            Group {
-                if !viewModel.selectedMembers.isEmpty {
-                    selectedListView
-                        .padding([.top, .leading], 16)
+            if viewModel.selectedMembers.isEmpty && viewModel.searchMembers.isEmpty {
+                VStack(alignment: .center, spacing: 10) {
+                    Image("staccato_character_gray")
+                        .resizable()
+                        .frame(width: 110, height: 110)
+                    
+                    Text("친구를 초대해 함께 기록해보세요!")
+                        .font(StaccatoFont.body4.font)
+                        .foregroundStyle(Color.gray3)
                 }
-                
-                if !viewModel.searchMembers.isEmpty {
-                    searchListView
-                        .padding(.top, 17)
-                        .frame(height: 288)
+                .padding(.top, 111)
+            } else {
+                Group {
+                    if !viewModel.selectedMembers.isEmpty {
+                        selectedListView
+                            .padding([.top, .leading], 16)
+                    }
+                    
+                    if !viewModel.searchMembers.isEmpty {
+                        searchListView
+                            .padding(.top, 17)
+                            .frame(height: 288)
+                    }
                 }
             }
+            
+            Spacer()
         }
+        .frame(height: 500)
         .background(.staccatoWhite)
         .clipShape(RoundedRectangle(cornerRadius: 10))
+        .padding(.vertical, 180)
         .padding(.horizontal, 16)
         .dismissKeyboardOnSwipe()
     }
@@ -72,6 +89,7 @@ private extension InviteMemberView {
             }
             
             Button {
+                // TODO: - 멤버 초대 필요
                 dismiss()
             } label: {
                 Text("확인")

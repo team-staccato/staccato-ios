@@ -181,7 +181,7 @@ private extension CategoryDetailView {
             Circle()
                 .fill(Color.white)
                 .stroke(Color.gray2, lineWidth: 1)
-                .frame(width: 40, height: 40)
+                .frame(width: 45, height: 45)
                 .overlay {
                     Image(.plus)
                         .frame(width: 13, height: 13)

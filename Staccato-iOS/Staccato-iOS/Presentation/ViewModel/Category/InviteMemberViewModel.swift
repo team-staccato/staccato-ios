@@ -19,14 +19,17 @@ final class InviteMemberViewModel: ObservableObject {
                                                              SearchedMemberModel(id: 6, nickname: "빙티5", imageURL: ""),
                                                              SearchedMemberModel(id: 7, nickname: "빙티6", imageURL: ""),
                                                              SearchedMemberModel(id: 8, nickname: "빙티7", imageURL: "")]
-    @Published var searchMembers: [SearchedMemberModel] = [SearchedMemberModel(id: 11, nickname: "영미1", imageURL: ""),
-                                                           SearchedMemberModel(id: 12, nickname: "영미2", imageURL: "", isInvited: true),
-                                                           SearchedMemberModel(id: 13, nickname: "영미3", imageURL: ""),
-                                                           SearchedMemberModel(id: 14, nickname: "영미4", imageURL: ""),
-                                                           SearchedMemberModel(id: 15, nickname: "영미5", imageURL: ""),
-                                                           SearchedMemberModel(id: 16, nickname: "영미6", imageURL: ""),
-                                                           SearchedMemberModel(id: 17, nickname: "영미7", imageURL: ""),
-                                                           SearchedMemberModel(id: 18, nickname: "영미8", imageURL: "")]
+//    @Published var searchMembers: [SearchedMemberModel] = [SearchedMemberModel(id: 11, nickname: "영미1", imageURL: ""),
+//                                                           SearchedMemberModel(id: 12, nickname: "영미2", imageURL: "", isInvited: true),
+//                                                           SearchedMemberModel(id: 13, nickname: "영미3", imageURL: ""),
+//                                                           SearchedMemberModel(id: 14, nickname: "영미4", imageURL: ""),
+//                                                           SearchedMemberModel(id: 15, nickname: "영미5", imageURL: ""),
+//                                                           SearchedMemberModel(id: 16, nickname: "영미6", imageURL: ""),
+//                                                           SearchedMemberModel(id: 17, nickname: "영미7", imageURL: ""),
+//                                                           SearchedMemberModel(id: 18, nickname: "영미8", imageURL: "")]
+    
+//    @Published var selectedMembers: [SearchedMemberModel] = []
+    @Published var searchMembers: [SearchedMemberModel] = []
     
     // 멤버 선택 토글 메서드
     func toggleMemberSelection(_ member: SearchedMemberModel) {

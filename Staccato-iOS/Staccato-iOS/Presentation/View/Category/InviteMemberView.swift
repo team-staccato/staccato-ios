@@ -15,6 +15,7 @@ struct InviteMemberView: View {
     
     @Binding var isPresented: Bool
     @State private var memberName: String = ""
+    @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
         VStack(alignment: .center) {
@@ -43,6 +44,7 @@ struct InviteMemberView: View {
         .background(.staccatoWhite)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal, 16)
+        .dismissKeyboardOnSwipe()
     }
 }
 
@@ -88,9 +90,20 @@ private extension InviteMemberView {
             
             TextField("닉네임을 검색해주세요.", text: $memberName)
                 .foregroundStyle(Color.staccatoBlack)
+            
+            if memberName != "" {
+                Button {
+                    memberName = ""
+                } label: {
+                    Image(.xCircleFill)
+                        .foregroundStyle(Color.gray3)
+                        .frame(width: 15, height: 15)
+                }
+            }
         }
         .padding([.top, .bottom], 13)
         .padding(.leading, 17)
+        .padding(.trailing, 15)
         .background(Color.gray1)
         .clipShape(RoundedRectangle(cornerRadius: 5))
     }

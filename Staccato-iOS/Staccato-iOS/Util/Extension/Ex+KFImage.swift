@@ -4,7 +4,8 @@
 //
 //  Created by 김영현 on 5/24/25.
 //
-
+import Foundation
+import SwiftUI
 import Kingfisher
 
 extension KFImage {

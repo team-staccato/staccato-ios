@@ -7,11 +7,11 @@
 
 import Foundation
 
-class STService {
+final class STService {
 
     static let shared = STService()
 
-    init() { }
+    private init() { }
 
 
     // MARK: - Services

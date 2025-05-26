@@ -11,7 +11,7 @@ struct SearchedMemberModel: Identifiable, Equatable {
     
     let id: Int64
     let nickname: String
-    let imageURL: String
+    let imageURL: String?
     var isSelected: Bool = false
     var isInvited: Bool = false
     
@@ -21,5 +21,15 @@ struct SearchedMemberModel: Identifiable, Equatable {
         self.imageURL = imageURL
         self.isSelected = isSelected
         self.isInvited = isInvited
+    }
+}
+
+// MARK: - Mapping DTO
+extension SearchedMemberModel {
+    init(from dto: MemberResponse) {
+        self.id = dto.memberId
+        self.nickname = dto.nickname
+        self.imageURL = dto.memberImageUrl
+        // TODO: - isInvitied 백엔드 필터링 필요
     }
 }

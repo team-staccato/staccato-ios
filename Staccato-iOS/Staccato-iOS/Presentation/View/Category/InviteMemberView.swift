@@ -11,7 +11,7 @@ import Kingfisher
 struct InviteMemberView: View {
     
     @EnvironmentObject private var viewModel: InviteMemberViewModel
-    @Environment(\.dismiss) private var dismiss // TODO: - 고려 필요
+    @Environment(\.dismiss) private var dismiss
     
     @State private var memberName: String = ""
     @FocusState private var isTextFieldFocused: Bool
@@ -48,7 +48,6 @@ struct InviteMemberView: View {
                     if !viewModel.searchMembers.isEmpty {
                         searchListView
                             .padding(.top, 17)
-                            .frame(height: 288)
                     }
                 }
             }
@@ -89,7 +88,7 @@ private extension InviteMemberView {
             }
             
             Button {
-                // TODO: - 멤버 초대 필요
+                viewModel.postInviteMember()
                 dismiss()
             } label: {
                 Text("확인")
@@ -108,6 +107,9 @@ private extension InviteMemberView {
             
             TextField("닉네임을 검색해주세요.", text: $memberName)
                 .foregroundStyle(Color.staccatoBlack)
+                .onChange(of: memberName, initial: false) { _, name in
+                    viewModel.getSearchedMember(name)
+                }
             
             if memberName != "" {
                 Button {
@@ -131,17 +133,8 @@ private extension InviteMemberView {
             LazyHStack(spacing: 15) {
                 ForEach(viewModel.selectedMembers) { member in
                     VStack(alignment: .center, spacing: 4) {
-                        KFImage(URL(string: member.imageURL))
-                            .placeholder {
-                                Image(.personCircleFill)
-                                    .resizable()
-                                    .foregroundStyle(.gray2)
-                                    .frame(width: 40, height: 40)
-                            }
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
+                        KFImage(URL(string: member.imageURL ?? ""))
+                            .fillPersonImage(width: 40, height: 40)
                             .overlay(alignment: .topTrailing) {
                                 Button {
                                     withAnimation {
@@ -188,17 +181,8 @@ struct SearchMemberRow: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            KFImage(URL(string: member.imageURL))
-                .placeholder {
-                    Image(.personCircleFill)
-                        .resizable()
-                        .foregroundStyle(.gray2)
-                        .frame(width: 35, height: 35)
-                }
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 35, height: 35)
-                .clipShape(Circle())
+            KFImage(URL(string: member.imageURL ?? ""))
+                .fillPersonImage(width: 35, height: 35)
                 .padding(.leading, 16)
             
             Text("\(member.nickname)")
@@ -250,5 +234,5 @@ struct SearchMemberRow: View {
 // MARK: - Preview
 #Preview {
     InviteMemberView()
-        .environmentObject(InviteMemberViewModel())
+        .environmentObject(InviteMemberViewModel(1))
 }

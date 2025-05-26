@@ -9,10 +9,16 @@ import Foundation
 import UIKit
 import Kingfisher
 
+@MainActor
 final class InviteMemberViewModel: ObservableObject {
     
+    private let categoryId: Int64?
     @Published var selectedMembers: [SearchedMemberModel] = []
     @Published var searchMembers: [SearchedMemberModel] = []
+    
+    init(_ categoryId: Int64?) {
+        self.categoryId = categoryId
+    }
     
     func toggleMemberSelection(_ member: SearchedMemberModel) {
         if let index = searchMembers.firstIndex(where: { $0.id == member.id }) {
@@ -29,6 +35,32 @@ final class InviteMemberViewModel: ObservableObject {
         selectedMembers.removeAll(where: { $0.id == member.id })
         if let index = searchMembers.firstIndex(where: { $0.id == member.id }) {
             searchMembers[index].isSelected = false
+        }
+    }
+}
+
+extension InviteMemberViewModel {
+    func getSearchedMember(_ name: String) {
+        searchMembers.removeAll()
+        if name == "" { return }
+        
+        Task {
+            let response = try await InviteService.getSearchMemberList(name)
+            response.members.forEach {
+                var searchedMember = SearchedMemberModel(from: $0)
+                if selectedMembers.contains(searchedMember) { searchedMember.isSelected = true }
+                searchMembers.append(searchedMember)
+            }
+        }
+    }
+    
+    // TODO: - 초대 후 상태 보여주기 필요
+    // TODO: - category 예외처리??
+    func postInviteMember() {
+        guard let categoryId else { return }
+        Task {
+            let response = try await InviteService.postInviteMember(categoryId, selectedMembers.map { $0.id })
+            print(response)
         }
     }
 }

@@ -28,15 +28,7 @@ struct InviteMemberView: View {
                 .presentationCornerRadius(5)
             
             if viewModel.selectedMembers.isEmpty && viewModel.searchMembers.isEmpty {
-                VStack(alignment: .center, spacing: 10) {
-                    Image("staccato_character_gray")
-                        .resizable()
-                        .frame(width: 110, height: 110)
-                    
-                    Text("친구를 초대해 함께 기록해보세요!")
-                        .font(StaccatoFont.body4.font)
-                        .foregroundStyle(Color.gray3)
-                }
+                staccatoEmptyView
                 .padding(.top, 111)
             } else {
                 Group {
@@ -48,6 +40,9 @@ struct InviteMemberView: View {
                     if !viewModel.searchMembers.isEmpty {
                         searchListView
                             .padding(.top, 17)
+                    } else {
+                        staccatoEmptyView
+                            .padding(.top, 111)
                     }
                 }
             }
@@ -171,6 +166,18 @@ private extension InviteMemberView {
                     .frame(height: 60)
                 }
             }
+        }
+    }
+    
+    var staccatoEmptyView: some View {
+        VStack(alignment: .center, spacing: 10) {
+            Image("staccato_character_gray")
+                .resizable()
+                .frame(width: 110, height: 110)
+            
+            Text("친구를 초대해 함께 기록해보세요!")
+                .font(StaccatoFont.body4.font)
+                .foregroundStyle(Color.gray3)
         }
     }
 }

@@ -49,20 +49,22 @@ struct CategoryDetailView: View {
         .background(.staccatoWhite)
 
         .staccatoNavigationBar {
-            Button("수정") {
-                isCategoryModifyModalPresented = true
-            }
-
-            Button("삭제") {
-                withAnimation {
-                    alertManager.show(
-                        .confirmCancelAlert(
-                            title: "삭제하시겠습니까?",
-                            message: "삭제를 누르면 복구할 수 없습니다.") {
-                                viewModel.deleteCategory()
-                                navigationState.dismiss()
-                            }
-                    )
+            if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
+                Button("수정") {
+                    isCategoryModifyModalPresented = true
+                }
+                
+                Button("삭제") {
+                    withAnimation {
+                        alertManager.show(
+                            .confirmCancelAlert(
+                                title: "삭제하시겠습니까?",
+                                message: "삭제를 누르면 복구할 수 없습니다.") {
+                                    viewModel.deleteCategory()
+                                    navigationState.dismiss()
+                                }
+                        )
+                    }
                 }
             }
         }
@@ -192,7 +194,7 @@ private extension CategoryDetailView {
         }
         .fullScreenCover(isPresented: $isInviteSheetPresented) {
             // TODO: - Background 애니메이션 수정 필요
-            InviteMemberView(isPresented: $isInviteSheetPresented)
+            InviteMemberView()
                 .environmentObject(InviteMemberViewModel())
                 .presentationBackground(.black.opacity(0.2))
         }

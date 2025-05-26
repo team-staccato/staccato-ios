@@ -13,7 +13,6 @@ struct InviteMemberView: View {
     @EnvironmentObject private var viewModel: InviteMemberViewModel
     @Environment(\.dismiss) private var dismiss // TODO: - 고려 필요
     
-    @Binding var isPresented: Bool
     @State private var memberName: String = ""
     @FocusState private var isTextFieldFocused: Bool
     
@@ -61,10 +60,11 @@ struct InviteMemberView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.vertical, 180)
         .padding(.horizontal, 16)
-        .dismissKeyboardOnSwipe()
+        .dismissKeyboardOnGesture()
     }
 }
 
+// MARK: - UI Components
 private extension InviteMemberView {
     var titleBarView: some View {
         HStack(spacing: 0) {
@@ -249,8 +249,6 @@ struct SearchMemberRow: View {
 
 // MARK: - Preview
 #Preview {
-    @Previewable @State var isPresented: Bool = true
-    
-    InviteMemberView(isPresented: $isPresented)
+    InviteMemberView()
         .environmentObject(InviteMemberViewModel())
 }

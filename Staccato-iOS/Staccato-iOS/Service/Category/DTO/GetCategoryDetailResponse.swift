@@ -20,18 +20,10 @@ struct GetCategoryDetailResponse: Decodable {
     let members: [MemberResponse]
     let staccatos: [StaccatoResponse]
 
-    struct MemberResponse: Decodable {
-        let memberId: Int64
-        let nickname: String
-        let memberImageUrl: String?
-        let memberRole: String
-    }
-
     struct StaccatoResponse: Decodable {
         let staccatoId: Int64
         let staccatoTitle: String
         let staccatoImageUrl: String?
         let visitedAt: String
     }
-
 }

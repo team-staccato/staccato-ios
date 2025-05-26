@@ -22,11 +22,4 @@ struct GetCategoryListResponse: Decodable {
         let members: [MemberResponse]
         let staccatoCount: Int
     }
-
-    struct MemberResponse: Decodable {
-        let memberId: Int64
-        let nickname: String
-        let memberImageUrl: String?
-    }
-
 }

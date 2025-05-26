@@ -16,8 +16,6 @@ struct InviteMemberView: View {
     
     @FocusState private var isTextFieldFocused: Bool
     @State private var memberName: String = ""
-    @State private var cancellables = Set<AnyCancellable>()
-    @State private var nameSubject = CurrentValueSubject<String, Never>("")
     
     var body: some View {
         VStack(alignment: .center) {
@@ -58,12 +56,6 @@ struct InviteMemberView: View {
         .padding(.vertical, 180)
         .padding(.horizontal, 16)
         .dismissKeyboardOnGesture()
-        .onAppear {
-            nameSubject
-                .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-                .sink { viewModel.getSearchedMember($0) }
-                .store(in: &cancellables)
-        }
     }
 }
 
@@ -112,7 +104,7 @@ private extension InviteMemberView {
             TextField("닉네임을 검색해주세요.", text: $memberName)
                 .foregroundStyle(Color.staccatoBlack)
                 .onChange(of: memberName, initial: false) { _, name in
-                    nameSubject.send(name)
+                    viewModel.nameSubject.send(name)
                 }
             
             if memberName != "" {

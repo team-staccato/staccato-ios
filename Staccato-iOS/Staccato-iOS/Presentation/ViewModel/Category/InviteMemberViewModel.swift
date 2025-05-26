@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import UIKit
+import Combine
 import Kingfisher
 
 @MainActor
@@ -16,8 +16,13 @@ final class InviteMemberViewModel: ObservableObject {
     @Published var selectedMembers: [SearchedMemberModel] = []
     @Published var searchMembers: [SearchedMemberModel] = []
     
+    var nameSubject = CurrentValueSubject<String, Never>("")
+    private var cancellables = Set<AnyCancellable>()
+    
+    
     init(_ categoryId: Int64?) {
         self.categoryId = categoryId
+        bind()
     }
     
     func toggleMemberSelection(_ member: SearchedMemberModel) {
@@ -36,6 +41,13 @@ final class InviteMemberViewModel: ObservableObject {
         if let index = searchMembers.firstIndex(where: { $0.id == member.id }) {
             searchMembers[index].isSelected = false
         }
+    }
+    
+    private func bind() {
+        nameSubject
+            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .sink { self.getSearchedMember($0) }
+            .store(in: &cancellables)
     }
 }
 

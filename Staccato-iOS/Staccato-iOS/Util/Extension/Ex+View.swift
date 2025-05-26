@@ -25,20 +25,20 @@ extension View {
     @ViewBuilder
     func overlayIf<T: View, U: View>(
         _ condition: Bool,
-        _ first: () -> T,
-        _ second: () -> U,
+        _ trueContent: () -> T,
+        _ falseContent: () -> U,
         _ alignment: Alignment = .center
     ) -> some View {
         if condition {
-            self.overlay(alignment: alignment, content: first)
+            self.overlay(alignment: alignment, content: trueContent)
         } else {
-            self.overlay(alignment: alignment, content: second)
+            self.overlay(alignment: alignment, content: falseContent)
         }
     }
 }
 
 extension View {
-    func dismissKeyboardOnSwipe() -> some View {
+    func dismissKeyboardOnGesture() -> some View {
         self.modifier(KeyboardDismissModifier())
     }
 }

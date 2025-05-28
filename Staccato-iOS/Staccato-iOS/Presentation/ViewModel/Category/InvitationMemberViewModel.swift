@@ -1,5 +1,5 @@
 //
-//  InviteMemberViewModel.swift
+//  InvitationMemberViewModel.swift
 //  Staccato-iOS
 //
 //  Created by 김영현 on 5/21/25.
@@ -10,7 +10,7 @@ import Combine
 import Kingfisher
 
 @MainActor
-final class InviteMemberViewModel: ObservableObject {
+final class InvitationMemberViewModel: ObservableObject {
     
     private let categoryId: Int64?
     @Published var selectedMembers: [SearchedMemberModel] = []
@@ -51,13 +51,13 @@ final class InviteMemberViewModel: ObservableObject {
     }
 }
 
-extension InviteMemberViewModel {
+extension InvitationMemberViewModel {
     func getSearchedMember(_ name: String) {
         searchMembers.removeAll()
         if name == "" { return }
         
         Task {
-            let response = try await InviteService.getSearchMemberList(name)
+            let response = try await InvitationService.getSearchMemberList(name)
             response.members.forEach {
                 var searchedMember = SearchedMemberModel(from: $0)
                 if selectedMembers.contains(searchedMember) { searchedMember.isSelected = true }
@@ -68,11 +68,10 @@ extension InviteMemberViewModel {
     
     // TODO: - 초대 후 상태 보여주기 필요
     // TODO: - category 예외처리??
-    func postInviteMember() {
+    func postInvitationMember() {
         guard let categoryId else { return }
         Task {
-            let response = try await InviteService.postInviteMember(categoryId, selectedMembers.map { $0.id })
-            print(response)
+            let response = try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
         }
     }
 }

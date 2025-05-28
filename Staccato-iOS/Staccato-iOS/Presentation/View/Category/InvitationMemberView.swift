@@ -1,5 +1,5 @@
 //
-//  InviteMemberView.swift
+//  InvitationMemberView.swift
 //  Staccato-iOS
 //
 //  Created by 김영현 on 5/20/25.
@@ -9,9 +9,9 @@ import SwiftUI
 import Combine
 import Kingfisher
 
-struct InviteMemberView: View {
+struct InvitationMemberView: View {
     
-    @EnvironmentObject private var viewModel: InviteMemberViewModel
+    @EnvironmentObject private var viewModel: InvitationMemberViewModel
     @Environment(\.dismiss) private var dismiss
     
     @FocusState private var isTextFieldFocused: Bool
@@ -60,7 +60,7 @@ struct InviteMemberView: View {
 }
 
 // MARK: - UI Components
-private extension InviteMemberView {
+private extension InvitationMemberView {
     var titleBarView: some View {
         HStack(spacing: 0) {
             Button("뒤로가기", systemImage: "xmark") {
@@ -84,7 +84,7 @@ private extension InviteMemberView {
             }
             
             Button {
-                viewModel.postInviteMember()
+                viewModel.postInvitationMember()
                 dismiss()
             } label: {
                 Text("확인")
@@ -241,6 +241,6 @@ struct SearchMemberRow: View {
 
 // MARK: - Preview
 #Preview {
-    InviteMemberView()
-        .environmentObject(InviteMemberViewModel(1))
+    InvitationMemberView()
+        .environmentObject(InvitationMemberViewModel(1))
 }

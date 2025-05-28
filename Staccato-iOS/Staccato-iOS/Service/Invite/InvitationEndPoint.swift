@@ -1,5 +1,5 @@
 //
-//  InviteEndpoint.swift
+//  InvitationEndPoint.swift
 //  Staccato-iOS
 //
 //  Created by 김영현 on 5/26/25.
@@ -7,12 +7,12 @@
 
 import Alamofire
 
-enum InviteEndPoint {
+enum InvitationEndPoint {
     case getSearchMemberList(_ name: String)
     case postInvitations(_ categoryId: Int64, _ membersId: [Int64])
 }
 
-extension InviteEndPoint: APIEndpoint {
+extension InvitationEndPoint: APIEndpoint {
 
     var path: String {
         switch self {

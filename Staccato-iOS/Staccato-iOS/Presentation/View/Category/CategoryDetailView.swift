@@ -20,7 +20,7 @@ struct CategoryDetailView: View {
 
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
-    @State private var isInviteSheetPresented = false
+    @State private var isinvitationSheetPresented = false
 
     private let horizontalInset: CGFloat = 16
 
@@ -163,7 +163,7 @@ private extension CategoryDetailView {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 17) {
                     if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
-                        inviteButton
+                        invitationButton
                     }
                     ForEach(viewModel.categoryDetail?.members ?? []) { member in
                         CategoryDetailMemberCell(member: member)
@@ -178,9 +178,9 @@ private extension CategoryDetailView {
         .padding(.horizontal, horizontalInset)
     }
     
-    var inviteButton: some View {
+    var invitationButton: some View {
         Button {
-            isInviteSheetPresented = true
+            isinvitationSheetPresented = true
         } label: {
             Circle()
                 .fill(Color.white)
@@ -192,10 +192,10 @@ private extension CategoryDetailView {
                         .foregroundStyle(Color.staccatoBlack)
                 }
         }
-        .fullScreenCover(isPresented: $isInviteSheetPresented) {
+        .fullScreenCover(isPresented: $isinvitationSheetPresented) {
             // TODO: - Background 애니메이션 수정 필요
-            InviteMemberView()
-                .environmentObject(InviteMemberViewModel(viewModel.categoryDetail?.categoryId))
+            InvitationMemberView()
+                .environmentObject(InvitationMemberViewModel(viewModel.categoryDetail?.categoryId))
                 .presentationBackground(.black.opacity(0.2))
         }
     }

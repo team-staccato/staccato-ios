@@ -45,7 +45,7 @@ final class InvitationMemberViewModel: ObservableObject {
     
     private func bind() {
         nameSubject
-            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .sink { self.getSearchedMember($0) }
             .store(in: &cancellables)
     }

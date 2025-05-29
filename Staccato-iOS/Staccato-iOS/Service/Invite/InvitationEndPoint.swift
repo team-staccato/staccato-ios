@@ -8,7 +8,6 @@
 import Alamofire
 
 enum InvitationEndPoint {
-    case getSearchMemberList(_ name: String)
     case postInvitations(_ categoryId: Int64, _ membersId: [Int64])
 }
 
@@ -16,8 +15,6 @@ extension InvitationEndPoint: APIEndpoint {
 
     var path: String {
         switch self {
-        case .getSearchMemberList:
-            return "/members/search"
         case .postInvitations:
             return "/invitations"
         }
@@ -25,15 +22,12 @@ extension InvitationEndPoint: APIEndpoint {
 
     var method: HTTPMethod {
         switch self {
-        case .getSearchMemberList: return .get
         case .postInvitations: return .post
         }
     }
 
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getSearchMemberList:
-            return URLEncoding.queryString
         case .postInvitations:
             return JSONEncoding.default
         }
@@ -41,8 +35,6 @@ extension InvitationEndPoint: APIEndpoint {
 
     var parameters: [String : Any]? {
         switch self {
-        case .getSearchMemberList(let name):
-            return ["nickname": name]
         case .postInvitations(let categoryId, let membersId):
             return PostInvitationsRequest(categoryId: categoryId, inviteeIds: membersId).toDictionary()
         }

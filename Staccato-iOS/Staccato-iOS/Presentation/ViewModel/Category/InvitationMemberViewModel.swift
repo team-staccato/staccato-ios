@@ -57,7 +57,7 @@ extension InvitationMemberViewModel {
         if name == "" { return }
         
         Task {
-            let response = try await InvitationService.getSearchMemberList(name)
+            let response = try await MemberService.getSearchMemberList(name)
             response.members.forEach {
                 var searchedMember = SearchedMemberModel(from: $0)
                 if selectedMembers.contains(searchedMember) { searchedMember.isSelected = true }
@@ -71,7 +71,7 @@ extension InvitationMemberViewModel {
     func postInvitationMember() {
         guard let categoryId else { return }
         Task {
-            let response = try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
+            try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
         }
     }
 }

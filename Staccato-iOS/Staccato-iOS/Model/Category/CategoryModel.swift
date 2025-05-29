@@ -51,7 +51,7 @@ extension CategoryModel {
 
 extension CategoryModel.MemberModel {
 
-    init(from dto:  GetCategoryListResponse.MemberResponse) {
+    init(from dto: MemberResponse) {
         self.memberId = dto.memberId
         self.nickname = dto.nickname
         self.memberImageUrl = dto.memberImageUrl

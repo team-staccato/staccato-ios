@@ -7,11 +7,11 @@
 
 import Foundation
 
-class STService {
+final class STService {
 
     static let shared = STService()
 
-    init() { }
+    private init() { }
 
 
     // MARK: - Services
@@ -19,8 +19,6 @@ class STService {
     lazy var categoryService = CategoryService()
 
     lazy var staccatoService = StaccatoService()
-
-    lazy var myPageService = MyPageService()
 
     lazy var commentService = CommentService()
     

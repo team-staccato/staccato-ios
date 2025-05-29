@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class MyPageViewModel: ObservableObject {
+final class MyPageViewModel: ObservableObject {
     @Published var profile: ProfileModel?
 }
 
@@ -17,7 +17,7 @@ extension MyPageViewModel {
     func fetchProfile() {
         Task {
             do {
-                let response = try await STService.shared.myPageService.getProfile()
+                let response = try await MemberService.getProfile()
                 
                 let profile: ProfileModel = ProfileModel(
                     nickname: response.nickname,

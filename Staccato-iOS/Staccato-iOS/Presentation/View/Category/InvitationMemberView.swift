@@ -1,20 +1,21 @@
 //
-//  InviteMemberView.swift
+//  InvitationMemberView.swift
 //  Staccato-iOS
 //
 //  Created by 김영현 on 5/20/25.
 //
 
 import SwiftUI
+import Combine
 import Kingfisher
 
-struct InviteMemberView: View {
+struct InvitationMemberView: View {
     
-    @EnvironmentObject private var viewModel: InviteMemberViewModel
-    @Environment(\.dismiss) private var dismiss // TODO: - 고려 필요
+    @EnvironmentObject private var viewModel: InvitationMemberViewModel
+    @Environment(\.dismiss) private var dismiss
     
-    @State private var memberName: String = ""
     @FocusState private var isTextFieldFocused: Bool
+    @State private var memberName: String = ""
     
     var body: some View {
         VStack(alignment: .center) {
@@ -28,15 +29,7 @@ struct InviteMemberView: View {
                 .presentationCornerRadius(5)
             
             if viewModel.selectedMembers.isEmpty && viewModel.searchMembers.isEmpty {
-                VStack(alignment: .center, spacing: 10) {
-                    Image("staccato_character_gray")
-                        .resizable()
-                        .frame(width: 110, height: 110)
-                    
-                    Text("친구를 초대해 함께 기록해보세요!")
-                        .font(StaccatoFont.body4.font)
-                        .foregroundStyle(Color.gray3)
-                }
+                staccatoEmptyView
                 .padding(.top, 111)
             } else {
                 Group {
@@ -48,7 +41,9 @@ struct InviteMemberView: View {
                     if !viewModel.searchMembers.isEmpty {
                         searchListView
                             .padding(.top, 17)
-                            .frame(height: 288)
+                    } else {
+                        staccatoEmptyView
+                            .padding(.top, 111)
                     }
                 }
             }
@@ -65,7 +60,7 @@ struct InviteMemberView: View {
 }
 
 // MARK: - UI Components
-private extension InviteMemberView {
+private extension InvitationMemberView {
     var titleBarView: some View {
         HStack(spacing: 0) {
             Button("뒤로가기", systemImage: "xmark") {
@@ -89,7 +84,7 @@ private extension InviteMemberView {
             }
             
             Button {
-                // TODO: - 멤버 초대 필요
+                viewModel.postInvitationMember()
                 dismiss()
             } label: {
                 Text("확인")
@@ -108,6 +103,9 @@ private extension InviteMemberView {
             
             TextField("닉네임을 검색해주세요.", text: $memberName)
                 .foregroundStyle(Color.staccatoBlack)
+                .onChange(of: memberName, initial: false) { _, name in
+                    viewModel.nameSubject.send(name)
+                }
             
             if memberName != "" {
                 Button {
@@ -131,17 +129,8 @@ private extension InviteMemberView {
             LazyHStack(spacing: 15) {
                 ForEach(viewModel.selectedMembers) { member in
                     VStack(alignment: .center, spacing: 4) {
-                        KFImage(URL(string: member.imageURL))
-                            .placeholder {
-                                Image(.personCircleFill)
-                                    .resizable()
-                                    .foregroundStyle(.gray2)
-                                    .frame(width: 40, height: 40)
-                            }
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
+                        KFImage(URL(string: member.imageURL ?? ""))
+                            .fillPersonImage(width: 40, height: 40)
                             .overlay(alignment: .topTrailing) {
                                 Button {
                                     withAnimation {
@@ -180,6 +169,18 @@ private extension InviteMemberView {
             }
         }
     }
+    
+    var staccatoEmptyView: some View {
+        VStack(alignment: .center, spacing: 10) {
+            Image("staccato_character_gray")
+                .resizable()
+                .frame(width: 110, height: 110)
+            
+            Text("친구를 초대해 함께 기록해보세요!")
+                .font(StaccatoFont.body4.font)
+                .foregroundStyle(Color.gray3)
+        }
+    }
 }
 
 struct SearchMemberRow: View {
@@ -188,17 +189,8 @@ struct SearchMemberRow: View {
     
     var body: some View {
         HStack(alignment: .center) {
-            KFImage(URL(string: member.imageURL))
-                .placeholder {
-                    Image(.personCircleFill)
-                        .resizable()
-                        .foregroundStyle(.gray2)
-                        .frame(width: 35, height: 35)
-                }
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 35, height: 35)
-                .clipShape(Circle())
+            KFImage(URL(string: member.imageURL ?? ""))
+                .fillPersonImage(width: 35, height: 35)
                 .padding(.leading, 16)
             
             Text("\(member.nickname)")
@@ -249,6 +241,6 @@ struct SearchMemberRow: View {
 
 // MARK: - Preview
 #Preview {
-    InviteMemberView()
-        .environmentObject(InviteMemberViewModel())
+    InvitationMemberView()
+        .environmentObject(InvitationMemberViewModel(1))
 }

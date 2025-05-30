@@ -10,13 +10,20 @@ import Combine
 import Kingfisher
 
 @MainActor
-final class InvitationMemberViewModel: ObservableObject {
+@Observable
+final class InvitationMemberViewModel {
     
     private let categoryId: Int64?
-    @Published var selectedMembers: [SearchedMemberModel] = []
-    @Published var searchMembers: [SearchedMemberModel] = []
+    var selectedMembers: [SearchedMemberModel] = []
+    var searchMembers: [SearchedMemberModel] = []
+    var memberName: String = "" {
+        didSet {
+//            memberName.trimPrefix(while: \.isWhitespace)
+            nameSubject.send(memberName)
+        }
+    }
     
-    var nameSubject = CurrentValueSubject<String, Never>("")
+    private var nameSubject = CurrentValueSubject<String, Never>("")
     private var cancellables = Set<AnyCancellable>()
     
     

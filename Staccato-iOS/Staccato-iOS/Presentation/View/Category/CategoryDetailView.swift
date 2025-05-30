@@ -194,9 +194,10 @@ private extension CategoryDetailView {
         }
         .fullScreenCover(isPresented: $isinvitationSheetPresented) {
             // TODO: - Background 애니메이션 수정 필요
-            InvitationMemberView()
-                .environmentObject(InvitationMemberViewModel(viewModel.categoryDetail?.categoryId))
-                .presentationBackground(.black.opacity(0.2))
+            if let categoryId = viewModel.categoryDetail?.categoryId {
+                InvitationMemberView(categoryId: categoryId)
+                    .presentationBackground(.black.opacity(0.2))
+            }
         }
     }
     

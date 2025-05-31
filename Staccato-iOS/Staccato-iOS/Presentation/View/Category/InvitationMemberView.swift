@@ -59,6 +59,16 @@ struct InvitationMemberView: View {
         .padding(.vertical, 180)
         .padding(.horizontal, 16)
         .dismissKeyboardOnGesture()
+        .alert(viewModel.errorTitle ?? "", isPresented: $viewModel.catchError) {
+            Button("확인") {
+                viewModel.catchError = false
+            }
+        } message: {
+            Text(viewModel.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+        }
+        .onChange(of: viewModel.inviteSuccess) { _, inviteSuccess in
+            if inviteSuccess { dismiss() }
+        }
     }
 }
 
@@ -88,7 +98,6 @@ private extension InvitationMemberView {
             
             Button {
                 viewModel.postInvitationMember()
-                dismiss()
             } label: {
                 Text("확인")
                     .font(StaccatoFont.body2.font)

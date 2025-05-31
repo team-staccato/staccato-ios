@@ -18,10 +18,13 @@ final class InvitationMemberViewModel {
     var searchMembers: [SearchedMemberModel] = []
     var memberName: String = "" {
         didSet {
-//            memberName.trimPrefix(while: \.isWhitespace)
             nameSubject.send(memberName)
         }
     }
+    var catchError = false
+    var errorTitle: String?
+    var errorMessage: String?
+    var inviteSuccess: Bool = false
     
     private var nameSubject = CurrentValueSubject<String, Never>("")
     private var cancellables = Set<AnyCancellable>()
@@ -78,7 +81,14 @@ extension InvitationMemberViewModel {
     func postInvitationMember() {
         guard let categoryId else { return }
         Task {
-            try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
+            do {
+                try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
+                inviteSuccess = true
+            } catch {
+                errorTitle = "친구 초대 실패"
+                errorMessage = error.localizedDescription
+                catchError = true
+            }
         }
     }
 }

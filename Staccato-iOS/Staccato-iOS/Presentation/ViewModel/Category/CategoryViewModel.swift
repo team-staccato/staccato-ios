@@ -55,7 +55,6 @@ final class CategoryViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func getCategoryDetail(_ categoryId: Int64) {
         Task {
             do {

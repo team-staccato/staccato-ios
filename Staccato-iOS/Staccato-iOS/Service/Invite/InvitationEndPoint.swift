@@ -9,6 +9,11 @@ import Alamofire
 
 enum InvitationEndPoint {
     case postInvitations(_ categoryId: Int64, _ membersId: [Int64])
+    case getReceivedInvites
+    case getSentInvites
+    case acceptInvite(_ invitationId: Int64)
+    case rejectInvite(_ invitationId: Int64)
+    case cancelInvite(_ invitationId: Int64)
 }
 
 extension InvitationEndPoint: APIEndpoint {
@@ -17,12 +22,25 @@ extension InvitationEndPoint: APIEndpoint {
         switch self {
         case .postInvitations:
             return "/invitations"
+        case .getReceivedInvites:
+            return "/invitations/received"
+        case .getSentInvites:
+            return "/invitations/sent"
+        case .acceptInvite(let invitationId):
+            return "/invitations/\(invitationId)/accept"
+        case .rejectInvite(let invitationId):
+            return "/invitations/\(invitationId)/reject"
+        case .cancelInvite(let invitationId):
+            return "/invitations/\(invitationId)/cancel"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .postInvitations: return .post
+        case .getReceivedInvites, .getSentInvites:
+            return .get
+        case .postInvitations, .acceptInvite, .rejectInvite, .cancelInvite:
+            return .post
         }
     }
 
@@ -30,6 +48,10 @@ extension InvitationEndPoint: APIEndpoint {
         switch self {
         case .postInvitations:
             return JSONEncoding.default
+        case .getReceivedInvites, .getSentInvites:
+            return URLEncoding.default
+        case .acceptInvite, .rejectInvite, .cancelInvite:
+            return URLEncoding.queryString
         }
     }
 
@@ -37,6 +59,9 @@ extension InvitationEndPoint: APIEndpoint {
         switch self {
         case .postInvitations(let categoryId, let membersId):
             return PostInvitationsRequest(categoryId: categoryId, inviteeIds: membersId).toDictionary()
+        case .getReceivedInvites, .getSentInvites,
+                .acceptInvite, .rejectInvite, .cancelInvite:
+            return nil
         }
     }
 

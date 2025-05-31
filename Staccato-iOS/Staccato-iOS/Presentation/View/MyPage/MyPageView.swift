@@ -180,6 +180,28 @@ extension MyPageView {
     private var menuSection: some View {
         VStack {
             NavigationLink {
+                CategoryInvitationManagerView()
+                    .environmentObject(CategoryInvitationManagerViewModel())
+            } label: {
+                HStack {
+                    Text("카테고리 초대 관리")
+                        .typography(.title3)
+                        .foregroundStyle(.staccatoBlack)
+                    
+                    Spacer()
+                    
+                    Image(.chevronRight)
+                        .foregroundStyle(.gray2)
+                }
+            }
+            .padding(.vertical, 26)
+            .padding(.horizontal, 24)
+            
+            Rectangle()
+                .fill(Color.gray1)
+                .frame(height: 10)
+            
+            NavigationLink {
                 EmbedWebView(title: "개인정보처리방침", urlString: WebViewURLs.privacyPolicy)
             } label: {
                 HStack {

@@ -24,29 +24,31 @@ struct CategoryDetailMemberCell: View {
                                     startPoint: .bottomLeading,
                                     endPoint: .topTrailing
                                 ),
-                                lineWidth: 4
+                                lineWidth: 3
                             )
+                            .padding(-1.5)
                         
                         Circle()
                             .stroke(Color.white, lineWidth: 1)
                     }
                 }
+                .padding(.horizontal, 3)
             
-            HStack(spacing: 0) {
+            HStack(spacing: 2) {
                 if member.memberRole == .host {
                     Image(.crown)
                         .resizable()
-                        .foregroundStyle(Color.staccatoBlue)
                         .frame(width: 8, height: 6)
-                        .padding(.trailing, 2)
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundStyle(Color.staccatoBlue)
                 }
                 
                 Text("\(member.nickname)")
                     .font(StaccatoFont.body5.font)
                     .foregroundStyle(Color.staccatoBlack)
-                    .frame(maxWidth: 50)
                     .lineLimit(1)
             }
+            .frame(maxWidth: 65)
         }
     }
 }

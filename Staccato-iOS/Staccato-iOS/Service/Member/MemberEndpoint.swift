@@ -9,7 +9,7 @@ import Alamofire
 
 enum MemberEndpoint {
     case getProfile
-    case getSearchMemberList(_ name: String)
+    case getSearchMemberList(_ name: String, _ excludeCategoryId: Int64)
 }
 
 extension MemberEndpoint: APIEndpoint {
@@ -41,8 +41,8 @@ extension MemberEndpoint: APIEndpoint {
         switch self {
         case .getProfile:
             return nil
-        case .getSearchMemberList(let name):
-            return ["nickname": name]
+        case .getSearchMemberList(let name, let excludeCategoryId):
+            return ["nickname": name, "excludeCategoryId": excludeCategoryId]
         }
     }
     

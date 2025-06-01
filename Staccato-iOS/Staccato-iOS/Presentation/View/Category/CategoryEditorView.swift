@@ -64,7 +64,7 @@ struct CategoryEditorView: View {
                             await vm.createCategory()
                         case .modify:
                             await vm.modifyCategory()
-                            homeViewModel.fetchStaccatos()
+                            homeViewModel.fetchStaccatos() // TODO: 새로 부를지 고민중....
                         }
                     }
                 }

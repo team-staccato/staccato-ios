@@ -23,7 +23,7 @@ struct StaccatoEditorView: View {
     let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
 
     // NOTE: Create
-    init(category: CategoryModel?) {
+    init(category: CategoryCandidateModel?) {
         self.viewModel = StaccatoEditorViewModel(selectedCategory: category)
     }
 
@@ -355,7 +355,7 @@ extension StaccatoEditorView {
 
             Menu(categoryMenuTitle) {
                 ForEach(viewModel.categories, id: \.id) { category in
-                    Button(category.title) {
+                    Button(category.categoryTitle) {
                         self.viewModel.selectedCategory = category
                     }
                 }
@@ -369,7 +369,7 @@ extension StaccatoEditorView {
         if viewModel.categories.isEmpty {
             return "생성된 카테고리가 없어요"
         } else {
-            return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
+            return viewModel.selectedCategory?.categoryTitle ?? "카테고리를 선택해주세요"
         }
     }
 

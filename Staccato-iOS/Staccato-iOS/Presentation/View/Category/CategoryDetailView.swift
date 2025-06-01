@@ -78,7 +78,7 @@ struct CategoryDetailView: View {
         }
 
         .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
-            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
+            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryCandidateModel())
         }
 
         .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {

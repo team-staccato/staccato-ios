@@ -92,27 +92,14 @@ extension CategoryDetailModel.StaccatoModel {
 }
 
 
-// MARK: - Mapping: CategoryDetail -> Category
+// MARK: - Mapping: CategoryDetail -> CategoryCandidate
 
 extension CategoryDetailModel {
-    func toCategoryModel() -> CategoryModel {
-        return CategoryModel(
+    func toCategoryCandidateModel() -> CategoryCandidateModel {
+        return CategoryCandidateModel(
             id: self.categoryId,
             categoryId: self.categoryId,
-            thumbNailURL: self.categoryThumbnailUrl,
-            title: self.categoryTitle,
-            categoryColor: self.categoryColor,
-            startAt: self.startAt,
-            endAt: self.endAt,
-            isShared: self.isShared,
-            members: self.members.map {
-                CategoryModel.MemberModel(
-                    memberId: $0.id,
-                    nickname: $0.nickname,
-                    memberImageUrl: $0.memberImageUrl
-                )
-            },
-            staccatoCount: self.staccatos.count
+            categoryTitle: self.categoryTitle
         )
     }
 }

@@ -12,20 +12,27 @@ import SwiftUI
 struct CategoryInvitationManagerView: View {
     
     @EnvironmentObject private var viewModel: CategoryInvitationManagerViewModel
+    @Environment(StaccatoAlertManager.self) var alertManager
     
     @State private var selectedType: InvitationType = .received
     
     var body: some View {
-        VStack {
-            typeSwitchButtons
-            Spacer()
-            if viewModel.receivedInvitaions.isEmpty && selectedType == .received
-                || viewModel.sentInvitaions.isEmpty && selectedType == .sent {
-                emptyStateView()
-            } else {
-                invitationList
+        ZStack {
+            VStack {
+                typeSwitchButtons
+                Spacer()
+                if viewModel.receivedInvitaions.isEmpty && selectedType == .received
+                    || viewModel.sentInvitaions.isEmpty && selectedType == .sent {
+                    emptyStateView()
+                } else {
+                    invitationList
+                }
+                Spacer()
             }
-            Spacer()
+            
+            if alertManager.isPresented {
+                StaccatoAlertView()
+            }
         }
         .onAppear {
             viewModel.fetchReceivedInvites()
@@ -78,7 +85,15 @@ private extension CategoryInvitationManagerView {
                 ForEach(viewModel.receivedInvitaions) { invite in
                     ReceivedInvitationCell(
                         invitation: invite,
-                        onReject: { viewModel.rejectInvite(invite.id) },
+                        onReject: {
+                            alertManager.show(
+                                .confirmCancelAlert(
+                                    title: "정말 거절하시겠습니까?",
+                                    message: "친구가 실망할지도 몰라요!") {
+                                        viewModel.rejectInvite(invite.id)
+                                    }
+                            )
+                        },
                         onAccept: { viewModel.acceptInvite(invite.id) }
                     )
                     .listRowSeparator(.hidden)
@@ -87,7 +102,13 @@ private extension CategoryInvitationManagerView {
             } else {
                 ForEach(viewModel.sentInvitaions) { invite in
                     SentInvitationCell(invitation: invite) {
-                        viewModel.cancelInvite(invite.id)
+                        alertManager.show(
+                            .confirmCancelAlert(
+                                title: "정말 취소하시겠습니까?",
+                                message: "취소하더라도 나중에 다시 초대를 보낼 수 있어요.") {
+                                    viewModel.cancelInvite(invite.id)
+                                }
+                        )
                     }
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets())
@@ -107,10 +128,12 @@ private extension CategoryInvitationManagerView {
                 Text("아직 친구에게 받은 초대가 없어요!")
                     .typography(.body4)
                     .foregroundStyle(.gray3)
+                    .multilineTextAlignment(.center)
             case .sent:
                 Text("보낸 초대가 없어요!\n카테고리에서 친구를 초대해보세요.")
                     .typography(.body4)
                     .foregroundStyle(.gray3)
+                    .multilineTextAlignment(.center)
             }
         }
         .frame(maxWidth: .infinity)

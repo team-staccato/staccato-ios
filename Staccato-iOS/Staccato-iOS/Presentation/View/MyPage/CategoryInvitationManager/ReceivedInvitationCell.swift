@@ -18,6 +18,39 @@ struct ReceivedInvitationCell: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 5) {
                         HStack(spacing: 0) {
+                            if let profileImageUrl = invitation.inviterProfileImageUrl,
+                               let url = URL(string: profileImageUrl) {
+                                AsyncImage(url: url) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                            .padding(.trailing, 3)
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .clipShape(Circle())
+                                            .frame(width: 16, height: 16)
+                                            .padding(.trailing, 3)
+                                    case .failure:
+                                        Image(.personCircleFill)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundStyle(.gray2)
+                                            .frame(width: 16, height: 16)
+                                            .padding(.trailing, 3)
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                            } else {
+                                Image(.personCircleFill)
+                                    .resizable()
+                                    .foregroundStyle(.gray2)
+                                    .scaledToFit()
+                                    .frame(width: 16, height: 16)
+                                    .padding(.trailing, 3)
+                            }
                             Text("\(invitation.inviterNickname)")
                                 .bold()
                                 .foregroundColor(.staccatoBlack)
@@ -49,7 +82,7 @@ struct ReceivedInvitationCell: View {
                             RoundedRectangle(cornerRadius: 8)
                                 .stroke(.gray2, lineWidth: 1)
                         )
-                        
+                        .buttonStyle(.plain)
                         Button(action: {
                             onAccept()
                         }) {
@@ -61,6 +94,7 @@ struct ReceivedInvitationCell: View {
                         .padding(.vertical, 6)
                         .background(Color.staccatoBlue)
                         .cornerRadius(8)
+                        .buttonStyle(.plain)
                     }
                 }
             }

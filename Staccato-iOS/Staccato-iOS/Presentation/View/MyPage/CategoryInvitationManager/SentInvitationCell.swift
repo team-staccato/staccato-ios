@@ -14,13 +14,35 @@ struct SentInvitationCell: View {
     var body: some View {
         VStack {
             HStack(alignment: .center, spacing: 12) {
-                if let image = invitation.inviteeProfileImageUrl {
-                    Image(systemName: image)
+                if let profileImageUrl = invitation.inviteeProfileImageUrl,
+                   let url = URL(string: profileImageUrl) {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .clipShape(Circle())
+                                .frame(width: 40, height: 40)
+                        case .failure:
+                            Image(.personCircleFill)
+                                .resizable()
+                                .scaledToFit()
+                                .foregroundStyle(.gray2)
+                                .frame(width: 40, height: 40)
+                        @unknown default:
+                            EmptyView()
+                        }
+                    }
+                } else {
+                    Image(.personCircleFill)
                         .resizable()
+                        .foregroundStyle(.gray2)
+                        .scaledToFit()
                         .frame(width: 40, height: 40)
-                        .clipShape(Circle())
                 }
-                
                 VStack(alignment: .leading) {
                     Text(invitation.inviteeNickname)
                         .typography(.title3)
@@ -50,12 +72,12 @@ struct SentInvitationCell: View {
                 .padding(.horizontal)
                 .background(.staccatoRed)
                 .cornerRadius(8)
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             
             Divider()
         }
-        
     }
 }

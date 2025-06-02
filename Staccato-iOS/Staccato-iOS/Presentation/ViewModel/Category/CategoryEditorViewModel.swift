@@ -12,6 +12,9 @@ import PhotosUI
 @Observable
 final class CategoryEditorViewModel {
 
+    // MARK: - CategoryDetail
+    let categoryDetail: CategoryDetailModel?
+
     // MARK: - Photo Related
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
@@ -56,6 +59,8 @@ final class CategoryEditorViewModel {
         editorType: CategoryEditorType = .create,
         categoryViewModel: CategoryViewModel
     ) {
+        self.categoryDetail = categoryDetail
+
         self.id = categoryDetail?.categoryId
         self.categoryViewModel = categoryViewModel
 

@@ -63,11 +63,29 @@ extension HomeViewModel {
 // MARK: - Map
 
 extension HomeViewModel {
-    
+
     func moveCamera(to coordinate: CLLocationCoordinate2D, zoom: Float = 15.0) {
         withAnimation {
             cameraPosition = GMSCameraPosition.camera(withTarget: coordinate, zoom: 15)
         }
     }
-    
+
+}
+
+
+// MARK: - Marker Updates
+
+extension HomeViewModel {
+
+    /// Updates marker icons for the given list of staccatos
+    func updateMarkerIcons(for staccatoIds: [Int64], to colorType: CategoryColorType) {
+        for staccatoId in staccatoIds {
+            guard let marker = displayedMarkers[staccatoId] else {
+                print("⚠️ Marker not found for staccato ID: \(staccatoId)")
+                continue
+            }
+            marker.icon = colorType.markerImage
+        }
+    }
+
 }

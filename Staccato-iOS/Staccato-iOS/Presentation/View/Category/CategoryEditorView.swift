@@ -11,6 +11,7 @@ import PhotosUI
 struct CategoryEditorView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(NavigationState.self) private var navigationState
+    @EnvironmentObject var homeViewModel: HomeViewModel
 
     @Bindable private var vm: CategoryEditorViewModel
 
@@ -67,6 +68,14 @@ struct CategoryEditorView: View {
                             }
                         case .modify:
                             await vm.modifyCategory()
+                            
+                            // 마커 업데이트
+                            if let staccatos = vm.categoryDetail?.staccatos {
+                                homeViewModel.updateMarkerIcons(
+                                    for: staccatos.map { $0.staccatoId },
+                                    to: vm.categoryColor
+                                )
+                            }
                         }
                     }
                 }

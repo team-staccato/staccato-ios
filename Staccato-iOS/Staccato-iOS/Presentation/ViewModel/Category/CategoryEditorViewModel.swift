@@ -111,7 +111,7 @@ final class CategoryEditorViewModel {
         }
     }
 
-    func createCategory() async {
+    func createCategory() async -> Int64? {
         let body = PostCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
@@ -123,12 +123,14 @@ final class CategoryEditorViewModel {
         )
 
         do {
-            try await STService.shared.categoryService.postCategory(body)
+            let response = try await STService.shared.categoryService.postCategory(body)
             try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
+            return response.categoryId
         } catch {
             errorMessage = error.localizedDescription
             catchError = true
+            return nil
         }
     }
 

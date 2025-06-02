@@ -8,5 +8,5 @@
 import Foundation
 
 struct PostCategoryResponse: Decodable {
-    let categoryId: Int
+    let categoryId: Int64
 }

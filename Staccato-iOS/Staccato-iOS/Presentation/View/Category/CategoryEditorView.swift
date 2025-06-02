@@ -10,6 +10,8 @@ import PhotosUI
 
 struct CategoryEditorView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(NavigationState.self) private var navigationState
+
     @Bindable private var vm: CategoryEditorViewModel
 
     @FocusState private var isTitleFocused: Bool
@@ -60,7 +62,9 @@ struct CategoryEditorView: View {
                     Task {
                         switch vm.editorType {
                         case .create:
-                            await vm.createCategory()
+                            if let categoryId: Int64 = await vm.createCategory() {
+                                navigationState.navigate(to: .categoryDetail(categoryId))
+                            }
                         case .modify:
                             await vm.modifyCategory()
                         }

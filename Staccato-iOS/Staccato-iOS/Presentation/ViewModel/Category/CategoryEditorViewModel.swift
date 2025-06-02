@@ -72,6 +72,10 @@ final class CategoryEditorViewModel {
         self.categoryDescription = categoryDetail?.description ?? ""
         self.categoryTitle = categoryDetail?.categoryTitle ?? ""
 
+        if let categoryColor = categoryDetail?.categoryColor {
+            self.categoryColor = CategoryColorType.fromServerKey(categoryColor) ?? .gray
+        }
+
         if let startAt = categoryDetail?.startAt,
            let endAt = categoryDetail?.endAt {
             self.selectedStartDate = Date.fromString(startAt)

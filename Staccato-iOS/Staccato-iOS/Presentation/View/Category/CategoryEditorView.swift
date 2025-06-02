@@ -70,9 +70,9 @@ struct CategoryEditorView: View {
                             await vm.modifyCategory()
                             
                             // 마커 업데이트
-                            if let staccatos = vm.categoryDetail?.staccatos {
+                            if let staccatoIds = vm.categoryDetail?.staccatos.map({ $0.staccatoId }) {
                                 homeViewModel.updateMarkerIcons(
-                                    for: staccatos.map { $0.staccatoId },
+                                    for: staccatoIds,
                                     to: vm.categoryColor
                                 )
                             }

@@ -383,7 +383,11 @@ extension StaccatoEditorView {
                     homeViewModel.fetchStaccatos()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)
-                    homeViewModel.fetchStaccatos()
+
+                    // 마커 좌표 업데이트
+                    if let newCoordinate = viewModel.selectedPlace?.coordinate {
+                        homeViewModel.updateMarkersPosition(for: id, to: newCoordinate)
+                    }
                 }
             }
         }

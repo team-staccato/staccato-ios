@@ -77,15 +77,47 @@ extension HomeViewModel {
 
 extension HomeViewModel {
 
-    /// Updates marker icons for the given list of staccatos
+    /// 마커 아이콘 업데이트
     func updateMarkerIcons(for staccatoIds: [Int64], to colorType: CategoryColorType) {
         for staccatoId in staccatoIds {
             guard let marker = displayedMarkers[staccatoId] else {
                 print("⚠️ Marker not found for staccato ID: \(staccatoId)")
                 continue
             }
+
             marker.icon = colorType.markerImage
+            updateMarkerUserData(marker, newColor: colorType.serverKey)
         }
+    }
+
+    /// 마커 위치 업데이트
+    func updateMarkersPosition(for staccatoId: Int64, to coordinate: CLLocationCoordinate2D) {
+        guard let marker = displayedMarkers[staccatoId] else {
+            print("⚠️ Marker not found for staccato ID: \(staccatoId)")
+            return
+        }
+
+        marker.position = coordinate
+        updateMarkerUserData(marker, newCoordinate: coordinate)
+    }
+
+    private func updateMarkerUserData(
+        _ marker: GMSMarker,
+        newColor: String? = nil,
+        newCoordinate: CLLocationCoordinate2D? = nil
+    ) {
+        var userData = marker.userData as? StaccatoCoordinateModel
+
+        if let newColor = newColor {
+            userData?.staccatoColor = newColor
+        }
+
+        if let newCoordinate = newCoordinate {
+            userData?.latitude = newCoordinate.latitude
+            userData?.longitude = newCoordinate.longitude
+        }
+
+        marker.userData = userData
     }
 
 }

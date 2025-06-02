@@ -67,18 +67,19 @@ final class CategoryViewModel: ObservableObject {
         }
     }
 
-    func deleteCategory() {
+    func deleteCategory() async -> Bool {
         guard let categoryDetail else {
             print("⚠️ \(StaccatoError.optionalBindingFailed) - delete category")
-            return
+            return false
         }
-        Task {
-            do {
-                try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
-                try getCategoryList()
-            } catch {
-                print("⚠️ \(error.localizedDescription) - delete category")
-            }
+
+        do {
+            try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
+            try getCategoryList()
+            return true
+        } catch {
+            print("⚠️ \(error.localizedDescription) - delete category")
+            return false
         }
     }
 

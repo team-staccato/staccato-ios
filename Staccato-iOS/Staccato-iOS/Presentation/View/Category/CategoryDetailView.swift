@@ -55,16 +55,7 @@ struct CategoryDetailView: View {
                 }
                 
                 Button("삭제") {
-                    withAnimation {
-                        alertManager.show(
-                            .confirmCancelAlert(
-                                title: "삭제하시겠습니까?",
-                                message: "삭제를 누르면 복구할 수 없습니다.") {
-                                    viewModel.deleteCategory()
-                                    navigationState.dismiss()
-                                }
-                        )
-                    }
+                    presentDeleteAlert()
                 }
             }
         }
@@ -91,6 +82,7 @@ struct CategoryDetailView: View {
     }
 
 }
+
 
 // MARK: - UI Components
 
@@ -253,4 +245,33 @@ private extension CategoryDetailView {
                 .multilineTextAlignment(.center)
         }
     }
+}
+
+
+// MARK: - Helper
+
+private extension CategoryDetailView {
+
+    func presentDeleteAlert() {
+        withAnimation {
+            alertManager.show(
+                .confirmCancelAlert(
+                    title: "삭제하시겠습니까?",
+                    message: "삭제를 누르면 복구할 수 없습니다."
+                ) {
+                    Task {
+                        let success = await viewModel.deleteCategory()
+                        if success {
+                            navigationState.dismiss()
+                            
+                            if let staccatoIds = viewModel.categoryDetail?.staccatos.map(\.staccatoId) {
+                                homeViewModel.removeStaccatos(with: Set(staccatoIds))
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+
 }

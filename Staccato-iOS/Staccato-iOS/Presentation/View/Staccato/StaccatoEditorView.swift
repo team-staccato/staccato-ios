@@ -51,7 +51,8 @@ struct StaccatoEditorView: View {
             }
         }
         .onAppear {
-            if STLocationManager.shared.hasLocationAuthorization() {
+            if viewModel.editorMode == .create,
+               STLocationManager.shared.hasLocationAuthorization() {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
                     self.viewModel.selectedPlace = place
                 }

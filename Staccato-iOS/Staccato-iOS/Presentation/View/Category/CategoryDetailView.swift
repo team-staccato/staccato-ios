@@ -153,7 +153,7 @@ private extension CategoryDetailView {
                 .padding(.leading, 4)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 17) {
+                HStack(alignment: .top, spacing: 10) {
                     if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
                         invitationButton
                     }
@@ -186,9 +186,10 @@ private extension CategoryDetailView {
         }
         .fullScreenCover(isPresented: $isinvitationSheetPresented) {
             // TODO: - Background 애니메이션 수정 필요
-            InvitationMemberView()
-                .environmentObject(InvitationMemberViewModel(viewModel.categoryDetail?.categoryId))
-                .presentationBackground(.black.opacity(0.2))
+            if let categoryId = viewModel.categoryDetail?.categoryId {
+                InvitationMemberView(categoryId: categoryId)
+                    .presentationBackground(.black.opacity(0.2))
+            }
         }
     }
     

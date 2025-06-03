@@ -19,9 +19,9 @@ struct MemberService {
         return profile
     }
     
-    static func getSearchMemberList(_ name: String) async throws -> SearchMemberResponse {
+    static func getSearchMemberList(_ name: String, _ categoryId: Int64) async throws -> SearchMemberResponse {
         guard let memberList = try await NetworkService.shared.request(
-            endpoint: MemberEndpoint.getSearchMemberList(name),
+            endpoint: MemberEndpoint.getSearchMemberList(name, categoryId),
             responseType: SearchMemberResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed

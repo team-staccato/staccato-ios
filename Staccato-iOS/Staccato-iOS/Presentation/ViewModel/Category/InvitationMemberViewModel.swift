@@ -64,10 +64,10 @@ final class InvitationMemberViewModel {
 extension InvitationMemberViewModel {
     func getSearchedMember(_ name: String) {
         searchMembers.removeAll()
-        if name == "" { return }
+        guard let categoryId, name != "" else { return }
         
         Task {
-            let response = try await MemberService.getSearchMemberList(name)
+            let response = try await MemberService.getSearchMemberList(name, categoryId)
             response.members.forEach {
                 var searchedMember = SearchedMemberModel(from: $0)
                 if selectedMembers.contains(searchedMember) { searchedMember.isSelected = true }

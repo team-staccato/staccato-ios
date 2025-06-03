@@ -12,6 +12,9 @@ import PhotosUI
 @Observable
 final class CategoryEditorViewModel {
 
+    // MARK: - CategoryDetail
+    let categoryDetail: CategoryDetailModel?
+
     // MARK: - Photo Related
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
@@ -56,6 +59,8 @@ final class CategoryEditorViewModel {
         editorType: CategoryEditorType = .create,
         categoryViewModel: CategoryViewModel
     ) {
+        self.categoryDetail = categoryDetail
+
         self.id = categoryDetail?.categoryId
         self.categoryViewModel = categoryViewModel
 
@@ -66,6 +71,10 @@ final class CategoryEditorViewModel {
 
         self.categoryDescription = categoryDetail?.description ?? ""
         self.categoryTitle = categoryDetail?.categoryTitle ?? ""
+
+        if let categoryColor = categoryDetail?.categoryColor {
+            self.categoryColor = CategoryColorType.fromServerKey(categoryColor) ?? .gray
+        }
 
         if let startAt = categoryDetail?.startAt,
            let endAt = categoryDetail?.endAt {
@@ -111,7 +120,7 @@ final class CategoryEditorViewModel {
         }
     }
 
-    func createCategory() async {
+    func createCategory() async -> Int64? {
         let body = PostCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
@@ -123,12 +132,14 @@ final class CategoryEditorViewModel {
         )
 
         do {
-            try await STService.shared.categoryService.postCategory(body)
+            let response = try await STService.shared.categoryService.postCategory(body)
             try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
+            return response.categoryId
         } catch {
             errorMessage = error.localizedDescription
             catchError = true
+            return nil
         }
     }
 

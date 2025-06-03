@@ -43,7 +43,6 @@ class CategoryService: CategoryServiceProtocol {
         return categoryDetail
     }
 
-    @discardableResult
     func postCategory(_ requestBody: PostCategoryRequest) async throws -> PostCategoryResponse {
         guard let categoryId = try await NetworkService.shared.request(
             endpoint: CategoryEndpoint.postCategory(requestBody),

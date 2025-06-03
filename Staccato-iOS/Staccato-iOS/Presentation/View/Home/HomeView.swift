@@ -178,6 +178,7 @@ private extension HomeView {
                     .foregroundStyle(.gray2)
 
                 CategoryListView(navigationState)
+                    .padding(.top, 21)
             }
             .background(Color.staccatoWhite)
             .frame(maxHeight: homeModalManager.modalHeight)

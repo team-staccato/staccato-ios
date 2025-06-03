@@ -14,44 +14,25 @@ final class CategoryViewModel: ObservableObject {
 
     @Published var categories: [CategoryModel] = []
 
-    @Published var filterSelection: CategoryListFilterType = .all {
-        didSet {
-            do {
-                try getCategoryList()
-            } catch {
-                print("❌ error: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    @Published var sortSelection: CategoryListSortType = .recentlyUpdated {
-        didSet {
-            do {
-                try getCategoryList()
-            } catch {
-                print("❌ error: \(error.localizedDescription)")
-            }
-        }
-    }
+    @Published var filterSelection: CategoryListFilterType = .all
+    @Published var sortSelection: CategoryListSortType = .recentlyUpdated
 
     @Published var categoryDetail: CategoryDetailModel?
 
 
     // MARK: - Networking
 
-    func getCategoryList() throws {
-        Task {
-            let categoryList = try await STService.shared.categoryService.getCategoryList(
-                GetCategoryListRequestQuery(
-                    filters: filterSelection.serverKey,
-                    sort: sortSelection.serverKey
-                )
+    func getCategoryList() async throws {
+        let categoryList = try await STService.shared.categoryService.getCategoryList(
+            GetCategoryListRequestQuery(
+                filters: filterSelection.serverKey,
+                sort: sortSelection.serverKey
             )
-            
-            let categories = categoryList.categories.map { CategoryModel(from: $0) }
-            withAnimation {
-                self.categories = categories
-            }
+        )
+        
+        let categories = categoryList.categories.map { CategoryModel(from: $0) }
+        withAnimation {
+            self.categories = categories
         }
     }
 
@@ -67,18 +48,19 @@ final class CategoryViewModel: ObservableObject {
         }
     }
 
-    func deleteCategory() {
+    func deleteCategory() async -> Bool {
         guard let categoryDetail else {
             print("⚠️ \(StaccatoError.optionalBindingFailed) - delete category")
-            return
+            return false
         }
-        Task {
-            do {
-                try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
-                try getCategoryList()
-            } catch {
-                print("⚠️ \(error.localizedDescription) - delete category")
-            }
+
+        do {
+            try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
+            try await getCategoryList()
+            return true
+        } catch {
+            print("⚠️ \(error.localizedDescription) - delete category")
+            return false
         }
     }
 

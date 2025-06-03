@@ -10,6 +10,9 @@ import PhotosUI
 
 struct CategoryEditorView: View {
     @Environment(\.dismiss) var dismiss
+    @Environment(NavigationState.self) private var navigationState
+    @EnvironmentObject var homeViewModel: HomeViewModel
+
     @Bindable private var vm: CategoryEditorViewModel
 
     @FocusState private var isTitleFocused: Bool
@@ -60,9 +63,19 @@ struct CategoryEditorView: View {
                     Task {
                         switch vm.editorType {
                         case .create:
-                            await vm.createCategory()
+                            if let categoryId: Int64 = await vm.createCategory() {
+                                navigationState.navigate(to: .categoryDetail(categoryId))
+                            }
                         case .modify:
                             await vm.modifyCategory()
+                            
+                            // 마커 업데이트
+                            if let staccatoIds = vm.categoryDetail?.staccatos.map({ $0.staccatoId }) {
+                                homeViewModel.updateMarkerIcons(
+                                    for: staccatoIds,
+                                    to: vm.categoryColor
+                                )
+                            }
                         }
                     }
                 }

@@ -62,12 +62,15 @@ struct CategoryListView: View {
         }
 
         .onAppear {
-            do {
-                try viewModel.getCategoryList()
-            } catch {
-                // 여기서 에러 메세지 띄우는 동작 등 구현
-                print(error.localizedDescription)
-            }
+            fetchCategoryList()
+        }
+
+        .onChange(of: viewModel.filterSelection) {
+            fetchCategoryList()
+        }
+
+        .onChange(of: viewModel.sortSelection) {
+            fetchCategoryList()
         }
 
         .fullScreenCover(isPresented: $isCreateCategoryModalPresented) {
@@ -190,6 +193,23 @@ private extension CategoryListView {
                         Divider()
                     }
                 }
+            }
+        }
+    }
+
+}
+
+
+// MARK: - Helper
+
+private extension CategoryListView {
+
+    func fetchCategoryList() {
+        Task {
+            do {
+                try await viewModel.getCategoryList()
+            } catch {
+                print("❌ Error: \(error.localizedDescription)")
             }
         }
     }

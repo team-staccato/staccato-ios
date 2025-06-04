@@ -27,36 +27,34 @@ enum BottomSheetDetent: CaseIterable {
 @MainActor
 final class BottomSheetDetentManager: ObservableObject {
 
-    @Published var currentHeight: CGFloat = BottomSheetDetent.medium.height // 실시간으로 반영되는 사이즈
-    @Published var currentDetent: BottomSheetDetent = .medium // 최신 사이즈
-    @Published var previousDetent: BottomSheetDetent? = nil
+    @Published var currentHeight: CGFloat = BottomSheetDetent.medium.height // 상세한 높이
+    @Published var currentDetent: BottomSheetDetent = .medium
+    @Published var previousDetent: BottomSheetDetent = .medium
     @Published var isbottomSheetPresented: Bool = true
     @Published var selectedDetent: PresentationDetent = BottomSheetDetent.medium.detent
     
     func updateDetent(_ newHeight: CGFloat) {
-        previousDetent = currentDetent
         currentHeight = newHeight
         
-        let detectedDetent = detectDetent(from: newHeight)
-        
-        if detectedDetent != currentDetent {
+        if let detectedDetent = detectDetent(from: newHeight) {
             currentDetent = detectedDetent
         }
     }
     
     func updateDetent(to size: BottomSheetDetent) {
-        previousDetent = currentDetent
         currentDetent = size
         currentHeight = currentDetent.height
     }
     
-    private func detectDetent(from height: CGFloat) -> BottomSheetDetent {
-        if height < BottomSheetDetent.small.height {
+    private func detectDetent(from height: CGFloat) -> BottomSheetDetent? {
+        if height > BottomSheetDetent.small.height - 5 && height < BottomSheetDetent.small.height + 5 {
             return .small
-        } else if height < BottomSheetDetent.medium.height {
+        } else if height > BottomSheetDetent.medium.height - 5 && height < BottomSheetDetent.medium.height + 5 {
             return .medium
-        } else {
+        } else if height > BottomSheetDetent.large.height - 5 && height < BottomSheetDetent.large.height + 5 {
             return .large
+        } else {
+            return nil
         }
     }
 }

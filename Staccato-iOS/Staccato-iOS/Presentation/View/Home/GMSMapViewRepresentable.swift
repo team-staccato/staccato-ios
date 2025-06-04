@@ -49,7 +49,8 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 
         // 모달 크기가 조정된 만큼 지도를 scroll
         let currentSize = detentManager.currentDetent
-        if let previousSize = detentManager.previousDetent, currentSize != previousSize {
+        let previousSize = detentManager.previousDetent
+        if currentSize != previousSize {
             scrollMap(on: uiView, currentSize: currentSize, previousSize: previousSize)
         }
 

@@ -153,8 +153,9 @@ private extension StaccatoDetailView {
             applicationActivities: nil
         )
 
-        if let rootVC = UIApplication.shared.windows.first?.rootViewController {
-            rootVC.present(activityViewController, animated: true) {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            window.rootViewController?.present(activityViewController, animated: true) {
                 viewModel.shareLink = nil
             }
         }

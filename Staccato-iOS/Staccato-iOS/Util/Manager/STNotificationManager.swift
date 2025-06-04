@@ -12,6 +12,10 @@ import SwiftUI
 final class STNotificationManager {
     
     static let shared = STNotificationManager()
+    
+    private init() {
+        
+    }
 }
 
 extension STNotificationManager {

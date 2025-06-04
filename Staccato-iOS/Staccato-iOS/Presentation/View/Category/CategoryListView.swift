@@ -49,6 +49,7 @@ struct CategoryListView: View {
                     Spacer()
                 }
                 .background(Color.staccatoWhite)
+                .ignoresSafeArea(.container, edges: .bottom)
                 .frame(maxWidth: .infinity)
                 .onChange(of: geometry.size.height) { _, height in
                     detentManager.updateDetent(height)

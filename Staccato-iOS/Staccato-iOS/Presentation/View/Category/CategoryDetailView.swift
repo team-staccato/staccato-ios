@@ -69,7 +69,7 @@ struct CategoryDetailView: View {
                     }
                 }
             }
-            
+            .ignoresSafeArea(.container, edges: .bottom)
             .onAppear {
                 detentManager.updateDetent(geometry.size.height)
                 viewModel.getCategoryDetail(categoryId)

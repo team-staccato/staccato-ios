@@ -33,7 +33,7 @@ final class BottomSheetDetentManager: ObservableObject {
     @Published var isbottomSheetPresented: Bool = true
     @Published var selectedDetent: PresentationDetent = BottomSheetDetent.medium.detent
     
-    func updateHeight(_ newHeight: CGFloat) {
+    func updateDetent(_ newHeight: CGFloat) {
         previousDetent = currentDetent
         currentHeight = newHeight
         
@@ -44,7 +44,7 @@ final class BottomSheetDetentManager: ObservableObject {
         }
     }
     
-    func updateSize(to size: BottomSheetDetent) {
+    func updateDetent(to size: BottomSheetDetent) {
         previousDetent = currentDetent
         currentDetent = size
         currentHeight = currentDetent.height

@@ -72,6 +72,7 @@ struct HomeView: View {
             } else {
                 refreshDataOnly()
             }
+            detentManager.isbottomSheetPresented = true
         }
         .sheet(isPresented: $detentManager.isbottomSheetPresented) {
             CategoryListView(navigationState)
@@ -86,9 +87,15 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()
+                .onDisappear {
+                    detentManager.isbottomSheetPresented = true
+                }
         }
         .fullScreenCover(isPresented: $isCreateStaccatoPresented) {
             StaccatoEditorView(category: nil)
+                .onDisappear {
+                    detentManager.isbottomSheetPresented = true
+                }
         }
         // 업데이트 안내 // TODO: 리팩토링
         .alert(isPresented: $showUpdateAlert) {
@@ -101,7 +108,6 @@ struct HomeView: View {
             )
         }
         .onDisappear {
-            detentManager.isbottomSheetPresented = false
             hasAppearedOnce = false
         }
     }
@@ -112,6 +118,7 @@ private extension HomeView {
 
     var myPageButton: some View {
         Button {
+            detentManager.isbottomSheetPresented = false
             isMyPagePresented = true
         } label: {
             KFImage(URL(string: mypageViewModel.profile?.profileImageUrl ?? ""))
@@ -142,6 +149,7 @@ private extension HomeView {
 
     var staccatoAddButton: some View {
         Button {
+            detentManager.isbottomSheetPresented = false
             isCreateStaccatoPresented = true
         } label: {
             Image(.plus)

@@ -72,7 +72,7 @@ struct StaccatoDetailView: View {
                     }
                     .onChange(of: isCommentFocused) { _, newValue in
                         withAnimation {
-                            if newValue { detentManager.updateSize(to: .large) }
+                            if newValue { detentManager.updateDetent(to: .large) }
                         }
                     }
                     .onTapGesture {
@@ -117,10 +117,10 @@ struct StaccatoDetailView: View {
                 }
             }
             .onChange(of: geometry.size.height) { _, height in
-                detentManager.updateHeight(height)
+                detentManager.updateDetent(height)
             }
             .onAppear {
-                detentManager.updateHeight(geometry.size.height)
+                detentManager.updateDetent(geometry.size.height)
             }
             .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
                 viewModel.getStaccatoDetail(staccatoId)

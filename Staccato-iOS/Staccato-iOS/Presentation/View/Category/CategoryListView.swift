@@ -51,10 +51,10 @@ struct CategoryListView: View {
                 .background(Color.staccatoWhite)
                 .frame(maxWidth: .infinity)
                 .onChange(of: geometry.size.height) { _, height in
-                    detentManager.updateHeight(height)
+                    detentManager.updateDetent(height)
                 }
                 .onAppear {
-                    detentManager.updateHeight(geometry.size.height)
+                    detentManager.updateDetent(geometry.size.height)
                 }
                 .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
                     switch destination {

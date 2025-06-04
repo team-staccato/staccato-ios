@@ -71,7 +71,7 @@ struct CategoryDetailView: View {
             }
             
             .onAppear {
-                detentManager.updateHeight(geometry.size.height)
+                detentManager.updateDetent(geometry.size.height)
                 viewModel.getCategoryDetail(categoryId)
             }
             
@@ -80,7 +80,7 @@ struct CategoryDetailView: View {
             }
             
             .onChange(of: geometry.size.height) { _, height in
-                detentManager.updateHeight(height)
+                detentManager.updateDetent(height)
             }
             
             .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {

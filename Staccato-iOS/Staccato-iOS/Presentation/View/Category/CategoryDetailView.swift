@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-
 import Kingfisher
 
 struct CategoryDetailView: View {
 
     @Environment(NavigationState.self) var navigationState
     @Environment(StaccatoAlertManager.self) var alertManager
+    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     private let categoryId: Int64
@@ -30,66 +30,72 @@ struct CategoryDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                headerSection
-
-                if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
-                    descriptionSection
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 16) {
+                    headerSection
+                    
+                    if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
+                        descriptionSection
+                    }
+                    
+                    if viewModel.categoryDetail?.isShared ?? false {
+                        sharedMemberSection
+                    }
+                    
+                    staccatoCollectionSection
                 }
-                
-                if viewModel.categoryDetail?.isShared ?? false {
-                    sharedMemberSection
-                }
-                
-                staccatoCollectionSection
+                .frame(width: ScreenUtils.width)
             }
-            .frame(width: ScreenUtils.width)
-        }
-        .background(.staccatoWhite)
-
-        .staccatoNavigationBar {
-            if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
-                Button("수정") {
-                    isCategoryModifyModalPresented = true
-                }
-                
-                Button("삭제") {
-                    withAnimation {
-                        alertManager.show(
-                            .confirmCancelAlert(
-                                title: "삭제하시겠습니까?",
-                                message: "삭제를 누르면 복구할 수 없습니다.") {
-                                    viewModel.deleteCategory()
-                                    navigationState.dismiss()
-                                }
-                        )
+            .background(.staccatoWhite)
+            
+            .staccatoNavigationBar {
+                if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
+                    Button("수정") {
+                        isCategoryModifyModalPresented = true
+                    }
+                    
+                    Button("삭제") {
+                        withAnimation {
+                            alertManager.show(
+                                .confirmCancelAlert(
+                                    title: "삭제하시겠습니까?",
+                                    message: "삭제를 누르면 복구할 수 없습니다.") {
+                                        viewModel.deleteCategory()
+                                        navigationState.dismiss()
+                                    }
+                            )
+                        }
                     }
                 }
             }
-        }
-
-        .onAppear {
-            viewModel.getCategoryDetail(categoryId)
-        }
-
-        .onChange(of: homeViewModel.staccatos) {
-            viewModel.getCategoryDetail(categoryId)
-        }
-
-        .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
-            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
-        }
-
-        .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
-            CategoryEditorView(
-                categoryDetail: self.viewModel.categoryDetail,
-                editorType: .modify,
-                categoryViewModel: viewModel
-            )
+            
+            .onAppear {
+                detentManager.updateHeight(geometry.size.height)
+                viewModel.getCategoryDetail(categoryId)
+            }
+            
+            .onChange(of: homeViewModel.staccatos) {
+                viewModel.getCategoryDetail(categoryId)
+            }
+            
+            .onChange(of: geometry.size.height) { _, height in
+                detentManager.updateHeight(height)
+            }
+            
+            .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
+                StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
+            }
+            
+            .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
+                CategoryEditorView(
+                    categoryDetail: self.viewModel.categoryDetail,
+                    editorType: .modify,
+                    categoryViewModel: viewModel
+                )
+            }
         }
     }
-
 }
 
 // MARK: - UI Components

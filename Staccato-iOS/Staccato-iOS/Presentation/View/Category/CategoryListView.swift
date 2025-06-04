@@ -10,7 +10,7 @@ import SwiftUI
 struct CategoryListView: View {
 
     @Environment(NavigationState.self) var navigationState
-    @Environment(HomeModalManager.self) private var homeModalManager
+    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @EnvironmentObject var mypageViewModel: MyPageViewModel
     @Bindable var bindableNavigationState: NavigationState
     
@@ -33,34 +33,43 @@ struct CategoryListView: View {
 
     var body: some View {
         NavigationStack(path: $bindableNavigationState.path) {
-            VStack(spacing: 0) {
-                titleSection
-                    .padding(.top, 8)
-                    .padding(.horizontal, 18)
-
-                if homeModalManager.modalSize != .small {
-                    filterSection
-                        .padding(.top, 20)
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    titleSection
+                        .padding(.top, 37)
                         .padding(.horizontal, 18)
-
+                    
+                    filterSection
+                        .padding(.top, 10)
+                        .padding(.horizontal, 18)
+                    
                     categoryList
                         .padding(.top, 10)
+                    
+                    Spacer()
                 }
-
-                Spacer()
-            }
-            .background(Color.staccatoWhite)
-            .frame(maxWidth: .infinity)
-
-            .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
-                switch destination {
-                case .staccatoDetail(let staccatoId): StaccatoDetailView(staccatoId)
-                case .categoryDetail(let categoryId): CategoryDetailView(categoryId, viewModel)
-                case .categoryAdd: CategoryEditorView(categoryViewModel: viewModel)
+                .background(Color.staccatoWhite)
+                .frame(maxWidth: .infinity)
+                .onChange(of: geometry.size.height) { _, height in
+                    detentManager.updateHeight(height)
+                }
+                .onAppear {
+                    detentManager.updateHeight(geometry.size.height)
+                }
+                .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
+                    switch destination {
+                    case .staccatoDetail(let staccatoId):
+                        StaccatoDetailView(staccatoId)
+                            .environmentObject(detentManager)
+                    case .categoryDetail(let categoryId):
+                        CategoryDetailView(categoryId, viewModel)
+                            .environmentObject(detentManager)
+                    case .categoryAdd:
+                        CategoryEditorView(categoryViewModel: viewModel)
+                    }
                 }
             }
         }
-
         .onAppear {
             do {
                 try viewModel.getCategoryList()
@@ -69,28 +78,14 @@ struct CategoryListView: View {
                 print(error.localizedDescription)
             }
         }
-
         .fullScreenCover(isPresented: $isCreateCategoryModalPresented) {
             CategoryEditorView(categoryViewModel: viewModel)
         }
     }
-
 }
 
-
 // MARK: - UI Components
-
 private extension CategoryListView {
-
-    // MARK: - Modal top
-    
-    var modalTop: some View {
-        Capsule()
-            .frame(width: 40, height: 4)
-            .padding(.top, 10)
-            .foregroundStyle(.gray2)
-    }
-
 
     // MARK: - TitleView
 

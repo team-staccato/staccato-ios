@@ -58,12 +58,6 @@ struct MyPageView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        MyPageView()
-    }
-}
-
 extension MyPageView {
     private var profileImageSection: some View {
         Button {

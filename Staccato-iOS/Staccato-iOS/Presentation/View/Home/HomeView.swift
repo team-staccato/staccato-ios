@@ -20,7 +20,7 @@ struct HomeView: View {
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: Managers
-    @Environment(HomeModalManager.self) private var homeModalManager
+    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @Environment(NavigationState.self) private var navigationState
     @Environment(StaccatoAlertManager.self) private var alertManager
     @State private var locationAuthorizationManager = STLocationManager.shared
@@ -28,64 +28,64 @@ struct HomeView: View {
     // NOTE: UI Visibility
     @State private var showUpdateAlert = false
     @State private var isMyPagePresented = false
-    @State private var isCreateStaccatoModalPresented = false
+    @State private var isCreateStaccatoPresented = false
+    @State private var hasAppearedOnce = false
     private var isStaccatoAddButtonVisible: Bool {
-        homeModalManager.modalSize != .large
+        detentManager.currentDetent != .large
     }
 
 
     // MARK: - Body
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            mapView
-                .background(Color.red)
-                .edgesIgnoringSafeArea(.all)
-
-            myPageButton
-                .padding(10)
-            
-            myLocationButton
-                .padding(12)
-                .frame(maxWidth: .infinity, alignment: .topTrailing)
-
-            if isStaccatoAddButtonVisible {
+        GeometryReader { geometry in
+            ZStack(alignment: .topLeading) {
+                mapView
+                    .edgesIgnoringSafeArea(.all)
+                
+                myPageButton
+                    .padding(10)
+                
+                myLocationButton
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .topTrailing)
+                
                 staccatoAddButton
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-                    .padding(.trailing, 12)
-                    .padding(.bottom, (homeModalManager.modalHeight - ScreenUtils.safeAreaInsets.bottom) + 12)
-            }
-
-            categoryListModal
-                .edgesIgnoringSafeArea(.bottom)
-            
-            if alertManager.isPresented {
-                StaccatoAlertView()
+                    .position(
+                        x: geometry.size.width - 40,
+                        y: calculateFloatingButtonY(in: geometry)
+                    )
+                    .animation(.spring(response: 0.4, dampingFraction: 0.8),
+                               value: detentManager.currentHeight)
+                
+                if alertManager.isPresented {
+                    StaccatoAlertView()
+                }
             }
         }
         .ignoresSafeArea(.keyboard)
         .onAppear() {
-            // 앱 버전체크 // TODO: 리팩토링
-            AppVersionCheckManager.shared.fetchAppStoreVersion { version in
-                guard let appStoreVersion = version else {
-                    print("❌ 버전 옵셔널 바인딩 실패")
-                    return
-                }
-                showUpdateAlert = AppVersionCheckManager.shared.isUpdateAvailable(appStoreVersion: appStoreVersion)
+            if !hasAppearedOnce {
+                hasAppearedOnce = true
+                setupInitialState()
+            } else {
+                refreshDataOnly()
             }
-
-            locationAuthorizationManager.checkAndRequestLocationAuthorization()
-            STLocationManager.shared.updateLocationForOneSec()
-            viewModel.fetchStaccatos()
-            mypageViewModel.fetchProfile()
+        }
+        .sheet(isPresented: $detentManager.isbottomSheetPresented) {
+            CategoryListView(navigationState)
+                .environmentObject(detentManager)
+                .interactiveDismissDisabled(true)
+                .presentationContentInteraction(.scrolls)
+                .presentationBackgroundInteraction(.enabled)
+                .presentationDetents(Set(BottomSheetDetent.allCases.map { $0.detent }))
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()
         }
-        .fullScreenCover(isPresented: $isCreateStaccatoModalPresented) {
+        .fullScreenCover(isPresented: $isCreateStaccatoPresented) {
             StaccatoEditorView(category: nil)
         }
-
         // 업데이트 안내 // TODO: 리팩토링
         .alert(isPresented: $showUpdateAlert) {
             Alert(
@@ -96,42 +96,28 @@ struct HomeView: View {
                 })
             )
         }
+        .onDisappear {
+            detentManager.isbottomSheetPresented = false
+            hasAppearedOnce = false
+        }
     }
-
 }
 
-
 // MARK: - UI Components
-
 private extension HomeView {
 
     var myPageButton: some View {
         Button {
             isMyPagePresented = true
         } label: {
-            if let profileImageUrl = mypageViewModel.profile?.profileImageUrl {
-                KFImage(URL(string:  profileImageUrl))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 40, height: 40)
-                    .background(Color.staccatoWhite)
-                    .foregroundStyle(.gray3)
-                    .clipShape(Circle())
-                    .overlay {
-                        Circle().stroke(Color.staccatoWhite, lineWidth: 2)
-                    }
-            } else {
-                Image(.personCircleFill)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
-                    .background(Color.staccatoWhite)
-                    .foregroundStyle(.gray3)
-                    .clipShape(Circle())
-                    .overlay {
-                        Circle().stroke(Color.staccatoWhite, lineWidth: 2)
-                    }
-            }
+            KFImage(URL(string: mypageViewModel.profile?.profileImageUrl ?? ""))
+                .fillPersonImage(width: 40, height: 40)
+                .background(Color.staccatoWhite)
+                .foregroundStyle(.gray3)
+                .clipShape(Circle())
+                .overlay {
+                    Circle().stroke(Color.staccatoWhite, lineWidth: 2)
+                }
         }
     }
 
@@ -152,7 +138,7 @@ private extension HomeView {
 
     var staccatoAddButton: some View {
         Button {
-            isCreateStaccatoModalPresented = true
+            isCreateStaccatoPresented = true
         } label: {
             Image(.plus)
                 .resizable()
@@ -165,36 +151,42 @@ private extension HomeView {
         .clipShape(.circle)
         .shadow(radius: 4, y: 4)
     }
+}
 
-    var categoryListModal: some View {
-        VStack {
-            Spacer()
-
-            VStack(spacing: 0) {
-                Capsule()
-                    .frame(width: 48, height: 3)
-                    .padding(.top, 10)
-                    .padding(.bottom, 5)
-                    .foregroundStyle(.gray2)
-
-                CategoryListView(navigationState)
+private extension HomeView {
+    func setupInitialState() {
+        // TODO: - 리팩토링
+        // 앱 버전체크
+        AppVersionCheckManager.shared.fetchAppStoreVersion { version in
+            guard let appStoreVersion = version else {
+                print("❌ 버전 옵셔널 바인딩 실패")
+                return
             }
-            .background(Color.staccatoWhite)
-            .frame(maxHeight: homeModalManager.modalHeight)
-            .clipShape(RoundedCornerShape(corners: [.topLeft, .topRight], radius: 20))
-            .shadow(color: .black.opacity(0.15), radius: 8, y: -1)
-
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let newHeight: CGFloat = homeModalManager.modalHeight - value.translation.height
-                        homeModalManager.updateHeight(to: max(100, newHeight))
-                    }
-                    .onEnded { value in
-                        homeModalManager.setFinalSize(translationAmount: value.translation.height)
-                    }
-            )
+            showUpdateAlert = AppVersionCheckManager.shared.isUpdateAvailable(appStoreVersion: appStoreVersion)
         }
+        
+        locationAuthorizationManager.checkAndRequestLocationAuthorization()
+        STLocationManager.shared.updateLocationForOneSec()
+        viewModel.fetchStaccatos()
+        mypageViewModel.fetchProfile()
     }
-
+    
+    func refreshDataOnly() {
+        viewModel.fetchStaccatos()
+        mypageViewModel.fetchProfile()
+    }
+    
+    func calculateFloatingButtonY(in geometry: GeometryProxy) -> CGFloat {
+        let safeAreaBottom = geometry.safeAreaInsets.bottom
+        let defaultY = geometry.size.height - safeAreaBottom - 12
+        
+        guard detentManager.isbottomSheetPresented && detentManager.currentHeight > 0 else {
+            return defaultY
+        }
+        
+        let sheetTopY = geometry.size.height - detentManager.currentHeight - safeAreaBottom
+        let buttonOffset: CGFloat = 12
+        
+        return max(sheetTopY - buttonOffset, 100)
+    }
 }

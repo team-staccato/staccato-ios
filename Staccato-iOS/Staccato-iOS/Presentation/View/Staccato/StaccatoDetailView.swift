@@ -16,10 +16,9 @@ struct StaccatoDetailView: View {
     
     let staccatoId: Int64
     @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @Environment(StaccatoAlertManager.self) var alertManager
     @Environment(NavigationState.self) var navigationState
-    @Environment(HomeModalManager.self) var homeModalManager
-    
     @ObservedObject var viewModel: StaccatoDetailViewModel
     
     @State var commentText: String = ""
@@ -40,94 +39,98 @@ struct StaccatoDetailView: View {
     private let horizontalInset: CGFloat = 16
 
     var body: some View {
-        VStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        imageSlider
-                        
-                        titleStack
-                        
-                        Divider()
-                        
-                        locationSection
-                        
-                        Divider()
-                        
-                        feelingSection
-                        
-                        Divider()
-                        
-                        commentSection
-                            .id("commentSection")
-                    }
-                }
-                .onChange(of: viewModel.comments) { _,_ in
-                    if viewModel.shouldScrollToBottom {
-                        withAnimation {
-                            proxy.scrollTo("commentSection", anchor: .bottom)
-                            viewModel.shouldScrollToBottom = false
+        GeometryReader { geometry in
+            VStack {
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            imageSlider
+                            
+                            titleStack
+                            
+                            Divider()
+                            
+                            locationSection
+                            
+                            Divider()
+                            
+                            feelingSection
+                            
+                            Divider()
+                            
+                            commentSection
+                                .id("commentSection")
                         }
                     }
-                }
-                
-                .onChange(of: isCommentFocused) { oldValue, newValue in
-                    withAnimation {
-                        if newValue { homeModalManager.updateSize(to: .large) }
+                    .onChange(of: viewModel.comments) { _,_ in
+                        if viewModel.shouldScrollToBottom {
+                            withAnimation {
+                                proxy.scrollTo("commentSection", anchor: .bottom)
+                                viewModel.shouldScrollToBottom = false
+                            }
+                        }
+                    }
+                    .onChange(of: isCommentFocused) { _, newValue in
+                        withAnimation {
+                            if newValue { detentManager.updateSize(to: .large) }
+                        }
+                    }
+                    .onTapGesture {
+                        isCommentFocused = false
                     }
                 }
                 
-                .onTapGesture {
-                    isCommentFocused = false
+                Spacer()
+                
+                commentTypingView
+            }
+            .staccatoNavigationBar {
+                Button("수정") {
+                    isStaccatoModifySheetPresented = true
                 }
-            }
-            
-            Spacer()
-            
-            commentTypingView
-        }
-        .staccatoNavigationBar {
-            Button("수정") {
-                isStaccatoModifySheetPresented = true
-            }
-
-            Button("삭제") {
-                withAnimation {
-                    alertManager.show(
-                        .confirmCancelAlert(
-                            title: "삭제하시겠습니까?",
-                            message: "삭제를 누르면 복구할 수 없습니다") {
-                                viewModel.deleteStaccato(staccatoId) {isSuccess in
-                                    if isSuccess,
-                                       let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
-                                        homeViewModel.staccatos.remove(at: indexToRemove)
+                
+                Button("삭제") {
+                    withAnimation {
+                        alertManager.show(
+                            .confirmCancelAlert(
+                                title: "삭제하시겠습니까?",
+                                message: "삭제를 누르면 복구할 수 없습니다") {
+                                    viewModel.deleteStaccato(staccatoId) {isSuccess in
+                                        if isSuccess,
+                                           let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
+                                            homeViewModel.staccatos.remove(at: indexToRemove)
+                                        }
+                                        navigationState.dismiss()
                                     }
-                                    navigationState.dismiss()
                                 }
-                            }
-                    )
+                        )
+                    }
                 }
             }
-        }
-        .onChange(of: viewModel.staccatoDetail) { _, _ in
-            updateMapCamera()
-        }
-        .onChange(of: viewModel.shareLink) { _, newValue in
-            if newValue != nil {
-                presentShareSheet()
-                isShareLinkLoading = false
+            .onChange(of: viewModel.staccatoDetail) { _, _ in
+                updateMapCamera()
             }
-        }
-
-        .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
-            viewModel.getStaccatoDetail(staccatoId)
-        } content: {
-            if let staccatoDetail = viewModel.staccatoDetail {
-                StaccatoEditorView(staccato: staccatoDetail)
+            .onChange(of: viewModel.shareLink) { _, newValue in
+                if newValue != nil {
+                    presentShareSheet()
+                    isShareLinkLoading = false
+                }
+            }
+            .onChange(of: geometry.size.height) { _, height in
+                detentManager.updateHeight(height)
+            }
+            .onAppear {
+                detentManager.updateHeight(geometry.size.height)
+            }
+            .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
+                viewModel.getStaccatoDetail(staccatoId)
+            } content: {
+                if let staccatoDetail = viewModel.staccatoDetail {
+                    StaccatoEditorView(staccato: staccatoDetail)
+                }
             }
         }
     }
-
 }
 
 

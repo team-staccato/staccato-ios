@@ -41,7 +41,8 @@ struct HomeView: View {
         GeometryReader { geometry in
             ZStack(alignment: .topLeading) {
                 mapView
-                    .edgesIgnoringSafeArea(.all)
+                    .ignoresSafeArea(.all)
+                    .environmentObject(detentManager)
                 
                 myPageButton
                     .padding(10)
@@ -78,7 +79,10 @@ struct HomeView: View {
                 .interactiveDismissDisabled(true)
                 .presentationContentInteraction(.scrolls)
                 .presentationBackgroundInteraction(.enabled)
-                .presentationDetents(Set(BottomSheetDetent.allCases.map { $0.detent }))
+                .presentationDetents(
+                    Set(BottomSheetDetent.allCases.map { $0.detent }),
+                    selection: $detentManager.selectedDetent
+                )
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()

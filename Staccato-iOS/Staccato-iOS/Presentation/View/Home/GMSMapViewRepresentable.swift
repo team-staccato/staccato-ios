@@ -49,7 +49,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 
         // 모달 크기가 조정된 만큼 지도를 scroll
         let currentSize = detentManager.currentDetent
-        if let previousSize = detentManager.targetDetent, currentSize != previousSize {
+        if let previousSize = detentManager.previousDetent, currentSize != previousSize {
             scrollMap(on: uiView, currentSize: currentSize, previousSize: previousSize)
         }
 
@@ -117,6 +117,9 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
             parent.navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
+            Task.detached { @MainActor in
+                self.parent.detentManager.selectedDetent = BottomSheetDetent.medium.detent
+            }
         } else {
             print("⚠️ No StaccatoData found for this marker.")
         }
@@ -193,7 +196,7 @@ private extension GMSMapViewRepresentable {
         let deltaY = (currentSize.height - previousSize.height) / 2
         Task {
             mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
-            detentManager.targetDetent = currentSize
+            detentManager.previousDetent = currentSize
         }
     }
 

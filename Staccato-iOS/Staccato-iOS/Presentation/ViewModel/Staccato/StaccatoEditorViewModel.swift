@@ -43,6 +43,7 @@ class StaccatoEditorViewModel {
 
     var uploadSuccess = false
 
+    /// Create Staccato
     init(selectedCategory: CategoryModel? = nil) {
         self.editorMode = .create
         self.selectedCategory = selectedCategory
@@ -50,6 +51,7 @@ class StaccatoEditorViewModel {
         getCategoryList()
     }
 
+    /// Modify Staccato
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
         getPhotos(urls: staccato.staccatoImageUrls)

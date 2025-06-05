@@ -47,26 +47,18 @@ struct CategoryDetailView: View {
                 }
                 .frame(width: ScreenUtils.width)
             }
-            .background(.staccatoWhite)
-            
-            .staccatoNavigationBar {
-                if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
-                    Button("수정") {
-                        isCategoryModifyModalPresented = true
-                    }
-                    
-                    Button("삭제") {
-                        withAnimation {
-                            alertManager.show(
-                                .confirmCancelAlert(
-                                    title: "삭제하시겠습니까?",
-                                    message: "삭제를 누르면 복구할 수 없습니다.") {
-                                        viewModel.deleteCategory()
-                                        navigationState.dismiss()
-                                    }
-                            )
-                        }
-                    }
+            .frame(width: ScreenUtils.width)
+        }
+        .background(.staccatoWhite)
+
+        .staccatoNavigationBar {
+            if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
+                Button("수정") {
+                    isCategoryModifyModalPresented = true
+                }
+                
+                Button("삭제") {
+                    presentDeleteAlert()
                 }
             }
             .ignoresSafeArea(.container, edges: .bottom)
@@ -97,6 +89,7 @@ struct CategoryDetailView: View {
         }
     }
 }
+
 
 // MARK: - UI Components
 
@@ -167,7 +160,7 @@ private extension CategoryDetailView {
                 .padding(.leading, 4)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 17) {
+                HStack(alignment: .top, spacing: 10) {
                     if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
                         invitationButton
                     }
@@ -200,9 +193,10 @@ private extension CategoryDetailView {
         }
         .fullScreenCover(isPresented: $isinvitationSheetPresented) {
             // TODO: - Background 애니메이션 수정 필요
-            InvitationMemberView()
-                .environmentObject(InvitationMemberViewModel(viewModel.categoryDetail?.categoryId))
-                .presentationBackground(.black.opacity(0.2))
+            if let categoryId = viewModel.categoryDetail?.categoryId {
+                InvitationMemberView(categoryId: categoryId)
+                    .presentationBackground(.black.opacity(0.2))
+            }
         }
     }
     
@@ -259,4 +253,33 @@ private extension CategoryDetailView {
                 .multilineTextAlignment(.center)
         }
     }
+}
+
+
+// MARK: - Helper
+
+private extension CategoryDetailView {
+
+    func presentDeleteAlert() {
+        withAnimation {
+            alertManager.show(
+                .confirmCancelAlert(
+                    title: "삭제하시겠습니까?",
+                    message: "삭제를 누르면 복구할 수 없습니다."
+                ) {
+                    Task {
+                        let success = await viewModel.deleteCategory()
+                        if success {
+                            navigationState.dismiss()
+                            
+                            if let staccatoIds = viewModel.categoryDetail?.staccatos.map(\.staccatoId) {
+                                homeViewModel.removeStaccatos(with: Set(staccatoIds))
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+
 }

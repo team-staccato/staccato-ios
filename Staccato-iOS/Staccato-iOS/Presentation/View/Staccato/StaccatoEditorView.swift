@@ -50,7 +50,8 @@ struct StaccatoEditorView: View {
             }
         }
         .onAppear {
-            if STLocationManager.shared.hasLocationAuthorization() {
+            if viewModel.editorMode == .create,
+               STLocationManager.shared.hasLocationAuthorization() {
                 STLocationManager.shared.getCurrentPlaceInfo { place in
                     self.viewModel.selectedPlace = place
                 }
@@ -352,7 +353,11 @@ extension StaccatoEditorView {
                     homeViewModel.fetchStaccatos()
                 case .modify(let id):
                     await viewModel.modifyStaccato(staccatoId: id)
-                    homeViewModel.fetchStaccatos()
+
+                    // 마커 좌표 업데이트
+                    if let newCoordinate = viewModel.selectedPlace?.coordinate {
+                        homeViewModel.updateMarkersPosition(for: id, to: newCoordinate)
+                    }
                 }
             }
         }

@@ -73,9 +73,9 @@ extension STLocationManager {
                 UIApplication.shared.open(settingsURL)
             })
 
-            // TODO: 리팩토링 ('windows' was deprecated in iOS 15.0)
-            if let topVC = UIApplication.shared.windows.first?.rootViewController {
-                topVC.present(alert, animated: true, completion: nil)
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                window.rootViewController?.present(alert, animated: true, completion: nil)
             }
         }
     }

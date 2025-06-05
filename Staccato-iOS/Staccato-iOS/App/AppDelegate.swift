@@ -7,11 +7,10 @@
 
 import GoogleMaps
 import GooglePlacesSwift
-
 import UIKit
 
 // Maps SDK 초기화를 위해 AppDelegate 구현
-class AppDelegate: NSObject, UIApplicationDelegate {
+final class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(
         _ application: UIApplication,

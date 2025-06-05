@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-
 import Kingfisher
 
 struct CategoryDetailView: View {
 
     @Environment(NavigationState.self) var navigationState
     @Environment(StaccatoAlertManager.self) var alertManager
+    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     private let categoryId: Int64
@@ -30,19 +30,22 @@ struct CategoryDetailView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                headerSection
-
-                if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
-                    descriptionSection
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 16) {
+                    headerSection
+                    
+                    if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
+                        descriptionSection
+                    }
+                    
+                    if viewModel.categoryDetail?.isShared ?? false {
+                        sharedMemberSection
+                    }
+                    
+                    staccatoCollectionSection
                 }
-                
-                if viewModel.categoryDetail?.isShared ?? false {
-                    sharedMemberSection
-                }
-                
-                staccatoCollectionSection
+                .frame(width: ScreenUtils.width)
             }
             .frame(width: ScreenUtils.width)
         }
@@ -58,29 +61,33 @@ struct CategoryDetailView: View {
                     presentDeleteAlert()
                 }
             }
-        }
-
-        .onAppear {
-            viewModel.getCategoryDetail(categoryId)
-        }
-
-        .onChange(of: homeViewModel.staccatos) {
-            viewModel.getCategoryDetail(categoryId)
-        }
-
-        .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
-            StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
-        }
-
-        .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
-            CategoryEditorView(
-                categoryDetail: self.viewModel.categoryDetail,
-                editorType: .modify,
-                categoryViewModel: viewModel
-            )
+            .ignoresSafeArea(.container, edges: .bottom)
+            .onAppear {
+                detentManager.updateDetent(geometry.size.height)
+                viewModel.getCategoryDetail(categoryId)
+            }
+            
+            .onChange(of: homeViewModel.staccatos) {
+                viewModel.getCategoryDetail(categoryId)
+            }
+            
+            .onChange(of: geometry.size.height) { _, height in
+                detentManager.updateDetent(height)
+            }
+            
+            .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
+                StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryModel())
+            }
+            
+            .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
+                CategoryEditorView(
+                    categoryDetail: self.viewModel.categoryDetail,
+                    editorType: .modify,
+                    categoryViewModel: viewModel
+                )
+            }
         }
     }
-
 }
 
 

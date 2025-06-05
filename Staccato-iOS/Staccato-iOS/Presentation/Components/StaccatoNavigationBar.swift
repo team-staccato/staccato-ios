@@ -167,6 +167,7 @@ extension View {
         self
             .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, trailingButtons: trailingButtons))
             .background(.staccatoWhite)
+            .padding(.top, 10)
     }
 
     func staccatoNavigationBar(
@@ -177,6 +178,7 @@ extension View {
         self
             .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, trailingButtons: { }))
             .background(.staccatoWhite)
+            .padding(.top, 10)
     }
 
     func staccatoModalBar<T: View>(

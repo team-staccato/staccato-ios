@@ -16,16 +16,16 @@ struct Staccato_iOSApp: App {
 
     private let navigationState = NavigationState()
     private let alertManager = StaccatoAlertManager()
-    private let homeModalManager = HomeModalManager()
+    @StateObject private var bottomSheetDetentManager = BottomSheetDetentManager()
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var mypageViewModel = MyPageViewModel()
     @StateObject private var signInViewModel: SignInViewModel
 
     init() {
-        let signInVM = SignInViewModel()
-        _signInViewModel = StateObject(wrappedValue: signInVM)
+        let signInViewModel = SignInViewModel()
+        _signInViewModel = StateObject(wrappedValue: signInViewModel)
 
-        signInVM.checkAutoLogin()
+        signInViewModel.checkAutoLogin()
     }
     
     var body: some Scene {
@@ -34,16 +34,16 @@ struct Staccato_iOSApp: App {
             Group {
                 if signInViewModel.isLoggedIn {
                     HomeView()
-                        .environment(homeModalManager)
                         .environmentObject(homeViewModel)
                         .environmentObject(mypageViewModel)
+                        .environmentObject(bottomSheetDetentManager)
                 } else {
                     SignInView()
+                        .environmentObject(signInViewModel)
                 }
             }
             .environment(navigationState)
             .environment(alertManager)
-            .environmentObject(signInViewModel)
         }
 
     }

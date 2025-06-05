@@ -13,7 +13,7 @@ enum BottomSheetDetent: CaseIterable {
     
     var height: CGFloat {
         switch self {
-        case .small: return 90
+        case .small: return 80
         case .medium: return ScreenUtils.height * 0.6
         case .large: return ScreenUtils.height - ScreenUtils.safeAreaInsets.top
         }

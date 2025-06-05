@@ -15,24 +15,21 @@ struct StaccatoDetailView: View {
     // MARK: - State Properties
     
     let staccatoId: Int64
-    @EnvironmentObject var homeViewModel: HomeViewModel
-    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @Environment(StaccatoAlertManager.self) var alertManager
     @Environment(NavigationState.self) var navigationState
-    @ObservedObject var viewModel: StaccatoDetailViewModel
+    @EnvironmentObject var homeViewModel: HomeViewModel
+    @EnvironmentObject var detentManager: BottomSheetDetentManager
+    @StateObject private var viewModel = StaccatoDetailViewModel()
     
     @State var commentText: String = ""
-    @FocusState private var isCommentFocused: Bool
-
+    @State private var hasLoadedInitialData = false
     @State private var isStaccatoModifySheetPresented = false
     @State private var isShareLinkLoading = false
+    @FocusState private var isCommentFocused: Bool
 
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
-        self.viewModel = StaccatoDetailViewModel()
-        viewModel.getStaccatoDetail(staccatoId)
     }
-
 
     // MARK: - UI Properties
 
@@ -59,30 +56,37 @@ struct StaccatoDetailView: View {
                             Divider()
                             
                             commentSection
-                                .id("commentSection")
+                            
+                            commentTypingView
+                                .id("commentTypingView")
                         }
                     }
+                    .ignoresSafeArea(.container, edges: .bottom)
                     .onChange(of: viewModel.comments) { _,_ in
-                        if viewModel.shouldScrollToBottom {
-                            withAnimation {
-                                proxy.scrollTo("commentSection", anchor: .bottom)
-                                viewModel.shouldScrollToBottom = false
+                        DispatchQueue.main.async {
+                            if viewModel.shouldScrollToBottom {
+                                withAnimation {
+                                    proxy.scrollTo("commentTypingView", anchor: .bottom)
+                                    viewModel.shouldScrollToBottom = false
+                                }
                             }
                         }
                     }
                     .onChange(of: isCommentFocused) { _, newValue in
-                        withAnimation {
-                            if newValue { detentManager.updateDetent(to: .large) }
+                        if newValue {
+                            detentManager.updateDetent(to: .large)
+                        }
+                        Task {
+                            try await Task.sleep(for: .seconds(0.5))
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                proxy.scrollTo("commentTypingView", anchor: .bottom)
+                            }
                         }
                     }
                     .onTapGesture {
                         isCommentFocused = false
                     }
                 }
-                
-                Spacer()
-                
-                commentTypingView
             }
             .staccatoNavigationBar {
                 Button("수정") {
@@ -121,6 +125,11 @@ struct StaccatoDetailView: View {
             }
             .onAppear {
                 detentManager.updateDetent(geometry.size.height)
+                
+                if !hasLoadedInitialData {
+                    viewModel.getStaccatoDetail(staccatoId)
+                    hasLoadedInitialData = true
+                }
             }
             .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
                 viewModel.getStaccatoDetail(staccatoId)

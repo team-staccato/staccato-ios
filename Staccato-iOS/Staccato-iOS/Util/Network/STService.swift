@@ -25,5 +25,7 @@ final class STService {
     lazy var imageService = ImageService()
     
     lazy var invitationService = InvitationService()
+    
+    lazy var notificationService = NotificationService()
 
 }

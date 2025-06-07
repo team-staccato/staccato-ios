@@ -30,6 +30,7 @@ struct HomeView: View {
     @State private var isMyPagePresented = false
     @State private var isCreateStaccatoPresented = false
     @State private var hasAppearedOnce = false
+    @State private var hasNotification = false
     private var isStaccatoAddButtonVisible: Bool {
         detentManager.currentDetent != .large
     }
@@ -72,6 +73,11 @@ struct HomeView: View {
             } else {
                 refreshDataOnly()
             }
+            
+            STNotificationManager.shared.getHasNotification { hasNotificaton in
+                self.hasNotification = hasNotificaton
+            }
+            
             detentManager.isbottomSheetPresented = true
         }
         .sheet(isPresented: $detentManager.isbottomSheetPresented) {
@@ -121,14 +127,23 @@ private extension HomeView {
             detentManager.isbottomSheetPresented = false
             isMyPagePresented = true
         } label: {
-            KFImage(URL(string: mypageViewModel.profile?.profileImageUrl ?? ""))
-                .fillPersonImage(width: 40, height: 40)
-                .background(Color.staccatoWhite)
-                .foregroundStyle(.gray3)
-                .clipShape(Circle())
-                .overlay {
-                    Circle().stroke(Color.staccatoWhite, lineWidth: 2)
+            ZStack(alignment: .topTrailing) {
+                KFImage(URL(string: mypageViewModel.profile?.profileImageUrl ?? ""))
+                    .fillPersonImage(width: 40, height: 40)
+                    .background(Color.staccatoWhite)
+                    .foregroundStyle(.gray3)
+                    .clipShape(Circle())
+                    .overlay {
+                        Circle().stroke(Color.staccatoWhite, lineWidth: 2)
+                    }
+                
+                if hasNotification {
+                    Circle()
+                        .fill(Color.accentRed)
+                        .frame(width: 10, height: 10)
+                        .offset(x: 4, y: -4)
                 }
+            }
         }
     }
 

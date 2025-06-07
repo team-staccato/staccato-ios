@@ -149,9 +149,15 @@ private extension InvitationMemberView {
                                         viewModel.removeMemberFromSelected(member)
                                     }
                                 } label: {
-                                    Image(.xCircleFill)
-                                        .foregroundColor(.gray5)
+                                    Circle()
+                                        .foregroundStyle(Color.gray5)
                                         .frame(width: 15, height: 15)
+                                        .overlay {
+                                            Image(.xmark)
+                                                .resizable()
+                                                .foregroundStyle(Color.staccatoWhite)
+                                                .frame(width: 7, height: 7)
+                                        }
                                 }
                             }
                         
@@ -213,12 +219,7 @@ struct SearchMemberRow: View {
             
             Spacer()
             
-            if member.isInvited {
-                Text("초대완료")
-                    .font(StaccatoFont.body5.font)
-                    .foregroundStyle(Color.gray3)
-                    .padding(.trailing, 14)
-            } else {
+            if member.status == .none {
                 Button {
                     withAnimation {
                         onToggleSelection(member)
@@ -230,7 +231,8 @@ struct SearchMemberRow: View {
                             .frame(width: 27, height: 27)
                             .overlay {
                                 Image(.checkmark)
-                                    .frame(width: 13, height: 13)
+                                    .resizable()
+                                    .frame(width: 13, height: 10)
                                     .foregroundStyle(Color.staccatoBlack)
                             }
                             .padding(.trailing, 18)

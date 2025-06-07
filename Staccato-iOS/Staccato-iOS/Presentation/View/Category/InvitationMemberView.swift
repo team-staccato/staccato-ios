@@ -230,7 +230,7 @@ struct SearchMemberRow: View {
                             .fill(Color.gray2)
                             .frame(width: 27, height: 27)
                             .overlay {
-                                Image(.checkmark)
+                                Image(.icCheckmark)
                                     .resizable()
                                     .frame(width: 13, height: 10)
                                     .foregroundStyle(Color.staccatoBlack)

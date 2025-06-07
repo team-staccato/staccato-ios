@@ -31,7 +31,6 @@ final class StaccatoEditorViewModel {
     var showCamera = false
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
-    var photosCount: Int { photos.count + selectedPhotos.count }
     
     var showPlaceSearchSheet = false
     var selectedPlace: StaccatoPlaceModel?
@@ -74,30 +73,38 @@ final class StaccatoEditorViewModel {
     }
     
     func loadTransferable() {
+        Array(0..<selectedPhotos.count).forEach { _ in
+            photos.append(UploadablePhoto())
+        }
+        
         Task {
-            await withTaskGroup(of: UploadablePhoto?.self) { group in
+            await withTaskGroup(of: UIImage.self) { group in
                 for selectedPhoto in selectedPhotos {
                     group.addTask {
                         do {
                             if let imageData = try await selectedPhoto.loadTransferable(type: Data.self),
                                let transferedImage = UIImage(data: imageData) {
-                                return UploadablePhoto(photo: transferedImage)
+                                return transferedImage
                             }
                         } catch let error {
                             self.errorTitle = "이미지 업로드 실패"
                             self.errorMessage = error.localizedDescription
                             self.catchError = true
                         }
-                        return nil
+                        return UIImage()
                     }
                 }
                 
-                for await result in group {
-                    if let photo = result,
-                       !photos.contains(where: { $0.photo.pngData() == photo.photo.pngData() }) {
+                for await image in group {
+                    if !photos.contains(where: { $0.photo.pngData() == image.pngData() }) {
                         await MainActor.run {
-                            self.photos.append(photo)
+                            if let uploadablePhoto = photos.first(where: { $0.photo == UIImage(resource: .categoryThumbnailDefault) }) {
+                                uploadablePhoto.photo = image
+                                Task.detached(priority: .high) { try await uploadablePhoto.uploadImage() }
+                            }
                         }
+                    } else {
+                        photos.removeLast()
                     }
                 }
             }

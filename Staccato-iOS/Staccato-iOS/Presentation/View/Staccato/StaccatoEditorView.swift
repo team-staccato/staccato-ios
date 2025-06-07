@@ -103,7 +103,7 @@ extension StaccatoEditorView {
                     .foregroundStyle(.staccatoBlack)
                     .typography(.title2)
 
-                Text("(\(viewModel.photosCount < 8 ? viewModel.photosCount : 8)/8)")
+                Text("(\(viewModel.photos.count)/8)")
                     .foregroundStyle(.gray3)
                     .typography(.body4)
 
@@ -150,21 +150,6 @@ extension StaccatoEditorView {
         .onChange(of: viewModel.selectedPhotos) { _, _ in
             viewModel.loadTransferable()
         }
-
-        .onChange(of: viewModel.photos) { oldValue, newValue in
-            Task {
-                if oldValue.count < newValue.count {
-                    if let lastIndex = newValue.indices.last {
-                        do {
-                            try await viewModel.photos[lastIndex].uploadImage()
-                        } catch {
-                            viewModel.errorTitle = "이미지 업로드 실패"
-                            viewModel.errorMessage = error.localizedDescription
-                        }
-                    }
-                }
-            }
-        }
     }
     
     private var photoInputGrid: some View {
@@ -180,7 +165,7 @@ extension StaccatoEditorView {
 
     private var photoInputPlaceholder: some View {
         Button {
-            if viewModel.photosCount < 8 {
+            if viewModel.photos.count < 8 {
                 viewModel.isPhotoInputPresented = true
             } else {
                 isPhotoFull = true
@@ -233,8 +218,7 @@ extension StaccatoEditorView {
                 Button {
                     if let index = viewModel.photos.firstIndex(of: photo) {
                         withAnimation {
-                            viewModel.photos.remove(at: index)
-                            viewModel.selectedPhotos.remove(at: index)
+                            _ = viewModel.photos.remove(at: index)
                         }
                     }
                 } label: {

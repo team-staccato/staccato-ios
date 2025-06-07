@@ -10,17 +10,19 @@ import SwiftUI
 @Observable
 class UploadablePhoto: Identifiable, Equatable {
     let id: UUID = UUID()
-    let photo: UIImage
+    var photo: UIImage
 
     var isUploading = true
     var isFailed = false
     var imageURL: String?
 
-    init(photo: UIImage) {
+    init(photo: UIImage = UIImage(resource: .categoryThumbnailDefault)) {
         self.photo = photo
     }
 
     init(imageUrl: String) async {
+        self.isUploading = false
+        
         guard let url = URL(string: imageUrl) else {
             self.imageURL = imageUrl
             self.photo = UIImage()

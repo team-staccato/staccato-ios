@@ -10,17 +10,19 @@ import SwiftUI
 @Observable
 class UploadablePhoto: Identifiable, Equatable {
     let id: UUID = UUID()
-    let photo: UIImage
+    var photo: UIImage
 
-    var isUploading = false
+    var isUploading = true
     var isFailed = false
     var imageURL: String?
 
-    init(photo: UIImage) {
+    init(photo: UIImage = UIImage(resource: .categoryThumbnailDefault)) {
         self.photo = photo
     }
 
     init(imageUrl: String) async {
+        self.isUploading = false
+        
         guard let url = URL(string: imageUrl) else {
             self.imageURL = imageUrl
             self.photo = UIImage()
@@ -50,16 +52,8 @@ class UploadablePhoto: Identifiable, Equatable {
         self.photo = loadedImage
     }
 
-    nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     func uploadImage() async throws {
-        isUploading = true
-
-        defer {
-            isUploading = false
-        }
+        defer { isUploading = false }
 
         do {
             let imageRequest = PostImageRequest(image: self.photo)
@@ -69,5 +63,9 @@ class UploadablePhoto: Identifiable, Equatable {
             isFailed = true
             throw error
         }
+    }
+    
+    nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
+        return lhs.id == rhs.id
     }
 }

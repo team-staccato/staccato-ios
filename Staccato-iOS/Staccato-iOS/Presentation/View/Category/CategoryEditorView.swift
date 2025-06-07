@@ -182,7 +182,7 @@ extension CategoryEditorView {
             }
         })
 
-        .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem)
+        .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem, matching: .images)
 
         .fullScreenCover(isPresented: $vm.showCamera) {
             Task {

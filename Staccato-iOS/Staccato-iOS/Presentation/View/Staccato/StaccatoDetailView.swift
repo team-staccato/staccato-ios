@@ -94,6 +94,7 @@ struct StaccatoDetailView: View {
                 }
                 
                 Button("삭제") {
+                    // TODO: - 삭제 버튼 시 alert가 sheet 뒤로 뜨는 이슈
                     withAnimation {
                         alertManager.show(
                             .confirmCancelAlert(

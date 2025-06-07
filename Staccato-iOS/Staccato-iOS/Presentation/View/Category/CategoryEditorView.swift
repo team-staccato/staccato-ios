@@ -302,7 +302,7 @@ extension CategoryEditorView {
                                 vm.categoryColorTemp = colorType
                             }
                         if vm.categoryColorTemp == colorType {
-                            Image(StaccatoIcon.checkmark)
+                            Image(.icCheckmark)
                                 .font(.system(size: 20, weight: .heavy))
                                 .foregroundColor(.white)
                         }

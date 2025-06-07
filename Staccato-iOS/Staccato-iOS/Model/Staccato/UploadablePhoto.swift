@@ -12,7 +12,7 @@ class UploadablePhoto: Identifiable, Equatable {
     let id: UUID = UUID()
     let photo: UIImage
 
-    var isUploading = false
+    var isUploading = true
     var isFailed = false
     var imageURL: String?
 
@@ -50,16 +50,8 @@ class UploadablePhoto: Identifiable, Equatable {
         self.photo = loadedImage
     }
 
-    nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
-        return lhs.id == rhs.id
-    }
-
     func uploadImage() async throws {
-        isUploading = true
-
-        defer {
-            isUploading = false
-        }
+        defer { isUploading = false }
 
         do {
             let imageRequest = PostImageRequest(image: self.photo)
@@ -69,5 +61,9 @@ class UploadablePhoto: Identifiable, Equatable {
             isFailed = true
             throw error
         }
+    }
+    
+    nonisolated static func == (lhs: UploadablePhoto, rhs: UploadablePhoto) -> Bool {
+        return lhs.id == rhs.id
     }
 }

@@ -62,18 +62,20 @@ struct StaccatoEditorView: View {
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)
-
+        
         .staccatoModalBar(
             title:
                 viewModel.editorMode == .create ? "스타카토 기록하기" : "스타카토 수정하기",
             subtitle: 
                 viewModel.editorMode == .create ? "기억하고 싶은 순간을 남겨보세요!" : "기억하고 싶은 순간을 수정해 보세요!"
         )
+        
         .sheet(isPresented: $viewModel.showPlaceSearchSheet) {
             GMSPlaceSearchViewController { place in
                 self.viewModel.selectedPlace = place
             }
         }
+        
         .alert(isPresented: $isPhotoFull) {
             Alert(title: Text("사진은 최대 8장만 첨부할 수 있어요!"),
                   message: nil,
@@ -101,7 +103,7 @@ extension StaccatoEditorView {
                     .foregroundStyle(.staccatoBlack)
                     .typography(.title2)
 
-                Text("(\(viewModel.photos.count)/8)")
+                Text("(\(viewModel.photosCount < 8 ? viewModel.photosCount : 8)/8)")
                     .foregroundStyle(.gray3)
                     .typography(.body4)
 
@@ -131,23 +133,22 @@ extension StaccatoEditorView {
             Text(viewModel.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
         
-        .photosPicker(isPresented: $viewModel.isPhotoPickerPresented, selection: $viewModel.photoItem)
-
+        .photosPicker(isPresented: $viewModel.isPhotoPickerPresented,
+                      selection: $viewModel.selectedPhotos,
+                      maxSelectionCount: 8 - viewModel.photos.count,
+                      matching: .images)
+        
         .fullScreenCover(isPresented: $viewModel.showCamera) {
             CameraView(cameraMode: .multiple, imageList: self.$viewModel.photos)
                 .background(.black)
         }
-
+        
         .onChange(of: viewModel.uploadSuccess, { _, uploadSuccess in
-            if uploadSuccess {
-                dismiss()
-            }
+            if uploadSuccess { dismiss() }
         })
 
-        .onChange(of: viewModel.photoItem) { _, newValue in
-            Task {
-                await viewModel.loadTransferable(from: newValue)
-            }
+        .onChange(of: viewModel.selectedPhotos) { _, _ in
+            viewModel.loadTransferable()
         }
 
         .onChange(of: viewModel.photos) { oldValue, newValue in
@@ -165,7 +166,7 @@ extension StaccatoEditorView {
             }
         }
     }
-
+    
     private var photoInputGrid: some View {
         LazyVGrid(columns: columns, alignment: .center, spacing: 7) {
             photoInputPlaceholder
@@ -179,7 +180,7 @@ extension StaccatoEditorView {
 
     private var photoInputPlaceholder: some View {
         Button {
-            if viewModel.photos.count < 8 {
+            if viewModel.photosCount < 8 {
                 viewModel.isPhotoInputPresented = true
             } else {
                 isPhotoFull = true
@@ -210,11 +211,9 @@ extension StaccatoEditorView {
                     .scaledToFill()
 
                 if photo.isUploading {
-                    ZStack {
-                        Color.staccatoWhite.opacity(0.8)
-                        LottieView(animation: .named("UploadImage"))
-                            .playing(loopMode: .loop)
-                    }
+                    Color.staccatoWhite.opacity(0.8)
+                    LottieView(animation: .named("UploadImage"))
+                        .playing(loopMode: .loop)
                 }
 
                 if photo.isFailed {
@@ -234,7 +233,8 @@ extension StaccatoEditorView {
                 Button {
                     if let index = viewModel.photos.firstIndex(of: photo) {
                         withAnimation {
-                            _ = viewModel.photos.remove(at: index)
+                            viewModel.photos.remove(at: index)
+                            viewModel.selectedPhotos.remove(at: index)
                         }
                     }
                 } label: {

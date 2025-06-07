@@ -9,11 +9,11 @@ import Alamofire
 
 enum InvitationEndPoint {
     case postInvitations(_ categoryId: Int64, _ membersId: [Int64])
-    case getReceivedInvites
-    case getSentInvites
-    case acceptInvite(_ invitationId: Int64)
-    case rejectInvite(_ invitationId: Int64)
-    case cancelInvite(_ invitationId: Int64)
+    case getReceivedInvitations
+    case getSentInvitations
+    case postAcceptInvitation(_ invitationId: Int64)
+    case postRejectInvitation(_ invitationId: Int64)
+    case postCancelInvitation(_ invitationId: Int64)
 }
 
 extension InvitationEndPoint: APIEndpoint {
@@ -22,24 +22,24 @@ extension InvitationEndPoint: APIEndpoint {
         switch self {
         case .postInvitations:
             return "/invitations"
-        case .getReceivedInvites:
+        case .getReceivedInvitations:
             return "/invitations/received"
-        case .getSentInvites:
+        case .getSentInvitations:
             return "/invitations/sent"
-        case .acceptInvite(let invitationId):
+        case .postAcceptInvitation(let invitationId):
             return "/invitations/\(invitationId)/accept"
-        case .rejectInvite(let invitationId):
+        case .postRejectInvitation(let invitationId):
             return "/invitations/\(invitationId)/reject"
-        case .cancelInvite(let invitationId):
+        case .postCancelInvitation(let invitationId):
             return "/invitations/\(invitationId)/cancel"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .getReceivedInvites, .getSentInvites:
+        case .getReceivedInvitations, .getSentInvitations:
             return .get
-        case .postInvitations, .acceptInvite, .rejectInvite, .cancelInvite:
+        case .postInvitations, .postAcceptInvitation, .postRejectInvitation, .postCancelInvitation:
             return .post
         }
     }
@@ -48,9 +48,9 @@ extension InvitationEndPoint: APIEndpoint {
         switch self {
         case .postInvitations:
             return JSONEncoding.default
-        case .getReceivedInvites, .getSentInvites:
+        case .getReceivedInvitations, .getSentInvitations:
             return URLEncoding.default
-        case .acceptInvite, .rejectInvite, .cancelInvite:
+        case .postAcceptInvitation, .postRejectInvitation, .postCancelInvitation:
             return URLEncoding.queryString
         }
     }
@@ -59,8 +59,8 @@ extension InvitationEndPoint: APIEndpoint {
         switch self {
         case .postInvitations(let categoryId, let membersId):
             return PostInvitationsRequest(categoryId: categoryId, inviteeIds: membersId).toDictionary()
-        case .getReceivedInvites, .getSentInvites,
-                .acceptInvite, .rejectInvite, .cancelInvite:
+        case .getReceivedInvitations, .getSentInvitations,
+                .postAcceptInvitation, .postRejectInvitation, .postCancelInvitation:
             return nil
         }
     }

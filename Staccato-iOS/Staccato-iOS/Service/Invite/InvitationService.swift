@@ -8,18 +8,11 @@
 import Foundation
 
 protocol InvitationServiceProtocol {
-    
-    func postInvitationMember(_ categoryId: Int64, _ membersId: [Int64]) async throws -> PostInvitationsResponse
-    
-    func getReceivedInvites() async throws -> GetReceivedInvitaionsResponse
-    
-    func getSentInvites() async throws -> GetSentInvitationsResponse
-    
-    func acceptInvite(_ invitationId: Int64) async throws -> Void
-    
-    func rejectInvite(_ invitationId: Int64) async throws -> Void
-    
-    func cancelInvite(_ invitationId: Int64) async throws -> Void
+    func getReceivedInvitations() async throws -> GetReceivedInvitaionsResponse
+    func getSentInvitations() async throws -> GetSentInvitationsResponse
+    func postAcceptInvitation(_ invitationId: Int64) async throws
+    func postRejectInvitation(_ invitationId: Int64) async throws
+    func postCancelInvitation(_ invitationId: Int64) async throws
 }
 
 struct InvitationService {
@@ -34,43 +27,41 @@ struct InvitationService {
         return response
     }
     
-    func getReceivedInvites() async throws -> GetReceivedInvitaionsResponse {
+    func getReceivedInvitations() async throws -> GetReceivedInvitaionsResponse {
         guard let invitations = try await NetworkService.shared.request(
-            endpoint: InvitationEndPoint.getReceivedInvites,
+            endpoint: InvitationEndPoint.getReceivedInvitations,
             responseType: GetReceivedInvitaionsResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed
         }
-        
         return invitations
     }
     
-    func getSentInvites() async throws -> GetSentInvitationsResponse {
+    func getSentInvitations() async throws -> GetSentInvitationsResponse {
         guard let invitations = try await NetworkService.shared.request(
-            endpoint: InvitationEndPoint.getSentInvites,
+            endpoint: InvitationEndPoint.getSentInvitations,
             responseType: GetSentInvitationsResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed
         }
-        
         return invitations
     }
     
-    func acceptInvite(_ invitationId: Int64) async throws {
+    func postAcceptInvitation(_ invitationId: Int64) async throws {
         try await NetworkService.shared.request(
-            endpoint: InvitationEndPoint.acceptInvite(invitationId)
+            endpoint: InvitationEndPoint.postAcceptInvitation(invitationId)
         )
     }
     
-    func rejectInvite(_ invitationId: Int64) async throws {
+    func postRejectInvitation(_ invitationId: Int64) async throws {
         try await NetworkService.shared.request(
-            endpoint: InvitationEndPoint.rejectInvite(invitationId)
+            endpoint: InvitationEndPoint.postRejectInvitation(invitationId)
         )
     }
     
-    func cancelInvite(_ invitationId: Int64) async throws {
+    func postCancelInvitation(_ invitationId: Int64) async throws {
         try await NetworkService.shared.request(
-            endpoint: InvitationEndPoint.cancelInvite(invitationId)
+            endpoint: InvitationEndPoint.postCancelInvitation(invitationId)
         )
     }
 }

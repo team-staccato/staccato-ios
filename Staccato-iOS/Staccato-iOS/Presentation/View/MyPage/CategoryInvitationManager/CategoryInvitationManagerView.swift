@@ -23,7 +23,7 @@ struct CategoryInvitationManagerView: View {
                 Spacer()
                 if viewModel.receivedInvitaions.isEmpty && selectedType == .received
                     || viewModel.sentInvitaions.isEmpty && selectedType == .sent {
-                    emptyStateView()
+                    emptyStateView
                 } else {
                     invitationList
                 }
@@ -35,8 +35,8 @@ struct CategoryInvitationManagerView: View {
             }
         }
         .onAppear {
-            viewModel.fetchReceivedInvites()
-            viewModel.fetchSentInvites()
+            viewModel.fetchReceivedInvitations()
+            viewModel.fetchSentInvitations()
         }
     }
 }
@@ -120,21 +120,15 @@ private extension CategoryInvitationManagerView {
 }
 
 private extension CategoryInvitationManagerView {
-    func emptyStateView() -> some View {
+    var emptyStateView: some View {
         VStack(alignment: .center, spacing: 10) {
             Image(.staccatoCharacter)
-            switch selectedType {
-            case .received:
-                Text("아직 친구에게 받은 초대가 없어요!")
-                    .typography(.body4)
-                    .foregroundStyle(.gray3)
-                    .multilineTextAlignment(.center)
-            case .sent:
-                Text("보낸 초대가 없어요!\n카테고리에서 친구를 초대해보세요.")
-                    .typography(.body4)
-                    .foregroundStyle(.gray3)
-                    .multilineTextAlignment(.center)
-            }
+            let text = selectedType == .received ?
+            "아직 친구에게 받은 초대가 없어요!" :
+            "보낸 초대가 없어요!\n카테고리에서 친구를 초대해보세요."
+            Text(text) .typography(.body4)
+                .foregroundStyle(.gray3)
+                .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 11)
@@ -142,9 +136,11 @@ private extension CategoryInvitationManagerView {
     }
 }
 
-enum InvitationType {
-    case received
-    case sent
+private extension CategoryInvitationManagerView {
+    enum InvitationType {
+        case received
+        case sent
+    }
 }
 
 #Preview {

@@ -13,12 +13,12 @@ class CategoryInvitationManagerViewModel: ObservableObject {
     @Published var sentInvitaions: [SentInvitationModel] = []
 }
 
+@MainActor
 extension CategoryInvitationManagerViewModel {
-    @MainActor
-    func fetchReceivedInvites() {
+    func fetchReceivedInvitations() {
         Task {
             do {
-                let invitationList = try await STService.shared.invitationService.getReceivedInvites()
+                let invitationList = try await STService.shared.invitationService.getReceivedInvitations()
                 let invitations = invitationList.invitations.map { ReceivedInvitationModel(from: $0) }
                 
                 withAnimation {
@@ -31,11 +31,10 @@ extension CategoryInvitationManagerViewModel {
         
     }
     
-    @MainActor
-    func fetchSentInvites() {
+    func fetchSentInvitations() {
         Task {
             do {
-                let invitationList = try await STService.shared.invitationService.getSentInvites()
+                let invitationList = try await STService.shared.invitationService.getSentInvitations()
                 let invitations = invitationList.invitations.map { SentInvitationModel(from: $0) }
                 
                 withAnimation {
@@ -47,27 +46,24 @@ extension CategoryInvitationManagerViewModel {
         }
     }
     
-    @MainActor
     func acceptInvite(_ invitationId: Int64) {
         Task {
-            try await STService.shared.invitationService.acceptInvite(invitationId)
-            fetchReceivedInvites()
+            try await STService.shared.invitationService.postAcceptInvitation(invitationId)
+            fetchReceivedInvitations()
         }
     }
     
-    @MainActor
     func rejectInvite(_ invitationId: Int64) {
         Task {
-            try await STService.shared.invitationService.rejectInvite(invitationId)
-            fetchReceivedInvites()
+            try await STService.shared.invitationService.postRejectInvitation(invitationId)
+            fetchReceivedInvitations()
         }
     }
     
-    @MainActor
     func cancelInvite(_ invitationId: Int64) {
         Task {
-            try await STService.shared.invitationService.cancelInvite(invitationId)
-            fetchSentInvites()
+            try await STService.shared.invitationService.postCancelInvitation(invitationId)
+            fetchSentInvitations()
         }
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 struct GetStaccatoDetailResponse: Decodable {
-    
+
     let staccatoId: Int64
     let categoryId: Int64
     let categoryTitle: String
@@ -22,5 +22,6 @@ struct GetStaccatoDetailResponse: Decodable {
     let address: String
     let latitude: Double
     let longitude: Double
-    
+    let isShared: Bool
+
 }

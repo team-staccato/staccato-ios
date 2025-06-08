@@ -28,7 +28,7 @@ extension StaccatoEndpoint: APIEndpoint {
     var path: String {
         switch self {
         case .getStaccatoList: return "/v2/staccatos"
-        case .getStaccatoDetail(let staccatoId): return "/staccatos/\(staccatoId)"
+        case .getStaccatoDetail(let staccatoId): return "/v2/staccatos/\(staccatoId)"
 
         case .postStaccato: return "/staccatos"
         case .postStaccatoFeeling(let staccatoId, _): return "/staccatos/\(staccatoId)/feeling"

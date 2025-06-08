@@ -17,7 +17,8 @@ final class StaccatoEditorViewModel {
     }
 
     let editorMode: StaccatoEditorMode
-    private let isPrivate: Bool
+    let isSharedStaccato: Bool
+    private let isPrivateCategory: Bool
 
     var title: String = ""
 
@@ -55,7 +56,8 @@ final class StaccatoEditorViewModel {
     /// Create Staccato
     init(selectedCategory: CategoryCandidateModel? = nil) {
         self.editorMode = .create
-        self.isPrivate = false
+        self.isSharedStaccato = false
+        self.isPrivateCategory = false
         
         self.selectedDate = .now
         self.dateOnDatePicker = selectedDate
@@ -67,7 +69,8 @@ final class StaccatoEditorViewModel {
     /// Modify Staccato
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
-        self.isPrivate = true
+        self.isSharedStaccato = staccato.isShared
+        self.isPrivateCategory = true
 
         getPhotos(urls: staccato.staccatoImageUrls)
 
@@ -190,7 +193,7 @@ extension StaccatoEditorViewModel {
             let selectedDate = selectedDate ?? Date()
             let request = GetCategoryCandidatesRequestQuery(
                 specificDate: selectedDate.formattedAsRequestDate,
-                isPrivate: isPrivate
+                isPrivate: isPrivateCategory
             )
             do {
                 let categoryList = try await STService.shared.categoryService.getCategoryCandidates(request)

@@ -43,7 +43,9 @@ struct StaccatoEditorView: View {
 
                 dateInputSection
 
-                categorySelectSection
+                if viewModel.editorMode == .create || !viewModel.isSharedStaccato {
+                    categorySelectSection
+                }
 
                 Spacer()
 

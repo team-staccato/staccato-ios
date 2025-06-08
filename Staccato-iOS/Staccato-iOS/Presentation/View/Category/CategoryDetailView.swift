@@ -44,11 +44,11 @@ struct CategoryDetailView: View {
                     }
                     
                     staccatoCollectionSection
+                        .padding(.bottom, ScreenUtils.safeAreaInsets.bottom)
                 }
                 .frame(width: ScreenUtils.width)
             }
             .background(.staccatoWhite)
-            .ignoresSafeArea(.container, edges: .bottom)
             
             .staccatoNavigationBar {
                 if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
@@ -88,6 +88,7 @@ struct CategoryDetailView: View {
                 )
             }
         }
+        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 

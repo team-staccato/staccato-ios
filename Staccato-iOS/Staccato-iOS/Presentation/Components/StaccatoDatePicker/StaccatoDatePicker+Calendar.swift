@@ -66,29 +66,29 @@ extension StaccatoDatePicker {
                         Rectangle()
                             .fill(Color.clear)
                         Rectangle()
-                            .fill(Color.accentColor.opacity(0.3))
+                            .fill(.staccatoBlue.opacity(0.3))
                     }
                     Circle()
-                        .fill(Color.accentColor)
+                        .fill(.staccatoBlue)
                 } else if endDate == date {
                     HStack(spacing: 0) {
                         Rectangle()
-                            .fill(Color.accentColor.opacity(0.3))
+                            .fill(.staccatoBlue.opacity(0.3))
                         Rectangle()
                             .fill(Color.clear)
                     }
                     Circle()
-                        .fill(Color.accentColor)
+                        .fill(.staccatoBlue)
                 } else if date > startDate && date < endDate {
                     Rectangle()
-                        .fill(Color.accentColor.opacity(0.3))
+                        .fill(.staccatoBlue.opacity(0.3))
                 } else {
                     Color.clear
                 }
             } else {
                 if date == startDate {
                     Circle()
-                        .fill(Color.accentColor)
+                        .fill(.staccatoBlue)
                 } else {
                     Color.clear
                 }

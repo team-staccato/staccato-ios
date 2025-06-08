@@ -367,7 +367,7 @@ extension StaccatoEditorView {
             Text(title)
                 .foregroundStyle(.staccatoBlack)
             + Text(" *")
-                .foregroundStyle(.accent)
+                .foregroundStyle(.staccatoBlue)
         }
         .typography(.title2)
         .padding(.bottom, 8)

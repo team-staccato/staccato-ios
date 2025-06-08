@@ -159,7 +159,7 @@ private extension HomeView {
                 .foregroundStyle(.staccatoWhite)
         }
         .frame(width: 44, height: 44)
-        .background(.accent)
+        .background(.staccatoBlue)
         .clipShape(.circle)
         .shadow(radius: 4, y: 4)
     }

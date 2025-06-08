@@ -234,7 +234,7 @@ extension MyPageView {
                         UIApplication.shared.open(URL(string: WebViewURLs.instagramWeb)!)
                     }
                 } label: {
-                    Image("instagram_icon")
+                    Image(.instagramLogo)
                         .padding(.trailing, 20)
                 }
             }

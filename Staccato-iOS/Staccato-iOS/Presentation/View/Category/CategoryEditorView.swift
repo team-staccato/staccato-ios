@@ -220,7 +220,7 @@ extension CategoryEditorView {
                 Text("카테고리 제목 ")
                     .foregroundStyle(.staccatoBlack)
                 + Text("*")
-                    .foregroundStyle(.accent)
+                    .foregroundStyle(.staccatoBlue)
             }
             .typography(.title2)
             .padding(.bottom, 8)

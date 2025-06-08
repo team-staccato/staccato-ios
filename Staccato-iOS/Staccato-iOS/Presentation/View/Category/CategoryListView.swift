@@ -166,7 +166,7 @@ private extension CategoryListView {
                 Text("기간 있는 카테고리만")
                     .typography(.body4)
             }
-            .foregroundStyle(onSpotFilter ? .accent : .gray3)
+            .foregroundStyle(onSpotFilter ? .staccatoBlue : .gray3)
         }
     }
 

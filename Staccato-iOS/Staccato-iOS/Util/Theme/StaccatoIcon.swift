@@ -20,7 +20,6 @@ enum StaccatoIcon: String {
     case chevronLeft = "chevron.left"
 
     // MARK: - CategoryList
-    case folderFill = "folder.fill"
     case folderFillBadgePlus = "folder.fill.badge.plus"
     case sliderHorizontal3 = "slider.horizontal.3"
     case line3HorizontalDecrease = "line.3.horizontal.decrease"

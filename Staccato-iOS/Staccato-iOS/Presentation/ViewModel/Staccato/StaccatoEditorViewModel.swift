@@ -14,7 +14,9 @@ class StaccatoEditorViewModel {
     private let isPrivate: Bool
 
     var title: String = ""
+
     var showDatePickerSheet = false
+    var dateOnDatePicker: Date? = nil
     var selectedDate: Date? = nil
 
     var catchError: Bool = false
@@ -51,8 +53,9 @@ class StaccatoEditorViewModel {
         self.editorMode = .create
         self.isPrivate = false
 
-        self.selectedCategory = selectedCategory
         self.selectedDate = .now
+        self.dateOnDatePicker = selectedDate
+        self.selectedCategory = selectedCategory
         getCategoryCandidates()
     }
 
@@ -71,6 +74,9 @@ class StaccatoEditorViewModel {
             coordinate: CLLocationCoordinate2D(latitude: staccato.latitude, longitude: staccato.longitude)
         )
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
+        self.dateOnDatePicker = selectedDate
+        self.selectedCategory = CategoryCandidateModel(id: staccato.categoryId, categoryId: staccato.categoryId, categoryTitle: staccato.categoryTitle)
+
     }
 
     func loadTransferable(from imageSelection: PhotosPickerItem?) async {

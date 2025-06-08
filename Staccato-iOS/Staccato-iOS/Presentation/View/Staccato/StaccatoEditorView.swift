@@ -58,9 +58,15 @@ struct StaccatoEditorView: View {
             }
         }
 
+        .onChange(of: viewModel.showDatePickerSheet) { _, newValue in
+            if !newValue,
+               viewModel.selectedDate != viewModel.dateOnDatePicker {
+                viewModel.selectedDate = viewModel.dateOnDatePicker
+            }
+        }
+
         .onChange(of: viewModel.selectedDate) {
-            viewModel.categories.removeAll()
-            viewModel.getCategoryCandidates()
+            viewModel.getCategoryCandidates(selectedCategoryId: viewModel.selectedCategory?.categoryId)
         }
 
         .scrollDismissesKeyboard(.interactively)
@@ -347,7 +353,7 @@ extension StaccatoEditorView {
             .buttonStyle(.staticTextFieldButtonStyle())
 
             .sheet(isPresented: $viewModel.showDatePickerSheet) {
-                DatePickerView(selectedDate: $viewModel.selectedDate)
+                DatePickerView(selectedDate: $viewModel.dateOnDatePicker)
                     .presentationDetents([.fraction(0.4)])
             }
         }

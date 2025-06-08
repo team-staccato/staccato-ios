@@ -34,20 +34,23 @@ struct StaccatoEditorView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 photoInputSection
+                    .padding(.bottom, 40)
 
                 titleInputSection
+                    .padding(.bottom, 40)
 
                 locationInputSection
+                    .padding(.bottom, 40)
 
                 dateInputSection
+                    .padding(.bottom, 40)
 
                 if viewModel.editorMode == .create || !viewModel.isSharedStaccato {
                     categorySelectSection
+                        .padding(.bottom, 40)
                 }
-
-                Spacer()
 
                 saveButton
             }

@@ -97,7 +97,6 @@ extension CategoryDetailModel.StaccatoModel {
 extension CategoryDetailModel {
     func toCategoryCandidateModel() -> CategoryCandidateModel {
         return CategoryCandidateModel(
-            id: self.categoryId,
             categoryId: self.categoryId,
             categoryTitle: self.categoryTitle
         )

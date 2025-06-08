@@ -7,9 +7,7 @@
 
 import Foundation
 
-struct CategoryCandidateModel: Equatable {
-
-    let id: Int64
+struct CategoryCandidateModel {
 
     let categoryId: Int64
     let categoryTitle: String
@@ -22,8 +20,6 @@ struct CategoryCandidateModel: Equatable {
 extension CategoryCandidateModel {
 
     init(from dto: GetCategoryCandidatesResponse.CategoryResponse) {
-        self.id = dto.categoryId
-
         self.categoryId = dto.categoryId
         self.categoryTitle = dto.categoryTitle
     }

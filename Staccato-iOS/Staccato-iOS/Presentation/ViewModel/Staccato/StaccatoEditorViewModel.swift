@@ -18,7 +18,6 @@ final class StaccatoEditorViewModel {
 
     let editorMode: StaccatoEditorMode
     let isSharedStaccato: Bool
-    private let isPrivateCategory: Bool
 
     var title: String = ""
 
@@ -57,8 +56,6 @@ final class StaccatoEditorViewModel {
     init(selectedCategory: CategoryCandidateModel? = nil) {
         self.editorMode = .create
         self.isSharedStaccato = false
-        self.isPrivateCategory = false
-        
         self.selectedDate = .now
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = selectedCategory
@@ -70,9 +67,6 @@ final class StaccatoEditorViewModel {
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
         self.isSharedStaccato = staccato.isShared
-        self.isPrivateCategory = true
-
-        getPhotos(urls: staccato.staccatoImageUrls)
 
         self.title = staccato.staccatoTitle
         self.selectedPlace = StaccatoPlaceModel(
@@ -84,6 +78,7 @@ final class StaccatoEditorViewModel {
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = CategoryCandidateModel(id: staccato.categoryId, categoryId: staccato.categoryId, categoryTitle: staccato.categoryTitle)
 
+        getPhotos(urls: staccato.staccatoImageUrls)
         getCategoryCandidates()
     }
 
@@ -193,7 +188,7 @@ extension StaccatoEditorViewModel {
             let selectedDate = selectedDate ?? Date()
             let request = GetCategoryCandidatesRequestQuery(
                 specificDate: selectedDate.formattedAsRequestDate,
-                isPrivate: isPrivateCategory
+                isPrivate: editorMode != .create
             )
             do {
                 let categoryList = try await STService.shared.categoryService.getCategoryCandidates(request)
@@ -202,7 +197,8 @@ extension StaccatoEditorViewModel {
                 self.categories = categories
 
                 // selectedCategory 갱신
-                if let selectedCategoryId = self.selectedCategory?.categoryId {
+                if !isSharedStaccato,
+                   let selectedCategoryId = self.selectedCategory?.categoryId {
                     self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
                 }
             } catch {

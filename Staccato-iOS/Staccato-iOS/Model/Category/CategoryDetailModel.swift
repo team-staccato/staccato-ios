@@ -13,7 +13,7 @@ struct CategoryDetailModel {
     let categoryThumbnailUrl: String?
     let categoryTitle: String
     let description: String?
-    let categoryColor: String
+    let categoryColor: CategoryColorType
     let startAt: String?
     let endAt: String?
     let isShared: Bool
@@ -55,7 +55,7 @@ extension CategoryDetailModel {
         self.categoryThumbnailUrl = dto.categoryThumbnailUrl
         self.categoryTitle = dto.categoryTitle
         self.description = dto.description
-        self.categoryColor = dto.categoryColor
+        self.categoryColor = CategoryColorType.fromServerKey(dto.categoryColor)
         self.startAt = dto.startAt
         self.endAt = dto.endAt
         self.isShared = dto.isShared
@@ -92,27 +92,13 @@ extension CategoryDetailModel.StaccatoModel {
 }
 
 
-// MARK: - Mapping: CategoryDetail -> Category
+// MARK: - Mapping: CategoryDetail -> CategoryCandidate
 
 extension CategoryDetailModel {
-    func toCategoryModel() -> CategoryModel {
-        return CategoryModel(
-            id: self.categoryId,
+    func toCategoryCandidateModel() -> CategoryCandidateModel {
+        return CategoryCandidateModel(
             categoryId: self.categoryId,
-            thumbNailURL: self.categoryThumbnailUrl,
-            title: self.categoryTitle,
-            categoryColor: self.categoryColor,
-            startAt: self.startAt,
-            endAt: self.endAt,
-            isShared: self.isShared,
-            members: self.members.map {
-                CategoryModel.MemberModel(
-                    memberId: $0.id,
-                    nickname: $0.nickname,
-                    memberImageUrl: $0.memberImageUrl
-                )
-            },
-            staccatoCount: self.staccatos.count
+            categoryTitle: self.categoryTitle
         )
     }
 }

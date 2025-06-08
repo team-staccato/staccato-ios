@@ -23,7 +23,7 @@ struct StaccatoEditorView: View {
     let columns = [GridItem(.flexible(), spacing: 7), GridItem(.flexible(), spacing: 7), GridItem(.flexible(), spacing: 7)]
 
     // NOTE: Create
-    init(category: CategoryModel?) {
+    init(category: CategoryCandidateModel?) {
         self.viewModel = StaccatoEditorViewModel(selectedCategory: category)
     }
 
@@ -34,18 +34,23 @@ struct StaccatoEditorView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 photoInputSection
+                    .padding(.bottom, 40)
 
                 titleInputSection
+                    .padding(.bottom, 40)
 
                 locationInputSection
+                    .padding(.bottom, 40)
 
                 dateInputSection
+                    .padding(.bottom, 40)
 
-                categorySelectSection
-
-                Spacer()
+                if viewModel.editorMode == .create || !viewModel.isSharedStaccato {
+                    categorySelectSection
+                        .padding(.bottom, 40)
+                }
 
                 saveButton
             }
@@ -57,6 +62,17 @@ struct StaccatoEditorView: View {
                     self.viewModel.selectedPlace = place
                 }
             }
+        }
+
+        .onChange(of: viewModel.showDatePickerSheet) { _, newValue in
+            if !newValue,
+               viewModel.selectedDate != viewModel.dateOnDatePicker {
+                viewModel.selectedDate = viewModel.dateOnDatePicker
+            }
+        }
+
+        .onChange(of: viewModel.selectedDate) {
+            viewModel.getCategoryCandidates()
         }
 
         .scrollDismissesKeyboard(.interactively)
@@ -308,7 +324,7 @@ extension StaccatoEditorView {
             .buttonStyle(.staticTextFieldButtonStyle())
 
             .sheet(isPresented: $viewModel.showDatePickerSheet) {
-                DatePickerView(selectedDate: $viewModel.selectedDate)
+                DatePickerView(selectedDate: $viewModel.dateOnDatePicker)
                     .presentationDetents([.fraction(0.4)])
             }
         }
@@ -320,8 +336,8 @@ extension StaccatoEditorView {
             sectionTitle(title: "카테고리 선택")
 
             Menu(categoryMenuTitle) {
-                ForEach(viewModel.categories, id: \.id) { category in
-                    Button(category.title) {
+                ForEach(viewModel.categories, id: \.categoryId) { category in
+                    Button(category.categoryTitle) {
                         self.viewModel.selectedCategory = category
                     }
                 }
@@ -335,7 +351,7 @@ extension StaccatoEditorView {
         if viewModel.categories.isEmpty {
             return "생성된 카테고리가 없어요"
         } else {
-            return viewModel.selectedCategory?.title ?? "카테고리를 선택해주세요"
+            return viewModel.selectedCategory?.categoryTitle ?? "카테고리를 선택해주세요"
         }
     }
 

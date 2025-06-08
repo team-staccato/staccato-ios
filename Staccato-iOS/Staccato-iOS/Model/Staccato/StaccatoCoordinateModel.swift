@@ -12,7 +12,7 @@ struct StaccatoCoordinateModel: Hashable {
     let id: Int64
 
     let staccatoId: Int64
-    var staccatoColor: String
+    var staccatoColor: CategoryColorType
     var latitude: Double
     var longitude: Double
 
@@ -26,7 +26,7 @@ extension StaccatoCoordinateModel {
     init(from dto: StaccatoLocationResponse) {
         self.id = dto.staccatoId
         self.staccatoId = dto.staccatoId
-        self.staccatoColor = dto.staccatoColor
+        self.staccatoColor = CategoryColorType.fromServerKey(dto.staccatoColor)
         self.latitude = dto.latitude
         self.longitude = dto.longitude
     }

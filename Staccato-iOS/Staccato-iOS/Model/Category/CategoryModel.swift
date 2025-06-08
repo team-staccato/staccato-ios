@@ -14,7 +14,7 @@ struct CategoryModel: Equatable {
     let categoryId: Int64
     let thumbNailURL: String?
     let title: String
-    let categoryColor: String
+    let categoryColor: CategoryColorType
     let startAt: String?
     let endAt: String?
     let isShared: Bool
@@ -39,7 +39,7 @@ extension CategoryModel {
         self.categoryId = dto.categoryId
         self.thumbNailURL = dto.categoryThumbnailUrl
         self.title = dto.categoryTitle
-        self.categoryColor = dto.categoryColor
+        self.categoryColor = CategoryColorType.fromServerKey(dto.categoryColor)
         self.startAt = dto.startAt
         self.endAt = dto.endAt
         self.isShared = dto.isShared

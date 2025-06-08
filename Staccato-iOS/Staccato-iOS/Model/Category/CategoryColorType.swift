@@ -21,8 +21,8 @@ enum CategoryColorType: CaseIterable {
     case brownLight, brown
     case grayLight, gray
 
-    static func fromServerKey(_ key: String) -> CategoryColorType? {
-        return allCases.first { $0.serverKey == key }
+    static func fromServerKey(_ key: String) -> CategoryColorType {
+        return allCases.first { $0.serverKey == key } ?? .gray
     }
 
     var color: Color {

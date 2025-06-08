@@ -10,31 +10,34 @@ import PhotosUI
 
 @Observable
 final class StaccatoEditorViewModel {
-    
+
     enum StaccatoEditorMode: Equatable {
         case modify(id: Int64)
         case create
     }
-    
+
     let editorMode: StaccatoEditorMode
-    
+    let isSharedStaccato: Bool
+
     var title: String = ""
+
     var showDatePickerSheet = false
+    var dateOnDatePicker: Date? = nil
     var selectedDate: Date? = nil
     
     var catchError: Bool = false
     var errorTitle: String?
     var errorMessage: String?
-    
+
     var photos: [UploadablePhoto] = []
     var selectedPhotos: [PhotosPickerItem] = []
     var showCamera = false
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
-    
+
     var showPlaceSearchSheet = false
     var selectedPlace: StaccatoPlaceModel?
-    
+
     var isReadyToSave: Bool {
         return !title.isEmpty &&
         selectedPlace?.name.isEmpty == false &&
@@ -43,26 +46,28 @@ final class StaccatoEditorViewModel {
         selectedPlace?.coordinate.longitude != nil &&
         selectedDate != nil
     }
-    
-    var categories: [CategoryModel] = []
-    var selectedCategory: CategoryModel?
-    
+
+    var categories: [CategoryCandidateModel] = []
+    var selectedCategory: CategoryCandidateModel?
+
     var uploadSuccess = false
-    
+
     /// Create Staccato
-    init(selectedCategory: CategoryModel? = nil) {
+    init(selectedCategory: CategoryCandidateModel? = nil) {
         self.editorMode = .create
-        self.selectedCategory = selectedCategory
+        self.isSharedStaccato = false
         self.selectedDate = .now
-        getCategoryList()
+        self.dateOnDatePicker = selectedDate
+        self.selectedCategory = selectedCategory
+
+        getCategoryCandidates()
     }
-    
+
     /// Modify Staccato
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
-        getPhotos(urls: staccato.staccatoImageUrls)
-        getCategoryList(selectedCategoryId: staccato.categoryId)
-        
+        self.isSharedStaccato = staccato.isShared
+
         self.title = staccato.staccatoTitle
         self.selectedPlace = StaccatoPlaceModel(
             name: staccato.placeName,
@@ -70,13 +75,21 @@ final class StaccatoEditorViewModel {
             coordinate: CLLocationCoordinate2D(latitude: staccato.latitude, longitude: staccato.longitude)
         )
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
+        self.dateOnDatePicker = selectedDate
+        self.selectedCategory = CategoryCandidateModel(
+            categoryId: staccato.categoryId,
+            categoryTitle: staccato.categoryTitle
+        )
+
+        getPhotos(urls: staccato.staccatoImageUrls)
+        getCategoryCandidates()
     }
-    
+
     func loadTransferable() {
         Array(0..<selectedPhotos.count).forEach { _ in
             photos.append(UploadablePhoto())
         }
-        
+
         Task {
             await withTaskGroup(of: UIImage.self) { group in
                 for selectedPhoto in selectedPhotos {
@@ -94,7 +107,7 @@ final class StaccatoEditorViewModel {
                         return UIImage()
                     }
                 }
-                
+
                 for await image in group {
                     if !photos.contains(where: { $0.photo.pngData() == image.pngData() }) {
                         await MainActor.run {
@@ -108,18 +121,24 @@ final class StaccatoEditorViewModel {
                     }
                 }
             }
-            
+
             selectedPhotos.removeAll()
         }
     }
-    
+
+}
+
+
+// MARK: - Network
+
+extension StaccatoEditorViewModel {
     func createStaccato() async {
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
             return
         }
-        
+
         let request = PostStaccatoRequest(
             staccatoTitle: self.title,
             placeName: self.selectedPlace?.name ?? "",
@@ -130,7 +149,7 @@ final class StaccatoEditorViewModel {
             categoryId: selectedCategoryId,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
-        
+
         do {
             try await STService.shared.staccatoService.postStaccato(request)
             self.uploadSuccess = true
@@ -139,14 +158,14 @@ final class StaccatoEditorViewModel {
             self.errorMessage = error.localizedDescription
         }
     }
-    
+
     func modifyStaccato(staccatoId: Int64) async {
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
             return
         }
-        
+
         let request = PutStaccatoRequest(
             staccatoTitle: self.title,
             placeName: self.selectedPlace?.name ?? "",
@@ -157,7 +176,7 @@ final class StaccatoEditorViewModel {
             categoryId: selectedCategoryId,
             staccatoImageUrls: photos.compactMap { return $0.imageURL }
         )
-        
+
         do {
             try await STService.shared.staccatoService.putStaccato(staccatoId, requestBody: request)
             self.uploadSuccess = true
@@ -166,24 +185,23 @@ final class StaccatoEditorViewModel {
             self.errorMessage = error.localizedDescription
         }
     }
-}
-    
-private extension StaccatoEditorViewModel {
-    
-    func getCategoryList(selectedCategoryId: Int64? = nil) {
-        Task {
-            do {
-                let categoryList = try await STService.shared.categoryService.getCategoryList(
-                    GetCategoryListRequestQuery(filters: nil, sort: nil)
-                )
 
-                let categories = categoryList.categories.map {
-                    CategoryModel(from: $0)
-                }
+    func getCategoryCandidates() {
+        Task {
+            let selectedDate = selectedDate ?? Date()
+            let request = GetCategoryCandidatesRequestQuery(
+                specificDate: selectedDate.formattedAsRequestDate,
+                isPrivate: editorMode != .create
+            )
+            do {
+                let categoryList = try await STService.shared.categoryService.getCategoryCandidates(request)
+                let categories = categoryList.categories.map { CategoryCandidateModel(from: $0) }
 
                 self.categories = categories
 
-                if let selectedCategoryId {
+                // selectedCategory 갱신
+                if !isSharedStaccato,
+                   let selectedCategoryId = self.selectedCategory?.categoryId {
                     self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
                 }
             } catch {
@@ -193,6 +211,13 @@ private extension StaccatoEditorViewModel {
         }
     }
 
+}
+
+
+// MARK: - Helper
+
+private extension StaccatoEditorViewModel {
+
     func getPhotos(urls: [String]) {
         Task {
             for url in urls {
@@ -200,4 +225,5 @@ private extension StaccatoEditorViewModel {
             }
         }
     }
+
 }

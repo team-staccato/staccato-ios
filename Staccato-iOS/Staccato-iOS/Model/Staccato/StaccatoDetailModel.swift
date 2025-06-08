@@ -26,7 +26,8 @@ struct StaccatoDetailModel: Identifiable, Equatable {
     let address: String
     let latitude: Double
     let longitude: Double
-    
+    let isShared: Bool
+
 }
 
 
@@ -49,6 +50,7 @@ extension StaccatoDetailModel {
         self.address = dto.address
         self.latitude = dto.latitude
         self.longitude = dto.longitude
+        self.isShared = dto.isShared
     }
     
 }

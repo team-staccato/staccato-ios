@@ -91,7 +91,7 @@ extension HomeViewModel {
             }
 
             marker.icon = colorType.markerImage
-            updateMarkerUserData(marker, newColor: colorType.serverKey)
+            updateMarkerUserData(marker, newColorType: colorType)
         }
     }
 
@@ -108,12 +108,12 @@ extension HomeViewModel {
 
     private func updateMarkerUserData(
         _ marker: GMSMarker,
-        newColor: String? = nil,
+        newColorType: CategoryColorType? = nil,
         newCoordinate: CLLocationCoordinate2D? = nil
     ) {
         var userData = marker.userData as? StaccatoCoordinateModel
 
-        if let newColor = newColor {
+        if let newColor = newColorType {
             userData?.staccatoColor = newColor
         }
 

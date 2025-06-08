@@ -134,7 +134,7 @@ struct CategoryEditorView: View {
             categoryThumbnailUrl: "https://image.staccato.kr/web/share/happy.png",
             categoryTitle: "테스트카테고리",
             description: "이건 설명",
-            categoryColor: "GRAY",
+            categoryColor: .gray,
             startAt: "2024-01-01",
             endAt: "2024-01-30",
             isShared: true,

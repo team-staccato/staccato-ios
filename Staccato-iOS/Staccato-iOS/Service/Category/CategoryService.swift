@@ -11,6 +11,8 @@ protocol CategoryServiceProtocol {
 
     func getCategoryList(_ query: GetCategoryListRequestQuery) async throws -> GetCategoryListResponse
 
+    func getCategoryCandidates(_ query: GetCategoryCandidatesRequestQuery) async throws -> GetCategoryCandidatesResponse
+
     func getCategoryDetail(_ categoryId: Int64) async throws -> GetCategoryDetailResponse
 
     func postCategory(_ requestBody: PostCategoryRequest) async throws -> PostCategoryResponse
@@ -27,6 +29,16 @@ class CategoryService: CategoryServiceProtocol {
         guard let categoryList = try await NetworkService.shared.request(
             endpoint: CategoryEndpoint.getCategoryList(query),
             responseType: GetCategoryListResponse.self
+        ) else {
+            throw StaccatoError.optionalBindingFailed
+        }
+        return categoryList
+    }
+
+    func getCategoryCandidates(_ query: GetCategoryCandidatesRequestQuery) async throws -> GetCategoryCandidatesResponse {
+        guard let categoryList = try await NetworkService.shared.request(
+            endpoint: CategoryEndpoint.getCategoryCandidates(query),
+            responseType: GetCategoryCandidatesResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed
         }

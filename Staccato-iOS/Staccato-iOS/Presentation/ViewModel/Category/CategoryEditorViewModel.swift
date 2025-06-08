@@ -113,13 +113,16 @@ final class CategoryEditorViewModel {
     }
 
     func createCategory() async {
+        let startAt: String? = isPeriodSettingActive ? selectedStartDate?.formattedAsRequestDate : nil
+        let endAt: String? = isPeriodSettingActive ? selectedEndDate?.formattedAsRequestDate : nil
+        
         let body = PostCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
             description: self.categoryDescription,
             categoryColor: self.categoryColor.serverKey,
-            startAt: self.selectedStartDate?.formattedAsRequestDate,
-            endAt: self.selectedEndDate?.formattedAsRequestDate,
+            startAt: startAt,
+            endAt: endAt,
             isShared: self.isShareSettingActive
         )
 
@@ -134,13 +137,16 @@ final class CategoryEditorViewModel {
     }
 
     func modifyCategory() async {
+        let startAt: String? = isPeriodSettingActive ? selectedStartDate?.formattedAsRequestDate : nil
+        let endAt: String? = isPeriodSettingActive ? selectedEndDate?.formattedAsRequestDate : nil
+
         let query = PutCategoryRequest(
             categoryThumbnailUrl: self.imageURL,
             categoryTitle: self.categoryTitle,
             description: self.categoryDescription,
             categoryColor: self.categoryColor.serverKey,
-            startAt: self.selectedStartDate?.formattedAsRequestDate ?? "",
-            endAt: self.selectedEndDate?.formattedAsRequestDate ?? ""
+            startAt: startAt,
+            endAt: endAt
         )
 
         guard let id = self.id else { return }
@@ -177,6 +183,7 @@ final class CategoryEditorViewModel {
             self.selectedPhoto = loadedImage
         }
     }
+
 
     // MARK: - Editor Type
     enum CategoryEditorType {

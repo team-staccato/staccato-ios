@@ -29,6 +29,11 @@ class HomeViewModel: ObservableObject {
 
     @Published var cameraPosition: GMSCameraPosition?
 
+    
+    func removeStaccatos(with staccatoIds: Set<Int64>) {
+        staccatos = staccatos.filter { !staccatoIds.contains($0.staccatoId) }
+    }
+
 }
 
 
@@ -63,11 +68,61 @@ extension HomeViewModel {
 // MARK: - Map
 
 extension HomeViewModel {
-    
+
     func moveCamera(to coordinate: CLLocationCoordinate2D, zoom: Float = 15.0) {
         withAnimation {
             cameraPosition = GMSCameraPosition.camera(withTarget: coordinate, zoom: 15)
         }
     }
-    
+
+}
+
+
+// MARK: - Marker Updates
+
+extension HomeViewModel {
+
+    /// 마커 아이콘 업데이트
+    func updateMarkerIcons(for staccatoIds: [Int64], to colorType: CategoryColorType) {
+        for staccatoId in staccatoIds {
+            guard let marker = displayedMarkers[staccatoId] else {
+                print("⚠️ Marker not found for staccato ID: \(staccatoId)")
+                continue
+            }
+
+            marker.icon = colorType.markerImage
+            updateMarkerUserData(marker, newColorType: colorType)
+        }
+    }
+
+    /// 마커 위치 업데이트
+    func updateMarkersPosition(for staccatoId: Int64, to coordinate: CLLocationCoordinate2D) {
+        guard let marker = displayedMarkers[staccatoId] else {
+            print("⚠️ Marker not found for staccato ID: \(staccatoId)")
+            return
+        }
+
+        marker.position = coordinate
+        updateMarkerUserData(marker, newCoordinate: coordinate)
+    }
+
+    private func updateMarkerUserData(
+        _ marker: GMSMarker,
+        newColorType: CategoryColorType? = nil,
+        newCoordinate: CLLocationCoordinate2D? = nil
+    ) {
+        var userData = marker.userData as? StaccatoCoordinateModel
+
+        if let newColor = newColorType {
+            userData?.staccatoColor = newColor
+        }
+
+        if let newCoordinate = newCoordinate {
+            userData?.latitude = newCoordinate.latitude
+            userData?.longitude = newCoordinate.longitude
+        }
+
+        marker.userData = userData
+    }
+
 }

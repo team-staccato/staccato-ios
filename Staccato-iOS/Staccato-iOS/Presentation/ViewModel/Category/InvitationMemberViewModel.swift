@@ -10,13 +10,23 @@ import Combine
 import Kingfisher
 
 @MainActor
-final class InvitationMemberViewModel: ObservableObject {
+@Observable
+final class InvitationMemberViewModel {
     
     private let categoryId: Int64?
-    @Published var selectedMembers: [SearchedMemberModel] = []
-    @Published var searchMembers: [SearchedMemberModel] = []
+    var selectedMembers: [SearchedMemberModel] = []
+    var searchMembers: [SearchedMemberModel] = []
+    var memberName: String = "" {
+        didSet {
+            nameSubject.send(memberName)
+        }
+    }
+    var catchError = false
+    var errorTitle: String?
+    var errorMessage: String?
+    var inviteSuccess: Bool = false
     
-    var nameSubject = CurrentValueSubject<String, Never>("")
+    private var nameSubject = CurrentValueSubject<String, Never>("")
     private var cancellables = Set<AnyCancellable>()
     
     
@@ -54,10 +64,10 @@ final class InvitationMemberViewModel: ObservableObject {
 extension InvitationMemberViewModel {
     func getSearchedMember(_ name: String) {
         searchMembers.removeAll()
-        if name == "" { return }
+        guard let categoryId, name != "" else { return }
         
         Task {
-            let response = try await MemberService.getSearchMemberList(name)
+            let response = try await MemberService.getSearchMemberList(name, categoryId)
             response.members.forEach {
                 var searchedMember = SearchedMemberModel(from: $0)
                 if selectedMembers.contains(searchedMember) { searchedMember.isSelected = true }
@@ -71,7 +81,14 @@ extension InvitationMemberViewModel {
     func postInvitationMember() {
         guard let categoryId else { return }
         Task {
-            try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
+            do {
+                try await InvitationService.postInvitationMember(categoryId, selectedMembers.map { $0.id })
+                inviteSuccess = true
+            } catch {
+                errorTitle = "친구 초대 실패"
+                errorMessage = error.localizedDescription
+                catchError = true
+            }
         }
     }
 }

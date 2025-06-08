@@ -10,8 +10,10 @@ import PhotosUI
 
 struct CategoryEditorView: View {
     @Environment(\.dismiss) var dismiss
-    @Bindable private var vm: CategoryEditorViewModel
+    @Environment(NavigationState.self) private var navigationState
     @EnvironmentObject var homeViewModel: HomeViewModel
+
+    @Bindable private var vm: CategoryEditorViewModel
 
     @FocusState private var isTitleFocused: Bool
 
@@ -61,10 +63,19 @@ struct CategoryEditorView: View {
                     Task {
                         switch vm.editorType {
                         case .create:
-                            await vm.createCategory()
+                            if let categoryId: Int64 = await vm.createCategory() {
+                                navigationState.navigate(to: .categoryDetail(categoryId))
+                            }
                         case .modify:
                             await vm.modifyCategory()
-                            homeViewModel.fetchStaccatos() // TODO: 새로 부를지 고민중....
+                            
+                            // 마커 업데이트
+                            if let staccatoIds = vm.categoryDetail?.staccatos.map({ $0.staccatoId }) {
+                                homeViewModel.updateMarkerIcons(
+                                    for: staccatoIds,
+                                    to: vm.categoryColor
+                                )
+                            }
                         }
                     }
                 }
@@ -171,7 +182,7 @@ extension CategoryEditorView {
             }
         })
 
-        .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem)
+        .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem, matching: .images)
 
         .fullScreenCover(isPresented: $vm.showCamera) {
             Task {
@@ -291,7 +302,7 @@ extension CategoryEditorView {
                                 vm.categoryColorTemp = colorType
                             }
                         if vm.categoryColorTemp == colorType {
-                            Image(StaccatoIcon.checkmark)
+                            Image(.icCheckmark)
                                 .font(.system(size: 20, weight: .heavy))
                                 .foregroundColor(.white)
                         }

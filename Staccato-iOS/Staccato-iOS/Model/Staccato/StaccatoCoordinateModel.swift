@@ -12,9 +12,9 @@ struct StaccatoCoordinateModel: Hashable {
     let id: Int64
 
     let staccatoId: Int64
-    let staccatoColor: CategoryColorType
-    let latitude: Double
-    let longitude: Double
+    var staccatoColor: CategoryColorType
+    var latitude: Double
+    var longitude: Double
 
 }
 

@@ -11,11 +11,14 @@ import Kingfisher
 
 struct InvitationMemberView: View {
     
-    @EnvironmentObject private var viewModel: InvitationMemberViewModel
+    @State private var viewModel: InvitationMemberViewModel
     @Environment(\.dismiss) private var dismiss
     
     @FocusState private var isTextFieldFocused: Bool
-    @State private var memberName: String = ""
+    
+    init(categoryId: Int64) {
+        self.viewModel = InvitationMemberViewModel(categoryId)
+    }
     
     var body: some View {
         VStack(alignment: .center) {
@@ -56,6 +59,16 @@ struct InvitationMemberView: View {
         .padding(.vertical, 180)
         .padding(.horizontal, 16)
         .dismissKeyboardOnGesture()
+        .alert(viewModel.errorTitle ?? "", isPresented: $viewModel.catchError) {
+            Button("확인") {
+                viewModel.catchError = false
+            }
+        } message: {
+            Text(viewModel.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+        }
+        .onChange(of: viewModel.inviteSuccess) { _, inviteSuccess in
+            if inviteSuccess { dismiss() }
+        }
     }
 }
 
@@ -85,7 +98,6 @@ private extension InvitationMemberView {
             
             Button {
                 viewModel.postInvitationMember()
-                dismiss()
             } label: {
                 Text("확인")
                     .font(StaccatoFont.body2.font)
@@ -101,15 +113,15 @@ private extension InvitationMemberView {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(Color.gray3)
             
-            TextField("닉네임을 검색해주세요.", text: $memberName)
+            TextField("닉네임을 검색해주세요.", text: $viewModel.memberName)
                 .foregroundStyle(Color.staccatoBlack)
-                .onChange(of: memberName, initial: false) { _, name in
-                    viewModel.nameSubject.send(name)
+                .onChange(of: viewModel.memberName, initial: false) { _, name in
+                    viewModel.memberName.trimPrefix(while: \.isWhitespace)
                 }
             
-            if memberName != "" {
+            if viewModel.memberName != "" {
                 Button {
-                    memberName = ""
+                    viewModel.memberName = ""
                 } label: {
                     Image(.xCircleFill)
                         .foregroundStyle(Color.gray3)
@@ -137,9 +149,15 @@ private extension InvitationMemberView {
                                         viewModel.removeMemberFromSelected(member)
                                     }
                                 } label: {
-                                    Image(.xCircleFill)
-                                        .foregroundColor(.gray5)
+                                    Circle()
+                                        .foregroundStyle(Color.gray5)
                                         .frame(width: 15, height: 15)
+                                        .overlay {
+                                            Image(.xmark)
+                                                .resizable()
+                                                .foregroundStyle(Color.staccatoWhite)
+                                                .frame(width: 7, height: 7)
+                                        }
                                 }
                             }
                         
@@ -196,16 +214,12 @@ struct SearchMemberRow: View {
             Text("\(member.nickname)")
                 .font(StaccatoFont.title3.font)
                 .foregroundStyle(Color.staccatoBlack)
-                .padding(.leading, 10)
+                .padding([.leading, .trailing], 10)
+                .lineLimit(1)
             
             Spacer()
             
-            if member.isInvited {
-                Text("초대완료")
-                    .font(StaccatoFont.body5.font)
-                    .foregroundStyle(Color.gray3)
-                    .padding(.trailing, 14)
-            } else {
+            if member.status == .none {
                 Button {
                     withAnimation {
                         onToggleSelection(member)
@@ -216,8 +230,9 @@ struct SearchMemberRow: View {
                             .fill(Color.gray2)
                             .frame(width: 27, height: 27)
                             .overlay {
-                                Image(.checkmark)
-                                    .frame(width: 13, height: 13)
+                                Image(.icCheckmark)
+                                    .resizable()
+                                    .frame(width: 13, height: 10)
                                     .foregroundStyle(Color.staccatoBlack)
                             }
                             .padding(.trailing, 18)
@@ -241,6 +256,5 @@ struct SearchMemberRow: View {
 
 // MARK: - Preview
 #Preview {
-    InvitationMemberView()
-        .environmentObject(InvitationMemberViewModel(1))
+    InvitationMemberView(categoryId: 1)
 }

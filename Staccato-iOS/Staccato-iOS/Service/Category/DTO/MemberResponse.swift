@@ -12,5 +12,6 @@ struct MemberResponse: Decodable {
     let memberId: Int64
     let nickname: String
     let memberImageUrl: String?
+    let status: String?
     let memberRole: String?
 }

@@ -12,8 +12,8 @@ import SwiftUI
 struct GMSMapViewRepresentable: UIViewRepresentable {
 
     @EnvironmentObject var viewModel: HomeViewModel
+    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @Environment(NavigationState.self) var navigationState
-    @Environment(HomeModalManager.self) var homeModalManager
 
     private let mapView = GMSMapView()
 
@@ -48,8 +48,8 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         }
 
         // 모달 크기가 조정된 만큼 지도를 scroll
-        let currentSize = homeModalManager.modalSize
-        let previousSize = homeModalManager.previousModalSize
+        let currentSize = detentManager.currentDetent
+        let previousSize = detentManager.previousDetent
         if currentSize != previousSize {
             scrollMap(on: uiView, currentSize: currentSize, previousSize: previousSize)
         }
@@ -118,6 +118,9 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
             parent.navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
+            Task.detached { @MainActor in
+                self.parent.detentManager.selectedDetent = BottomSheetDetent.medium.detent
+            }
         } else {
             print("⚠️ No StaccatoData found for this marker.")
         }
@@ -178,7 +181,7 @@ private extension GMSMapViewRepresentable {
 
     /// 카메라 좌표를 이동하며, 모달이 올라온 만큼 지도를 화면 중앙으로 scroll합니다.
     func moveCamera(on mapView: GMSMapView, to cameraPosition: GMSCameraPosition) {
-        let deltaY =  (homeModalManager.modalSize.height - ScreenUtils.safeAreaInsets.top) / 2
+        let deltaY =  (detentManager.currentDetent.height - ScreenUtils.safeAreaInsets.top) / 2
         Task {
             mapView.camera = cameraPosition
             mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
@@ -188,13 +191,13 @@ private extension GMSMapViewRepresentable {
     /// 모달 크기가 조정된 만큼 지도를 scroll합니다.
     func scrollMap(
         on mapView: GMSMapView,
-        currentSize: HomeModalManager.ModalSize,
-        previousSize: HomeModalManager.ModalSize
+        currentSize: BottomSheetDetent,
+        previousSize: BottomSheetDetent
     ) {
         let deltaY = (currentSize.height - previousSize.height) / 2
         Task {
             mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
-            homeModalManager.previousModalSize = currentSize
+            detentManager.previousDetent = currentSize
         }
     }
 

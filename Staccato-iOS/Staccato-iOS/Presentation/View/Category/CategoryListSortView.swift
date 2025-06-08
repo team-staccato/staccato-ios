@@ -62,7 +62,7 @@ extension CategoryListSortView {
                 isPresented = false
             } label: {
                 HStack {
-                    Image(.checkmark)
+                    Image(.icCheckmark)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 10, height: 10)

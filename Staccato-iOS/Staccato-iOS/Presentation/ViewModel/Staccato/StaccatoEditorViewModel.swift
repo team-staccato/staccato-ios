@@ -9,7 +9,13 @@ import SwiftUI
 import PhotosUI
 
 @Observable
-class StaccatoEditorViewModel {
+final class StaccatoEditorViewModel {
+
+    enum StaccatoEditorMode: Equatable {
+        case modify(id: Int64)
+        case create
+    }
+
     let editorMode: StaccatoEditorMode
     private let isPrivate: Bool
 
@@ -18,16 +24,16 @@ class StaccatoEditorViewModel {
     var showDatePickerSheet = false
     var dateOnDatePicker: Date? = nil
     var selectedDate: Date? = nil
-
+    
     var catchError: Bool = false
     var errorTitle: String?
     var errorMessage: String?
 
     var photos: [UploadablePhoto] = []
-    var isPhotoInputPresented = false
+    var selectedPhotos: [PhotosPickerItem] = []
     var showCamera = false
+    var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
-    var photoItem: PhotosPickerItem? = nil
 
     var showPlaceSearchSheet = false
     var selectedPlace: StaccatoPlaceModel?
@@ -41,25 +47,23 @@ class StaccatoEditorViewModel {
         selectedDate != nil
     }
 
-//    var categories: [CategoryModel] = []
-//    var selectedCategory: CategoryModel?
     var categories: [CategoryCandidateModel] = []
     var selectedCategory: CategoryCandidateModel?
 
     var uploadSuccess = false
 
-    // Create
+    /// Create Staccato
     init(selectedCategory: CategoryCandidateModel? = nil) {
         self.editorMode = .create
         self.isPrivate = false
-
+        
         self.selectedDate = .now
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = selectedCategory
         getCategoryCandidates()
     }
 
-    // Modify
+    /// Modify Staccato
     init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
         self.isPrivate = true
@@ -76,24 +80,55 @@ class StaccatoEditorViewModel {
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = CategoryCandidateModel(id: staccato.categoryId, categoryId: staccato.categoryId, categoryTitle: staccato.categoryTitle)
-
     }
 
-    func loadTransferable(from imageSelection: PhotosPickerItem?) async {
-        do {
-            if let imageData = try await imageSelection?.loadTransferable(type: Data.self),
-               let transferedImage = UIImage(data: imageData) {
-                self.photos.append(UploadablePhoto(photo: transferedImage))
-                self.photoItem = nil
+    func loadTransferable() {
+        Array(0..<selectedPhotos.count).forEach { _ in
+            photos.append(UploadablePhoto())
+        }
+
+        Task {
+            await withTaskGroup(of: UIImage.self) { group in
+                for selectedPhoto in selectedPhotos {
+                    group.addTask {
+                        do {
+                            if let imageData = try await selectedPhoto.loadTransferable(type: Data.self),
+                               let transferedImage = UIImage(data: imageData) {
+                                return transferedImage
+                            }
+                        } catch let error {
+                            self.errorTitle = "이미지 업로드 실패"
+                            self.errorMessage = error.localizedDescription
+                            self.catchError = true
+                        }
+                        return UIImage()
+                    }
+                }
+
+                for await image in group {
+                    if !photos.contains(where: { $0.photo.pngData() == image.pngData() }) {
+                        await MainActor.run {
+                            if let uploadablePhoto = photos.first(where: { $0.photo == UIImage(resource: .categoryThumbnailDefault) }) {
+                                uploadablePhoto.photo = image
+                                Task.detached(priority: .high) { try await uploadablePhoto.uploadImage() }
+                            }
+                        }
+                    } else {
+                        photos.removeLast()
+                    }
+                }
             }
-        } catch {
-            print(error.localizedDescription)
-            errorTitle = "이미지 업로드 실패"
-            errorMessage = error.localizedDescription
-            catchError = true
+
+            selectedPhotos.removeAll()
         }
     }
 
+}
+
+
+// MARK: - Network
+
+extension StaccatoEditorViewModel {
     func createStaccato() async {
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
@@ -158,9 +193,9 @@ class StaccatoEditorViewModel {
             do {
                 let categoryList = try await STService.shared.categoryService.getCategoryCandidates(request)
                 let categories = categoryList.categories.map { CategoryCandidateModel(from: $0) }
-                
+
                 self.categories = categories
-                
+
                 // selectedCategory 갱신
                 if let selectedCategoryId {
                     self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
@@ -172,28 +207,12 @@ class StaccatoEditorViewModel {
         }
     }
 
-//    func getCategoryList(selectedCategoryId: Int64? = nil) {
-//        Task {
-//            do {
-//                let categoryList = try await STService.shared.categoryService.getCategoryList(
-//                    GetCategoryListRequestQuery(filters: nil, sort: nil)
-//                )
-//
-//                let categories = categoryList.categories.map {
-//                    CategoryModel(from: $0)
-//                }
-//
-//                self.categories = categories
-//
-//                if let selectedCategoryId {
-//                    self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
-//                }
-//            } catch {
-//                self.catchError = true
-//                self.errorMessage = error.localizedDescription
-//            }
-//        }
-//    }
+}
+
+
+// MARK: - Helper
+
+private extension StaccatoEditorViewModel {
 
     func getPhotos(urls: [String]) {
         Task {
@@ -202,11 +221,5 @@ class StaccatoEditorViewModel {
             }
         }
     }
-}
 
-extension StaccatoEditorViewModel {
-    enum StaccatoEditorMode: Equatable {
-        case modify(id: Int64)
-        case create
-    }
 }

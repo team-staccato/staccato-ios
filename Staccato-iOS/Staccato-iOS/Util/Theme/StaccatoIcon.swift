@@ -25,17 +25,16 @@ enum StaccatoIcon: String {
     case sliderHorizontal3 = "slider.horizontal.3"
     case line3HorizontalDecrease = "line.3.horizontal.decrease"
     case arrowtriangleDownFill = "arrowtriangle.down.fill"
-    case checkmark = "checkmark"
     case photoBadgeExclamationmark = "photo.badge.exclamationmark"
 
     // MARK: - Category
     case pencilLine = "pencil.line"
     case calendar = "calendar"
-    case crown = "crown.fill"
 
     // MARK: - Category Creation/Update
     case camera = "camera"
     case xCircleFill = "x.circle.fill"
+    case xmark = "xmark"
     case infoCircle = "info.circle"
 
     // MARK: - Staccato Creation/Update

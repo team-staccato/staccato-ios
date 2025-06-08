@@ -7,13 +7,14 @@
 
 import Foundation
 
+@MainActor
 class StaccatoDetailViewModel: ObservableObject {
 
     // MARK: - Properties
 
     @Published var staccatoDetail: StaccatoDetailModel? {
         didSet {
-            Task { @MainActor in
+            Task {
                 getComments()
             }
         }
@@ -33,7 +34,6 @@ class StaccatoDetailViewModel: ObservableObject {
 
 extension StaccatoDetailViewModel {
 
-    @MainActor
     func getStaccatoDetail(_ staccatoId: Int64) {
         Task {
             do {
@@ -47,7 +47,6 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    @MainActor
     func deleteStaccato(_ staccatoId: Int64, isSuccess: @escaping ((Bool) -> Void)) {
         Task {
             do {
@@ -61,9 +60,9 @@ extension StaccatoDetailViewModel {
     }
 
     func postStaccatoFeeling(_ feeling: FeelingType?, isSuccess: @escaping ((Bool) -> Void)) {
-        Task {
+        Task.detached {
             do {
-                guard let staccatoDetail = staccatoDetail else {
+                guard let staccatoDetail = await self.staccatoDetail else {
                     print(StaccatoError.optionalBindingFailed, ": staccatoDetail")
                     return
                 }
@@ -77,7 +76,6 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    @MainActor
     func getComments() {
         guard let staccatoDetail else {
             print("😢getComments - \(StaccatoError.optionalBindingFailed)")
@@ -95,7 +93,6 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    @MainActor
     func postComment(_ content: String) {
         guard let staccatoDetail else { return }
         
@@ -112,7 +109,6 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    @MainActor
     func updateComment(commentId: Int64, comment: String) {
         Task {
             do {
@@ -128,17 +124,16 @@ extension StaccatoDetailViewModel {
     }
 
     func deleteComment(_ commentId: Int64) {
-        Task {
+        Task.detached {
             do {
                 try await STService.shared.commentService.deleteComment(commentId)
-                await getComments()
+                await self.getComments()
             } catch {
                 print("Error on deleteComment: \(error.localizedDescription)")
             }
         }
     }
 
-    @MainActor
     func postShareLink() {
         guard let staccatoId = staccatoDetail?.staccatoId else { return }
         Task {

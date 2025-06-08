@@ -69,6 +69,22 @@ enum CategoryColorType: CaseIterable {
         }
     }
 
+    var folderIconBgColor: Color {
+        switch self {
+        case .red, .RedLight: return .markerRed.opacity(0.15)
+        case .orange, .orangeLight: return .markerOrange.opacity(0.15)
+        case .yellow, .yellowLight: return .markerYellow.opacity(0.15)
+        case .green, .greenLight: return .markerGreen.opacity(0.15)
+        case .mint, .mintLight: return .markerMint.opacity(0.15)
+        case .blue, .blueLight: return .markerBlue.opacity(0.15)
+        case .indigo, .indigoLight: return .markerIndigo.opacity(0.15)
+        case .purple, .purpleLight: return .markerPurple.opacity(0.15)
+        case .pink, .pinkLight: return .markerPink.opacity(0.15)
+        case .brown, .brownLight: return .markerBrown.opacity(0.15)
+        case .gray, .grayLight: return .gray4.opacity(0.15)
+        }
+    }
+
     var serverKey: String {
         switch self {
         case .red: return "red"
@@ -99,9 +115,10 @@ enum CategoryColorType: CaseIterable {
     var folderIcon: some View {
         ZStack {
             Circle()
-                .foregroundStyle(self.color.opacity(0.15))
+                .foregroundStyle(self.folderIconBgColor)
                 .frame(width: 32, height: 32)
-            Image(StaccatoIcon.folderFill)
+            Image(.icFolder)
+                .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .foregroundStyle(self.color)

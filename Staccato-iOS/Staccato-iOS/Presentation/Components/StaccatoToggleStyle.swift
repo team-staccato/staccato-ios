@@ -24,13 +24,13 @@ struct StaccatoToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         ZStack(alignment: configuration.isOn ? .trailing : .leading) {
             Capsule()
-                .foregroundStyle(configuration.isOn ? .accent : .gray4)
+                .foregroundStyle(configuration.isOn ? .staccatoBlue70 : .gray2)
 
             Circle()
                 .foregroundStyle(.staccatoWhite)
                 .padding(2)
         }
-        .frame(width: 43, height: 20)
+        .frame(width: 43, height: 23)
         .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
         .onTapGesture {
             configuration.isOn.toggle()

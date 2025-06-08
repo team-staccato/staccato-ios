@@ -36,7 +36,7 @@ struct CategoryDetailMemberCell: View {
             
             HStack(spacing: 2) {
                 if member.memberRole == .host {
-                    Image(.crown)
+                    Image(.imgCrown)
                         .resizable()
                         .frame(width: 8, height: 6)
                         .aspectRatio(contentMode: .fit)

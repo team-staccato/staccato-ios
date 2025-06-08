@@ -39,6 +39,8 @@ struct CategoryListCell: View {
                     staccatoCountView
                 }
             }
+            .padding(.top, 5)
+            .padding(.bottom, 4)
         }
         .padding(.vertical, 13)
         .padding(.horizontal, 18)
@@ -57,8 +59,8 @@ private extension CategoryListCell {
 
     var labelStack: some View {
         VStack(alignment: .leading, spacing: 4) {
-            periodLabel
             titleLabel
+            periodLabel
         }
     }
 
@@ -74,7 +76,7 @@ private extension CategoryListCell {
                                              endAt: categoryInfo.endAt) {
             Text(period)
                 .typography(.body5)
-                .foregroundStyle(.gray3)
+                .foregroundStyle(.gray5)
         }
     }
 

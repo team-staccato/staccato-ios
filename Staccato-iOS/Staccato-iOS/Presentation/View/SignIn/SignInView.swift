@@ -17,7 +17,7 @@ struct SignInView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    Image("staccato_login_logo")
+                    Image(.staccatoLoginLogo)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 176)

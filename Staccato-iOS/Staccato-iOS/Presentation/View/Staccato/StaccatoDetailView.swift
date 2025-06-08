@@ -349,7 +349,7 @@ private extension StaccatoDetailView {
             Image(StaccatoIcon.arrowRightCircleFill)
                 .resizable()
                 .scaledToFit()
-                .foregroundStyle(isValid ? .accent : .gray3)
+                .foregroundStyle(isValid ? .staccatoBlue : .gray3)
                 .frame(width: 30, height: 30)
         }
         .disabled(!isValid)

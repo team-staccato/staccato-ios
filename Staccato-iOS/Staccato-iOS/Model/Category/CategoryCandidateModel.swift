@@ -21,7 +21,7 @@ struct CategoryCandidateModel: Equatable {
 
 extension CategoryCandidateModel {
 
-    init(from dto: GetCategoriesCandidatesResponse.CategoryResponse) {
+    init(from dto: GetCategoryCandidatesResponse.CategoryResponse) {
         self.id = dto.categoryId
 
         self.categoryId = dto.categoryId

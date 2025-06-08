@@ -58,6 +58,11 @@ struct StaccatoEditorView: View {
             }
         }
 
+        .onChange(of: viewModel.selectedDate) {
+            viewModel.categories.removeAll()
+            viewModel.getCategoryCandidates()
+        }
+
         .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .padding(.horizontal, 24)

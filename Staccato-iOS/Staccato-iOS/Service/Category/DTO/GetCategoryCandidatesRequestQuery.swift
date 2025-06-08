@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct GetCategoriesCandidatesRequestQuery: Encodable {
+struct GetCategoryCandidatesRequestQuery: Encodable {
 
     let specificDate: String
 
-    let isShared: Bool
+    let isPrivate: Bool?
 
 }

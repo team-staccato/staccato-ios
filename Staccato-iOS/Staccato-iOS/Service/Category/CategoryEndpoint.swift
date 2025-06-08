@@ -9,7 +9,7 @@ import Alamofire
 
 enum CategoryEndpoint {
     case getCategoryList(_ query: GetCategoryListRequestQuery)
-    case getCategoriesCandidates(_ query: GetCategoriesCandidatesRequestQuery)
+    case getCategoryCandidates(_ query: GetCategoryCandidatesRequestQuery)
     case getCategoryDetail(_ categoryId: Int64)
     case postCategory(_ requestBody: PostCategoryRequest)
     case putCategory(_ query: PutCategoryRequest, id: Int64)
@@ -22,8 +22,8 @@ extension CategoryEndpoint: APIEndpoint {
         switch self {
         case .getCategoryList:
             return "/v3/categories"
-        case .getCategoriesCandidates:
-            return "categories/candidates"
+        case .getCategoryCandidates:
+            return "/categories/candidates"
         case .getCategoryDetail(let categoryId):
             return "/v3/categories/\(categoryId)"
         case .postCategory:
@@ -38,7 +38,7 @@ extension CategoryEndpoint: APIEndpoint {
     var method: HTTPMethod {
         switch self {
         case .putCategory: return .put
-        case .getCategoryList, .getCategoriesCandidates, .getCategoryDetail:
+        case .getCategoryList, .getCategoryCandidates, .getCategoryDetail:
             return .get
         case .postCategory:
             return .post
@@ -49,7 +49,7 @@ extension CategoryEndpoint: APIEndpoint {
 
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getCategoryList, .getCategoriesCandidates, .getCategoryDetail, .deleteCategory:
+        case .getCategoryList, .getCategoryCandidates, .getCategoryDetail, .deleteCategory:
             return URLEncoding.queryString
         case .postCategory, .putCategory:
             return JSONEncoding.default
@@ -67,7 +67,7 @@ extension CategoryEndpoint: APIEndpoint {
                 params["sort"] = sort
             }
             return params.isEmpty ? nil : params
-        case .getCategoriesCandidates(let query):
+        case .getCategoryCandidates(let query):
             return query.toDictionary()
         case .postCategory(let body):
             return body.toDictionary()

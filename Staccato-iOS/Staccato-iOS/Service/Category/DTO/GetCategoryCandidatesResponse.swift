@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetCategoriesCandidatesResponse: Decodable {
+struct GetCategoryCandidatesResponse: Decodable {
 
     let categories: [CategoryResponse]
 

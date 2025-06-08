@@ -11,7 +11,7 @@ import PhotosUI
 @Observable
 class StaccatoEditorViewModel {
     let editorMode: StaccatoEditorMode
-    let isShared: Bool // TODO: 플래그 수정 필요. 서버와 논의중
+    private let isPrivate: Bool
 
     var title: String = ""
     var showDatePickerSheet = false
@@ -47,20 +47,22 @@ class StaccatoEditorViewModel {
     var uploadSuccess = false
 
     // Create
-    init(selectedCategory: CategoryCandidateModel? = nil, isShared: Bool = false) {
+    init(selectedCategory: CategoryCandidateModel? = nil) {
         self.editorMode = .create
+        self.isPrivate = false
+
         self.selectedCategory = selectedCategory
         self.selectedDate = .now
-        self.isShared = isShared
-        getCategoriesCandidates()
+        getCategoryCandidates()
     }
 
     // Modify
-    init(staccato: StaccatoDetailModel, isShared: Bool = false) {
+    init(staccato: StaccatoDetailModel) {
         self.editorMode = .modify(id: staccato.staccatoId)
-        self.isShared = isShared
+        self.isPrivate = true
+
         getPhotos(urls: staccato.staccatoImageUrls)
-        getCategoriesCandidates(selectedCategoryId: staccato.categoryId)
+        getCategoryCandidates(selectedCategoryId: staccato.categoryId)
 
         self.title = staccato.staccatoTitle
         self.selectedPlace = StaccatoPlaceModel(
@@ -140,19 +142,20 @@ class StaccatoEditorViewModel {
         }
     }
 
-    func getCategoriesCandidates(selectedCategoryId: Int64? = nil) {
+    func getCategoryCandidates(selectedCategoryId: Int64? = nil) {
         Task {
             let selectedDate = selectedDate ?? Date()
-            let request = GetCategoriesCandidatesRequestQuery(
+            let request = GetCategoryCandidatesRequestQuery(
                 specificDate: selectedDate.formattedAsRequestDate,
-                isShared: isShared
+                isPrivate: isPrivate
             )
             do {
-                let categoryList = try await STService.shared.categoryService.getCategoriesCandidates(request)
+                let categoryList = try await STService.shared.categoryService.getCategoryCandidates(request)
                 let categories = categoryList.categories.map { CategoryCandidateModel(from: $0) }
                 
                 self.categories = categories
                 
+                // selectedCategory 갱신
                 if let selectedCategoryId {
                     self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
                 }

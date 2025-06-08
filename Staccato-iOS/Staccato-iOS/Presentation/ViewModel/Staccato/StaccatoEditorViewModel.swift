@@ -60,6 +60,7 @@ final class StaccatoEditorViewModel {
         self.selectedDate = .now
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = selectedCategory
+
         getCategoryCandidates()
     }
 
@@ -69,7 +70,6 @@ final class StaccatoEditorViewModel {
         self.isPrivate = true
 
         getPhotos(urls: staccato.staccatoImageUrls)
-        getCategoryCandidates(selectedCategoryId: staccato.categoryId)
 
         self.title = staccato.staccatoTitle
         self.selectedPlace = StaccatoPlaceModel(
@@ -80,6 +80,8 @@ final class StaccatoEditorViewModel {
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = CategoryCandidateModel(id: staccato.categoryId, categoryId: staccato.categoryId, categoryTitle: staccato.categoryTitle)
+
+        getCategoryCandidates()
     }
 
     func loadTransferable() {
@@ -183,7 +185,7 @@ extension StaccatoEditorViewModel {
         }
     }
 
-    func getCategoryCandidates(selectedCategoryId: Int64? = nil) {
+    func getCategoryCandidates() {
         Task {
             let selectedDate = selectedDate ?? Date()
             let request = GetCategoryCandidatesRequestQuery(
@@ -197,7 +199,7 @@ extension StaccatoEditorViewModel {
                 self.categories = categories
 
                 // selectedCategory 갱신
-                if let selectedCategoryId {
+                if let selectedCategoryId = self.selectedCategory?.categoryId {
                     self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
                 }
             } catch {

@@ -67,7 +67,7 @@ struct StaccatoEditorView: View {
         }
 
         .onChange(of: viewModel.selectedDate) {
-            viewModel.getCategoryCandidates(selectedCategoryId: viewModel.selectedCategory?.categoryId)
+            viewModel.getCategoryCandidates()
         }
 
         .scrollDismissesKeyboard(.interactively)

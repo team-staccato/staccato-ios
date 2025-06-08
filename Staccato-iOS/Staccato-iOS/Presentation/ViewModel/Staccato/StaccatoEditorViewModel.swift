@@ -76,7 +76,11 @@ final class StaccatoEditorViewModel {
         )
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
         self.dateOnDatePicker = selectedDate
-        self.selectedCategory = CategoryCandidateModel(id: staccato.categoryId, categoryId: staccato.categoryId, categoryTitle: staccato.categoryTitle)
+        self.selectedCategory = CategoryCandidateModel(
+            id: staccato.categoryId,
+            categoryId: staccato.categoryId,
+            categoryTitle: staccato.categoryTitle
+        )
 
         getPhotos(urls: staccato.staccatoImageUrls)
         getCategoryCandidates()

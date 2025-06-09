@@ -27,23 +27,21 @@ enum BottomSheetDetent: CaseIterable {
 @MainActor
 final class BottomSheetDetentManager: ObservableObject {
 
-    @Published var currentHeight: CGFloat = BottomSheetDetent.medium.height // 상세한 높이
     @Published var currentDetent: BottomSheetDetent = .medium
     @Published var previousDetent: BottomSheetDetent = .medium
     @Published var isbottomSheetPresented: Bool = true
     @Published var selectedDetent: PresentationDetent = BottomSheetDetent.medium.detent
     
     func updateDetent(_ newHeight: CGFloat) {
-        currentHeight = newHeight
-        
-        if let detectedDetent = detectDetent(from: newHeight) {
+        if let detectedDetent = detectDetent(from: newHeight), currentDetent != detectedDetent {
             currentDetent = detectedDetent
         }
     }
     
     func updateDetent(to size: BottomSheetDetent) {
-        currentDetent = size
-        currentHeight = currentDetent.height
+        if currentDetent != size {
+            currentDetent = size
+        }
     }
     
     private func detectDetent(from height: CGFloat) -> BottomSheetDetent? {

@@ -57,7 +57,7 @@ struct HomeView: View {
                         y: calculateFloatingButtonY(in: geometry)
                     )
                     .animation(.spring(response: 0.4, dampingFraction: 0.8),
-                               value: detentManager.currentHeight)
+                               value: detentManager.currentDetent.height)
                 
                 if alertManager.isPresented {
                     StaccatoAlertView()
@@ -192,11 +192,11 @@ private extension HomeView {
         let safeAreaBottom = geometry.safeAreaInsets.bottom
         let defaultY = geometry.size.height - safeAreaBottom - 12
         
-        guard detentManager.isbottomSheetPresented && detentManager.currentHeight > 0 else {
+        guard detentManager.isbottomSheetPresented && detentManager.currentDetent.height > 0 else {
             return defaultY
         }
         
-        let sheetTopY = geometry.size.height - detentManager.currentHeight - safeAreaBottom
+        let sheetTopY = geometry.size.height - detentManager.currentDetent.height - safeAreaBottom
         let buttonOffset: CGFloat = 12
         
         return max(sheetTopY - buttonOffset, 100)

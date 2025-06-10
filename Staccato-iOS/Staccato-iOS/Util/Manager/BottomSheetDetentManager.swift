@@ -28,7 +28,7 @@ enum BottomSheetDetent: CaseIterable {
 final class BottomSheetDetentManager: ObservableObject {
 
     @Published var currentDetent: BottomSheetDetent = .medium
-    @Published var previousDetent: BottomSheetDetent = .medium
+    var previousDetent: BottomSheetDetent = .medium
     @Published var isbottomSheetPresented: Bool = true
     @Published var selectedDetent: PresentationDetent = BottomSheetDetent.medium.detent
     

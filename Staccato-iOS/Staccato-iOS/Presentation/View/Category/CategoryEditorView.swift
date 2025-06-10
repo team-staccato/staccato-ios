@@ -90,7 +90,7 @@ struct CategoryEditorView: View {
         .staccatoModalBar(
             title:
                 self.vm.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",
-            subtitle: 
+            subtitle:
                 self.vm.editorType == . create ? "스타카토를 담을 카테고리를 만들어 보세요!" : "스타카토를 담을 카테고리를 수정해 보세요!"
         )
 

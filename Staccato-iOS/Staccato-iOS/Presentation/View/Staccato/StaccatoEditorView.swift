@@ -82,7 +82,7 @@ struct StaccatoEditorView: View {
         .staccatoModalBar(
             title:
                 viewModel.editorMode == .create ? "스타카토 기록하기" : "스타카토 수정하기",
-            subtitle: 
+            subtitle:
                 viewModel.editorMode == .create ? "기억하고 싶은 순간을 남겨보세요!" : "기억하고 싶은 순간을 수정해 보세요!"
         )
         

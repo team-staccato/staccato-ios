@@ -22,6 +22,7 @@ struct MyPageView: View {
     @State private var capturedImage: UIImage?
     @State private var selectedPhoto: UIImage?
     @State private var showToast = false
+    @State private var hasNotification = false
     
     var body: some View {
         NavigationView {
@@ -52,6 +53,10 @@ struct MyPageView: View {
                 alignment: .bottom
             )
             .onAppear {
+                STNotificationManager.shared.getHasNotification { hasNotificaton in
+                    self.hasNotification = hasNotificaton
+                }
+                
                 viewModel.fetchProfile()
             }
         }
@@ -180,6 +185,36 @@ extension MyPageView {
     private var menuSection: some View {
         VStack {
             NavigationLink {
+                CategoryInvitationManagerView()
+                    .environmentObject(CategoryInvitationManagerViewModel())
+            } label: {
+                HStack {
+                    ZStack(alignment: .topTrailing) {
+                        Text("카테고리 초대 관리")
+                            .typography(.title3)
+                            .foregroundStyle(.staccatoBlack)
+                        if hasNotification {
+                            Circle()
+                                .fill(Color.accentRed)
+                                .frame(width: 5, height: 5)
+                                .offset(x: 10, y: -6)
+                        }
+                    }
+                    
+                    Spacer()
+                    
+                    Image(.chevronRight)
+                        .foregroundStyle(.gray2)
+                }
+            }
+            .padding(.vertical, 26)
+            .padding(.horizontal, 24)
+            
+            Rectangle()
+                .fill(Color.gray1)
+                .frame(height: 10)
+            
+            NavigationLink {
                 EmbedWebView(title: "개인정보처리방침", urlString: WebViewURLs.privacyPolicy)
             } label: {
                 HStack {
@@ -269,7 +304,7 @@ extension MyPageView {
 // MARK: - 디버깅용 코드
 
 extension MyPageView {
-
+    
     var logoutButton: some View {
         HStack {
             Spacer()
@@ -286,7 +321,7 @@ extension MyPageView {
                         .padding(.vertical, 8)
                 }
                 .background(RoundedRectangle(cornerRadius: 2).stroke(.red))
-
+                
                 Text("복구코드는 복사되며 콘솔창에도 프린트됩니다.")
                     .typography(.body4)
                     .foregroundStyle(.gray4)
@@ -294,5 +329,5 @@ extension MyPageView {
         }
         .padding(.horizontal, 20)
     }
-
+    
 }

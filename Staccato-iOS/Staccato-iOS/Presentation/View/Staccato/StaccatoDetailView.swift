@@ -24,7 +24,6 @@ struct StaccatoDetailView: View {
     @State var commentText: String = ""
     @State private var hasLoadedInitialData = false
     @State private var isStaccatoModifySheetPresented = false
-    @State private var isShareLinkLoading = false
     @FocusState private var isCommentFocused: Bool
 
     init(_ staccatoId: Int64) {
@@ -62,6 +61,7 @@ struct StaccatoDetailView: View {
                         }
                     }
                     .ignoresSafeArea(.container, edges: .bottom)
+
                     .onChange(of: viewModel.comments) { _,_ in
                         DispatchQueue.main.async {
                             if viewModel.shouldScrollToBottom {
@@ -72,6 +72,7 @@ struct StaccatoDetailView: View {
                             }
                         }
                     }
+
                     .onChange(of: isCommentFocused) { _, newValue in
                         if newValue {
                             detentManager.updateDetent(to: .large)
@@ -115,12 +116,6 @@ struct StaccatoDetailView: View {
             .onChange(of: viewModel.staccatoDetail) { _, _ in
                 updateMapCamera()
             }
-            .onChange(of: viewModel.shareLink) { _, newValue in
-                if newValue != nil {
-                    presentShareSheet()
-                    isShareLinkLoading = false
-                }
-            }
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
             }
@@ -128,12 +123,22 @@ struct StaccatoDetailView: View {
                 detentManager.updateDetent(geometry.size.height)
                 
                 if !hasLoadedInitialData {
-                    viewModel.getStaccatoDetail(staccatoId)
-                    hasLoadedInitialData = true
+                    Task {
+                        do {
+                            try await viewModel.getStaccatoDetail(staccatoId)
+                            try await viewModel.postShareLink(staccatoId)
+                        } catch {
+                            print("❌ Error: \(error.localizedDescription)")
+                        }
+                        
+                        hasLoadedInitialData = true
+                    }
                 }
             }
             .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
-                viewModel.getStaccatoDetail(staccatoId)
+                Task {
+                    try await viewModel.getStaccatoDetail(staccatoId)
+                }
             } content: {
                 if let staccatoDetail = viewModel.staccatoDetail {
                     StaccatoEditorView(staccato: staccatoDetail)
@@ -155,22 +160,6 @@ private extension StaccatoDetailView {
                 longitude: detail.longitude
             )
             homeViewModel.moveCamera(to: coordinate)
-        }
-    }
-
-    private func presentShareSheet() {
-        guard let shareLink = viewModel.shareLink else { return }
-        
-        let activityViewController = UIActivityViewController(
-            activityItems: [shareLink],
-            applicationActivities: nil
-        )
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController?.present(activityViewController, animated: true) {
-                viewModel.shareLink = nil
-            }
         }
     }
 
@@ -205,14 +194,10 @@ private extension StaccatoDetailView {
         .padding(.horizontal, horizontalInset)
     }
     
+    @ViewBuilder
     var shareButton: some View {
-        Button {
-            isShareLinkLoading = true
-            viewModel.postShareLink()
-        } label: {
-            if isShareLinkLoading {
-                ProgressView()
-            } else {
+        if let link = viewModel.shareLink {
+            ShareLink(item: link) {
                 Image(StaccatoIcon.squareAndArrowUp)
                     .foregroundStyle(.gray3)
                     .fontWeight(.semibold)
@@ -220,7 +205,7 @@ private extension StaccatoDetailView {
             }
         }
     }
-
+    
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(viewModel.staccatoDetail?.placeName ?? "")

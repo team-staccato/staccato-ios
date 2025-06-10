@@ -34,17 +34,11 @@ class StaccatoDetailViewModel: ObservableObject {
 
 extension StaccatoDetailViewModel {
 
-    func getStaccatoDetail(_ staccatoId: Int64) {
-        Task {
-            do {
-                let response = try await STService.shared.staccatoService.getStaccatoDetail(staccatoId)
-                let staccatoDetail = StaccatoDetailModel(from: response)
-                self.staccatoDetail = staccatoDetail
-                self.selectedFeeling = FeelingType.from(serverKey: staccatoDetail.feeling)
-            } catch {
-                print("Error fetching staccato detail: \(error.localizedDescription)")
-            }
-        }
+    func getStaccatoDetail(_ staccatoId: Int64) async throws {
+        let response = try await STService.shared.staccatoService.getStaccatoDetail(staccatoId)
+        let staccatoDetail = StaccatoDetailModel(from: response)
+        self.staccatoDetail = staccatoDetail
+        self.selectedFeeling = FeelingType.from(serverKey: staccatoDetail.feeling)
     }
 
     func deleteStaccato(_ staccatoId: Int64, isSuccess: @escaping ((Bool) -> Void)) {
@@ -134,16 +128,9 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    func postShareLink() {
-        guard let staccatoId = staccatoDetail?.staccatoId else { return }
-        Task {
-            do {
-                let shareLink: PostShareLinkResponse = try await STService.shared.staccatoService.postShareLink(staccatoId)
-                self.shareLink = URL(string: shareLink.shareLink)
-            } catch {
-                print("❌ Error on postShareLink: \(error.localizedDescription)")
-            }
-        }
+    func postShareLink(_ staccatoId: Int64) async throws {
+        let shareLink: PostShareLinkResponse = try await STService.shared.staccatoService.postShareLink(staccatoId)
+        self.shareLink = URL(string: shareLink.shareLink)
     }
 
 }

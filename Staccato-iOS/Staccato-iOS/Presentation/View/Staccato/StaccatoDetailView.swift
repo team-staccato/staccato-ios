@@ -126,6 +126,7 @@ struct StaccatoDetailView: View {
                     Task {
                         do {
                             try await viewModel.getStaccatoDetail(staccatoId)
+                            try await viewModel.getComments(staccatoId)
                             try await viewModel.postShareLink(staccatoId)
                         } catch {
                             print("❌ Error: \(error.localizedDescription)")
@@ -328,8 +329,16 @@ private extension StaccatoDetailView {
         let isValid = !commentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         
         return Button {
-            viewModel.postComment(commentText)
-            commentText.removeAll()
+            Task {
+                do {
+                    try await viewModel.postComment(staccatoId, commentText)
+                    try await viewModel.getComments(staccatoId)
+                    viewModel.shouldScrollToBottom = true
+                    commentText.removeAll()
+                } catch {
+                    print("❌ Error: \(error.localizedDescription)")
+                }
+            }
         } label: {
             Image(StaccatoIcon.arrowRightCircleFill)
                 .resizable()
@@ -436,7 +445,14 @@ private extension StaccatoDetailView {
                     .confirmCancelAlert(
                         title: "댓글을 삭제하시겠습니까?",
                         message: "삭제하면 되돌릴 수 없어요") {
-                            viewModel.deleteComment(comment.commentId)
+                            Task {
+                                do {
+                                    try await viewModel.deleteComment(comment.commentId)
+                                    try await viewModel.getComments(staccatoId)
+                                } catch {
+                                    print("❌ Error: \(error.localizedDescription)")
+                                }
+                            }
                         }
                 )
             } label: {

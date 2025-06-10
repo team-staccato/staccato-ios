@@ -12,13 +12,7 @@ class StaccatoDetailViewModel: ObservableObject {
 
     // MARK: - Properties
 
-    @Published var staccatoDetail: StaccatoDetailModel? {
-        didSet {
-            Task {
-                getComments()
-            }
-        }
-    }
+    @Published var staccatoDetail: StaccatoDetailModel?
     @Published var selectedFeeling: FeelingType?
     @Published var comments: [CommentModel] = []
     @Published var shouldScrollToBottom: Bool = false
@@ -70,62 +64,27 @@ extension StaccatoDetailViewModel {
         }
     }
 
-    func getComments() {
-        guard let staccatoDetail else {
-            print("😢getComments - \(StaccatoError.optionalBindingFailed)")
-            return
-        }
-        
-        Task {
-            do {
-                let response: GetCommentsResponse = try await STService.shared.commentService.getComments(staccatoDetail.staccatoId)
-                let comments: [CommentModel] = response.comments.map { CommentModel(from: $0) }
-                self.comments = comments
-            } catch {
-                print("Error on getComments: \(error.localizedDescription)")
-            }
-        }
+    func getComments(_ staccatoId: Int64) async throws {
+        let response: GetCommentsResponse = try await STService.shared.commentService.getComments(staccatoId)
+        let comments: [CommentModel] = response.comments.map { CommentModel(from: $0) }
+        self.comments = comments
     }
 
-    func postComment(_ content: String) {
-        guard let staccatoDetail else { return }
-        
-        Task {
-            do {
-                try await STService.shared.commentService.postComment(
-                    PostCommentRequest(staccatoId: staccatoDetail.staccatoId, content: content)
-                )
-                getComments()
-                shouldScrollToBottom = true
-            } catch {
-                print("Error on postComment: \(error.localizedDescription)")
-            }
-        }
+    func postComment(_ staccatoId: Int64, _ content: String) async throws {
+        try await STService.shared.commentService.postComment(
+            PostCommentRequest(staccatoId: staccatoId, content: content)
+        )
     }
 
-    func updateComment(commentId: Int64, comment: String) {
-        Task {
-            do {
-                try await STService.shared.commentService.putComment(
-                    commentId,
-                    PutCommentRequest(content: comment)
-                )
-                getComments()
-            } catch {
-                print("Error on putComment: \(error.localizedDescription)")
-            }
-        }
+    func updateComment(commentId: Int64, comment: String) async throws {
+        try await STService.shared.commentService.putComment(
+            commentId,
+            PutCommentRequest(content: comment)
+        )
     }
 
-    func deleteComment(_ commentId: Int64) {
-        Task.detached {
-            do {
-                try await STService.shared.commentService.deleteComment(commentId)
-                await self.getComments()
-            } catch {
-                print("Error on deleteComment: \(error.localizedDescription)")
-            }
-        }
+    func deleteComment(_ commentId: Int64) async throws {
+        try await STService.shared.commentService.deleteComment(commentId)
     }
 
     func postShareLink(_ staccatoId: Int64) async throws {

@@ -39,11 +39,11 @@ struct Staccato_iOSApp: App {
                         .environmentObject(bottomSheetDetentManager)
                 } else {
                     SignInView()
-                        .environmentObject(signInViewModel)
                 }
             }
             .environment(navigationState)
             .environment(alertManager)
+            .environmentObject(signInViewModel)
         }
 
     }

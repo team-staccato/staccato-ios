@@ -54,6 +54,9 @@ struct RecoverAccountView: View {
             .padding(.vertical)
             .disabled(code.count != 36 || isLoading)
         }
+        .contentShape(Rectangle())
+        .dismissKeyboardOnGesture()
+
         .alert(isPresented: Binding<Bool>(
             get: { errorMessage != nil },
             set: { _ in errorMessage = nil }
@@ -65,7 +68,6 @@ struct RecoverAccountView: View {
             )
         }
         .padding(.horizontal, 24)
-        .ignoresSafeArea(.all, edges: .bottom)
 
         .navigationBarBackButtonHidden(true)
         .toolbar {

@@ -87,6 +87,7 @@ struct SignInView: View {
                     StaccatoAlertView()
                 }
             }
+            .dismissKeyboardOnGesture()
         }
     }
 }

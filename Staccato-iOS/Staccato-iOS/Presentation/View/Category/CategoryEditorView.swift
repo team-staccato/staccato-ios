@@ -84,9 +84,10 @@ struct CategoryEditorView: View {
             }
             .animation(.easeIn(duration: 0.15), value: vm.isPeriodSettingActive)
         }
-        .scrollDismissesKeyboard(.interactively)
+        .dismissKeyboardOnGesture()
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
+
         .staccatoModalBar(
             title:
                 self.vm.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",

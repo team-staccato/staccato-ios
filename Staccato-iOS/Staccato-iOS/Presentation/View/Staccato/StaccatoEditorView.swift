@@ -55,6 +55,10 @@ struct StaccatoEditorView: View {
                 saveButton
             }
         }
+        .dismissKeyboardOnGesture()
+        .scrollIndicators(.hidden)
+        .padding(.horizontal, 24)
+
         .onAppear {
             if viewModel.editorMode == .create,
                STLocationManager.shared.hasLocationAuthorization() {
@@ -74,10 +78,6 @@ struct StaccatoEditorView: View {
         .onChange(of: viewModel.selectedDate) {
             viewModel.getCategoryCandidates()
         }
-
-        .scrollDismissesKeyboard(.interactively)
-        .scrollIndicators(.hidden)
-        .padding(.horizontal, 24)
         
         .staccatoModalBar(
             title:

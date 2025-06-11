@@ -25,11 +25,11 @@ struct StaccatoDetailView: View {
     @State private var hasLoadedInitialData = false
     @State private var isStaccatoModifySheetPresented = false
     @FocusState private var isCommentFocused: Bool
-
+    
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
     }
-
+    
     // MARK: - UI Properties
     
     private let horizontalInset: CGFloat = 16
@@ -58,15 +58,15 @@ struct StaccatoDetailView: View {
                             
                             commentTypingView
                                 .id("commentTypingView")
+                            
+                            Spacer()
                         }
                     }
-                    .ignoresSafeArea(.container, edges: .bottom)
                     
                     if alertManager.isPresented {
                         StaccatoAlertView(alertManager: $alertManager)
                     }
                 }
-                
                 .onChange(of: viewModel.comments) { _,_ in
                     DispatchQueue.main.async {
                         if viewModel.shouldScrollToBottom {
@@ -93,7 +93,18 @@ struct StaccatoDetailView: View {
                     isCommentFocused = false
                 }
             }
-            
+            .staccatoNavigationBar {
+                Button("수정") {
+                    isStaccatoModifySheetPresented = true
+                }
+                
+                Button("삭제") {
+                    presentDeleteAlert()
+                }
+            }
+            .onChange(of: viewModel.staccatoDetail) { _, _ in
+                updateMapCamera()
+            }
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
             }
@@ -114,27 +125,16 @@ struct StaccatoDetailView: View {
                     }
                 }
             }
-        }
-        .staccatoNavigationBar {
-            Button("수정") {
-                isStaccatoModifySheetPresented = true
+            .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
+                Task {
+                    try await viewModel.getStaccatoDetail(staccatoId)
+                }
+            } content: {
+                if let staccatoDetail = viewModel.staccatoDetail {
+                    StaccatoEditorView(staccato: staccatoDetail)
+                }
             }
-            
-            Button("삭제") {
-                presentDeleteAlert()
-            }
-        }
-        .onChange(of: viewModel.staccatoDetail) { _, _ in
-            updateMapCamera()
-        }
-        .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
-            Task {
-                try await viewModel.getStaccatoDetail(staccatoId)
-            }
-        } content: {
-            if let staccatoDetail = viewModel.staccatoDetail {
-                StaccatoEditorView(staccato: staccatoDetail)
-            }
+            .ignoresSafeArea(.container, edges: .bottom)
         }
     }
 }

@@ -67,24 +67,21 @@ struct CategoryDetailView: View {
                     }
                 }
             }
-            
-            .onAppear {
-                detentManager.updateDetent(geometry.size.height)
+            .onChange(of: homeViewModel.staccatos) {
                 viewModel.getCategoryDetail(categoryId)
             }
-            
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
             }
-            
-            .onChange(of: homeViewModel.staccatos) {
+            .onAppear {
+                detentManager.updateDetent(geometry.size.height)
+                
                 viewModel.getCategoryDetail(categoryId)
             }
             
             .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
                 StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryCandidateModel())
             }
-            
             .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
                 CategoryEditorView(
                     categoryDetail: self.viewModel.categoryDetail,
@@ -92,8 +89,8 @@ struct CategoryDetailView: View {
                     categoryViewModel: viewModel
                 )
             }
+            .ignoresSafeArea(.container, edges: .bottom)
         }
-        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 

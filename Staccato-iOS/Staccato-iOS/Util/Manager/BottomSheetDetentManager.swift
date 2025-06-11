@@ -33,7 +33,7 @@ final class BottomSheetDetentManager: ObservableObject {
     @Published var selectedDetent: PresentationDetent = BottomSheetDetent.medium.detent
     
     func updateDetent(_ newHeight: CGFloat) {
-        if let detectedDetent = detectDetent(from: newHeight), currentDetent != detectedDetent {
+        if let detectedDetent = detectDetent(from: newHeight) {
             currentDetent = detectedDetent
         }
     }

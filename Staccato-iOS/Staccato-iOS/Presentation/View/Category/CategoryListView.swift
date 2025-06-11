@@ -67,8 +67,6 @@ struct CategoryListView: View {
                     case .categoryDetail(let categoryId):
                         CategoryDetailView(categoryId, viewModel)
                             .environmentObject(detentManager)
-                    case .categoryAdd:
-                        CategoryEditorView(categoryViewModel: viewModel)
                     }
                 }
             }

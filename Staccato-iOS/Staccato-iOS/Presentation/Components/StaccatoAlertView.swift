@@ -10,7 +10,7 @@ import Observation
 
 struct StaccatoAlertView: View {
 
-    @Environment(StaccatoAlertManager.self) var alertManager
+    @Binding var alertManager: StaccatoAlertManager
 
     var body: some View {
         ZStack {

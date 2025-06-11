@@ -22,7 +22,7 @@ struct HomeView: View {
     // NOTE: Managers
     @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @Environment(NavigationState.self) private var navigationState
-    @Environment(StaccatoAlertManager.self) private var alertManager
+    @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
 
     // NOTE: UI Visibility
@@ -61,7 +61,7 @@ struct HomeView: View {
                                value: detentManager.currentDetent.height)
                 
                 if alertManager.isPresented {
-                    StaccatoAlertView()
+                    StaccatoAlertView(alertManager: $alertManager)
                 }
             }
         }

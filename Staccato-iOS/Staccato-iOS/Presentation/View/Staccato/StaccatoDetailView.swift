@@ -15,12 +15,12 @@ struct StaccatoDetailView: View {
     // MARK: - State Properties
     
     let staccatoId: Int64
-    @Environment(StaccatoAlertManager.self) var alertManager
     @Environment(NavigationState.self) var navigationState
     @EnvironmentObject var homeViewModel: HomeViewModel
     @EnvironmentObject var detentManager: BottomSheetDetentManager
     @StateObject private var viewModel = StaccatoDetailViewModel()
     
+    @State private var alertManager = StaccatoAlertManager()
     @State var commentText: String = ""
     @State private var hasLoadedInitialData = false
     @State private var isStaccatoModifySheetPresented = false
@@ -31,13 +31,13 @@ struct StaccatoDetailView: View {
     }
 
     // MARK: - UI Properties
-
+    
     private let horizontalInset: CGFloat = 16
-
+    
     var body: some View {
         GeometryReader { geometry in
-            VStack {
-                ScrollViewReader { proxy in
+            ScrollViewReader { proxy in
+                ZStack {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             imageSlider
@@ -61,61 +61,39 @@ struct StaccatoDetailView: View {
                         }
                     }
                     .ignoresSafeArea(.container, edges: .bottom)
-
-                    .onChange(of: viewModel.comments) { _,_ in
-                        DispatchQueue.main.async {
-                            if viewModel.shouldScrollToBottom {
-                                withAnimation {
-                                    proxy.scrollTo("commentTypingView", anchor: .bottom)
-                                    viewModel.shouldScrollToBottom = false
-                                }
-                            }
-                        }
+                    
+                    if alertManager.isPresented {
+                        StaccatoAlertView(alertManager: $alertManager)
                     }
-
-                    .onChange(of: isCommentFocused) { _, newValue in
-                        if newValue {
-                            detentManager.updateDetent(to: .large)
-                        }
-                        Task {
-                            try await Task.sleep(for: .seconds(0.5))
-                            withAnimation(.easeInOut(duration: 0.3)) {
-                                proxy.scrollTo("commentTypingView", anchor: .bottom)
-                            }
-                        }
-                    }
-                    .onTapGesture {
-                        isCommentFocused = false
-                    }
-                }
-            }
-            .staccatoNavigationBar {
-                Button("수정") {
-                    isStaccatoModifySheetPresented = true
                 }
                 
-                Button("삭제") {
-                    // TODO: - 삭제 버튼 시 alert가 sheet 뒤로 뜨는 이슈
-                    withAnimation {
-                        alertManager.show(
-                            .confirmCancelAlert(
-                                title: "삭제하시겠습니까?",
-                                message: "삭제를 누르면 복구할 수 없습니다") {
-                                    viewModel.deleteStaccato(staccatoId) {isSuccess in
-                                        if isSuccess,
-                                           let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
-                                            homeViewModel.staccatos.remove(at: indexToRemove)
-                                        }
-                                        navigationState.dismiss()
-                                    }
-                                }
-                        )
+                .onChange(of: viewModel.comments) { _,_ in
+                    DispatchQueue.main.async {
+                        if viewModel.shouldScrollToBottom {
+                            withAnimation {
+                                proxy.scrollTo("commentTypingView", anchor: .bottom)
+                                viewModel.shouldScrollToBottom = false
+                            }
+                        }
                     }
                 }
+                
+                .onChange(of: isCommentFocused) { _, newValue in
+                    if newValue {
+                        detentManager.updateDetent(to: .large)
+                    }
+                    Task {
+                        try await Task.sleep(for: .seconds(0.5))
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            proxy.scrollTo("commentTypingView", anchor: .bottom)
+                        }
+                    }
+                }
+                .onTapGesture {
+                    isCommentFocused = false
+                }
             }
-            .onChange(of: viewModel.staccatoDetail) { _, _ in
-                updateMapCamera()
-            }
+            
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
             }
@@ -136,14 +114,26 @@ struct StaccatoDetailView: View {
                     }
                 }
             }
-            .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
-                Task {
-                    try await viewModel.getStaccatoDetail(staccatoId)
-                }
-            } content: {
-                if let staccatoDetail = viewModel.staccatoDetail {
-                    StaccatoEditorView(staccato: staccatoDetail)
-                }
+        }
+        .staccatoNavigationBar {
+            Button("수정") {
+                isStaccatoModifySheetPresented = true
+            }
+            
+            Button("삭제") {
+                presentDeleteAlert()
+            }
+        }
+        .onChange(of: viewModel.staccatoDetail) { _, _ in
+            updateMapCamera()
+        }
+        .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
+            Task {
+                try await viewModel.getStaccatoDetail(staccatoId)
+            }
+        } content: {
+            if let staccatoDetail = viewModel.staccatoDetail {
+                StaccatoEditorView(staccato: staccatoDetail)
             }
         }
     }
@@ -154,6 +144,24 @@ struct StaccatoDetailView: View {
 
 private extension StaccatoDetailView {
 
+    func presentDeleteAlert() {
+        withAnimation {
+            alertManager.show(
+                .confirmCancelAlert(
+                    title: "삭제하시겠습니까?",
+                    message: "삭제를 누르면 복구할 수 없습니다") {
+                        viewModel.deleteStaccato(staccatoId) {isSuccess in
+                            if isSuccess,
+                               let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
+                                homeViewModel.staccatos.remove(at: indexToRemove)
+                            }
+                            navigationState.dismiss()
+                        }
+                    }
+            )
+        }
+    }
+    
     func updateMapCamera() {
         if let detail = viewModel.staccatoDetail {
             let coordinate = CLLocationCoordinate2D(
@@ -163,7 +171,6 @@ private extension StaccatoDetailView {
             homeViewModel.moveCamera(to: coordinate)
         }
     }
-
 }
 
 
@@ -462,5 +469,4 @@ private extension StaccatoDetailView {
             .foregroundStyle(.red)
         }
     }
-
 }

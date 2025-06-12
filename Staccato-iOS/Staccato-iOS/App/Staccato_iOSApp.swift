@@ -42,6 +42,9 @@ struct Staccato_iOSApp: App {
             }
             .environment(navigationState)
             .environmentObject(signInViewModel)
+
+            .preferredColorScheme(.light)
+
         }
 
     }

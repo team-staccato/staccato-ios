@@ -139,6 +139,7 @@ extension CategoryEditorView {
         }
         .frame(height: 200)
         .clipShape(.rect(cornerRadius: 8))
+        .contentShape(.rect(cornerRadius: 8))
         .padding(.top, 12)
         .onChange(of: viewModel.photoItem) { _, newValue in
             Task {

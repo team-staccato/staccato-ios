@@ -13,7 +13,7 @@ struct CategoryEditorView: View {
     @Environment(NavigationState.self) private var navigationState
     @EnvironmentObject var homeViewModel: HomeViewModel
 
-    @Bindable private var vm: CategoryEditorViewModel
+    @State private var viewModel: CategoryEditorViewModel
 
     @FocusState private var isTitleFocused: Bool
 
@@ -24,11 +24,11 @@ struct CategoryEditorView: View {
         editorType: CategoryEditorViewModel.CategoryEditorType = .create,
         categoryViewModel: CategoryViewModel
     ) {
-        self.vm = CategoryEditorViewModel(
+        self._viewModel = State(initialValue: CategoryEditorViewModel(
             categoryDetail: categoryDetail,
             editorType: editorType,
             categoryViewModel: categoryViewModel
-        )
+        ))
     }
 
     var body: some View {
@@ -50,7 +50,7 @@ struct CategoryEditorView: View {
                     periodSettingSection
                         .padding(.bottom, 24)
 
-                    if vm.editorType == .create {
+                    if viewModel.editorType == .create {
                         shareSettingSection
                             .padding(.bottom, 24)
                     }
@@ -61,57 +61,58 @@ struct CategoryEditorView: View {
 
                 Button("저장") {
                     Task {
-                        switch vm.editorType {
+                        switch viewModel.editorType {
                         case .create:
-                            if let categoryId: Int64 = await vm.createCategory() {
+                            if let categoryId: Int64 = await viewModel.createCategory() {
                                 navigationState.navigate(to: .categoryDetail(categoryId))
                             }
                         case .modify:
-                            await vm.modifyCategory()
+                            await viewModel.modifyCategory()
                             
                             // 마커 업데이트
-                            if let staccatoIds = vm.categoryDetail?.staccatos.map({ $0.staccatoId }) {
+                            if let staccatoIds = viewModel.categoryDetail?.staccatos.map({ $0.staccatoId }) {
                                 homeViewModel.updateMarkerIcons(
                                     for: staccatoIds,
-                                    to: vm.categoryColor
+                                    to: viewModel.categoryColor
                                 )
                             }
                         }
                     }
                 }
                 .buttonStyle(.staccatoFullWidth)
-                .disabled(vm.isSubmitButtonDisabled)
+                .disabled(viewModel.isSubmitButtonDisabled)
             }
-            .animation(.easeIn(duration: 0.15), value: vm.isPeriodSettingActive)
+            .animation(.easeIn(duration: 0.15), value: viewModel.isPeriodSettingActive)
         }
-        .scrollDismissesKeyboard(.interactively)
+        .dismissKeyboardOnGesture()
         .scrollIndicators(.hidden)
         .padding(.horizontal, 20)
+
         .staccatoModalBar(
             title:
-                self.vm.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",
+                self.viewModel.editorType == . create ? "카테고리 만들기" : "카테고리 수정하기",
             subtitle:
-                self.vm.editorType == . create ? "스타카토를 담을 카테고리를 만들어 보세요!" : "스타카토를 담을 카테고리를 수정해 보세요!"
+                self.viewModel.editorType == . create ? "스타카토를 담을 카테고리를 만들어 보세요!" : "스타카토를 담을 카테고리를 수정해 보세요!"
         )
 
-        .sheet(isPresented: $vm.isPeriodSheetPresented) {
-            StaccatoDatePicker(isDatePickerPresented: $vm.isPeriodSheetPresented, selectedStartDate: $vm.selectedStartDate, selectedEndDate: $vm.selectedEndDate)
+        .sheet(isPresented: $viewModel.isPeriodSheetPresented) {
+            StaccatoDatePicker(isDatePickerPresented: $viewModel.isPeriodSheetPresented, selectedStartDate: $viewModel.selectedStartDate, selectedEndDate: $viewModel.selectedEndDate)
         }
 
-        .sheet(isPresented: $vm.isColorPalettePresented) {
+        .sheet(isPresented: $viewModel.isColorPalettePresented) {
             colorPaletteModal
                 .presentationDetents([.height(410)])
         }
 
-        .alert(vm.errorTitle ?? "", isPresented: $vm.catchError) {
+        .alert(viewModel.errorTitle ?? "", isPresented: $viewModel.catchError) {
             Button("확인") {
-                vm.catchError = false
+                viewModel.catchError = false
             }
         } message: {
-            Text(vm.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
+            Text(viewModel.errorMessage ?? "알 수 없는 에러입니다.\n다시 한 번 확인해주세요.")
         }
 
-        .onChange(of: vm.uploadSuccess) { _, uploadSuccess in
+        .onChange(of: viewModel.uploadSuccess) { _, uploadSuccess in
             if uploadSuccess {
                 dismiss()
             }
@@ -119,42 +120,16 @@ struct CategoryEditorView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        NavigationLink("이동") {
-            CategoryEditorView(categoryViewModel: CategoryViewModel())
-        }
-    }
-}
-
-#Preview("수정") {
-    CategoryEditorView(
-        categoryDetail: CategoryDetailModel(
-            categoryId: 1,
-            categoryThumbnailUrl: "https://image.staccato.kr/web/share/happy.png",
-            categoryTitle: "테스트카테고리",
-            description: "이건 설명",
-            categoryColor: .gray,
-            startAt: "2024-01-01",
-            endAt: "2024-01-30",
-            isShared: true,
-            members: [],
-            staccatos: []
-        ),
-        editorType: .modify,
-        categoryViewModel: CategoryViewModel()
-    )
-    .environment(NavigationState())
-}
-
 // MARK: - Section
+
 extension CategoryEditorView {
+    
     // MARK: Photo Section
     private var photoSection: some View {
         Button {
-            vm.isPhotoInputPresented = true
+            viewModel.isPhotoInputPresented = true
         } label: {
-            if let photo = vm.selectedPhoto {
+            if let photo = viewModel.selectedPhoto {
                 Image(uiImage: photo)
                     .resizable()
                     .scaledToFill()
@@ -164,32 +139,33 @@ extension CategoryEditorView {
         }
         .frame(height: 200)
         .clipShape(.rect(cornerRadius: 8))
+        .contentShape(.rect(cornerRadius: 8))
         .padding(.top, 12)
-        .onChange(of: vm.photoItem) { _, newValue in
+        .onChange(of: viewModel.photoItem) { _, newValue in
             Task {
-                await vm.loadTransferable(from: newValue)
-                try await vm.uploadImage()
+                await viewModel.loadTransferable(from: newValue)
+                try await viewModel.uploadImage()
             }
         }
 
-        .confirmationDialog("사진을 첨부해 보세요", isPresented: $vm.isPhotoInputPresented, titleVisibility: .visible, actions: {
+        .confirmationDialog("사진을 첨부해 보세요", isPresented: $viewModel.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                vm.showCamera = true
+                viewModel.showCamera = true
             }
 
             Button("앨범에서 가져오기") {
-                vm.isPhotoPickerPresented = true
+                viewModel.isPhotoPickerPresented = true
             }
         })
 
-        .photosPicker(isPresented: $vm.isPhotoPickerPresented, selection: $vm.photoItem, matching: .images)
+        .photosPicker(isPresented: $viewModel.isPhotoPickerPresented, selection: $viewModel.photoItem, matching: .images)
 
-        .fullScreenCover(isPresented: $vm.showCamera) {
+        .fullScreenCover(isPresented: $viewModel.showCamera) {
             Task {
-                try await vm.uploadImage()
+                try await viewModel.uploadImage()
             }
         } content: {
-            CameraView(selectedImage: $vm.selectedPhoto)
+            CameraView(selectedImage: $viewModel.selectedPhoto)
                 .background(.staccatoBlack)
         }
     }
@@ -226,7 +202,7 @@ extension CategoryEditorView {
             .padding(.bottom, 8)
 
             StaccatoTextField(
-                text: $vm.categoryTitle,
+                text: $viewModel.categoryTitle,
                 isFocused: $isTitleFocused,
                 placeholder: "카테고리 제목을 입력해주세요(최대 30자)",
                 maximumTextLength: 30
@@ -242,10 +218,10 @@ extension CategoryEditorView {
                 .foregroundStyle(.staccatoBlack)
                 .typography(.title2)
 
-            TextEditor(text: $vm.categoryDescription)
+            TextEditor(text: $viewModel.categoryDescription)
                 .staccatoTextEditorStyle(
                     placeholder: "카테고리 소개를 입력해주세요(최대 500자)",
-                    text: $vm.categoryDescription,
+                    text: $viewModel.categoryDescription,
                     maximumTextLength: 500,
                     isFocused: $isDescriptionFocused
                 )
@@ -269,9 +245,9 @@ extension CategoryEditorView {
             Spacer()
 
             Button {
-                vm.isColorPalettePresented = true
+                viewModel.isColorPalettePresented = true
             } label: {
-                Image(uiImage: vm.categoryColor.markerImage)
+                Image(uiImage: viewModel.categoryColor.markerImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 26,height: 32)
@@ -284,7 +260,7 @@ extension CategoryEditorView {
     private var colorPaletteModal: some View {
         let spacing = (ScreenUtils.width - 48 - 28 * 6) / 5
         let columns = Array(repeating: GridItem(.flexible(), spacing: spacing), count: 6)
-        vm.categoryColorTemp = vm.categoryColor
+        viewModel.categoryColorTemp = viewModel.categoryColor
 
         return VStack(alignment: .leading) {
             Text("색상을 선택해 주세요")
@@ -299,9 +275,9 @@ extension CategoryEditorView {
                             .fill(colorType.color)
                             .frame(width: 28, height: 28)
                             .onTapGesture {
-                                vm.categoryColorTemp = colorType
+                                viewModel.categoryColorTemp = colorType
                             }
-                        if vm.categoryColorTemp == colorType {
+                        if viewModel.categoryColorTemp == colorType {
                             Image(.icCheckmark)
                                 .font(.system(size: 20, weight: .heavy))
                                 .foregroundColor(.white)
@@ -313,8 +289,8 @@ extension CategoryEditorView {
             Spacer()
 
             Button("확인") {
-                vm.categoryColor = vm.categoryColorTemp
-                vm.isColorPalettePresented = false
+                viewModel.categoryColor = viewModel.categoryColorTemp
+                viewModel.isColorPalettePresented = false
             }
             .buttonStyle(.staccatoFullWidth)
         }
@@ -336,16 +312,16 @@ extension CategoryEditorView {
 
                 Spacer()
 
-                Toggle("", isOn: $vm.isPeriodSettingActive)
+                Toggle("", isOn: $viewModel.isPeriodSettingActive)
                     .toggleStyle(StaccatoToggleStyle())
             }
 
-            if vm.isPeriodSettingActive {
+            if viewModel.isPeriodSettingActive {
                 Button {
-                    vm.isPeriodSheetPresented = true
+                    viewModel.isPeriodSheetPresented = true
                 } label: {
-                    Text(vm.categoryPeriod ?? "카테고리 기간을 선택해주세요")
-                        .foregroundStyle(vm.categoryPeriod == nil ? .gray3 : .staccatoBlack)
+                    Text(viewModel.categoryPeriod ?? "카테고리 기간을 선택해주세요")
+                        .foregroundStyle(viewModel.categoryPeriod == nil ? .gray3 : .staccatoBlack)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -384,9 +360,38 @@ extension CategoryEditorView {
 
             Spacer()
 
-            Toggle("", isOn: $vm.isShareSettingActive)
+            Toggle("", isOn: $viewModel.isShareSettingActive)
                 .toggleStyle(StaccatoToggleStyle())
         }
     }
+}
 
+// MARK: - Preview
+
+#Preview {
+    NavigationStack {
+        NavigationLink("이동") {
+            CategoryEditorView(categoryViewModel: CategoryViewModel())
+        }
+    }
+}
+
+#Preview("수정") {
+    CategoryEditorView(
+        categoryDetail: CategoryDetailModel(
+            categoryId: 1,
+            categoryThumbnailUrl: "https://image.staccato.kr/web/share/happy.png",
+            categoryTitle: "테스트카테고리",
+            description: "이건 설명",
+            categoryColor: .gray,
+            startAt: "2024-01-01",
+            endAt: "2024-01-30",
+            isShared: true,
+            members: [],
+            staccatos: []
+        ),
+        editorType: .modify,
+        categoryViewModel: CategoryViewModel()
+    )
+    .environment(NavigationState())
 }

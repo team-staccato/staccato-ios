@@ -15,30 +15,29 @@ struct StaccatoDetailView: View {
     // MARK: - State Properties
     
     let staccatoId: Int64
-    @Environment(StaccatoAlertManager.self) var alertManager
     @Environment(NavigationState.self) var navigationState
     @EnvironmentObject var homeViewModel: HomeViewModel
     @EnvironmentObject var detentManager: BottomSheetDetentManager
     @StateObject private var viewModel = StaccatoDetailViewModel()
     
+    @State private var alertManager = StaccatoAlertManager()
     @State var commentText: String = ""
     @State private var hasLoadedInitialData = false
     @State private var isStaccatoModifySheetPresented = false
-    @State private var isShareLinkLoading = false
     @FocusState private var isCommentFocused: Bool
-
+    
     init(_ staccatoId: Int64) {
         self.staccatoId = staccatoId
     }
-
+    
     // MARK: - UI Properties
-
+    
     private let horizontalInset: CGFloat = 16
-
+    
     var body: some View {
         GeometryReader { geometry in
-            VStack {
-                ScrollViewReader { proxy in
+            ScrollViewReader { proxy in
+                ZStack {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 20) {
                             imageSlider
@@ -59,33 +58,39 @@ struct StaccatoDetailView: View {
                             
                             commentTypingView
                                 .id("commentTypingView")
+                            
+                            Spacer()
                         }
                     }
-                    .ignoresSafeArea(.container, edges: .bottom)
-                    .onChange(of: viewModel.comments) { _,_ in
-                        DispatchQueue.main.async {
-                            if viewModel.shouldScrollToBottom {
-                                withAnimation {
-                                    proxy.scrollTo("commentTypingView", anchor: .bottom)
-                                    viewModel.shouldScrollToBottom = false
-                                }
-                            }
-                        }
+                    
+                    if alertManager.isPresented {
+                        StaccatoAlertView(alertManager: $alertManager)
                     }
-                    .onChange(of: isCommentFocused) { _, newValue in
-                        if newValue {
-                            detentManager.updateDetent(to: .large)
-                        }
-                        Task {
-                            try await Task.sleep(for: .seconds(0.5))
-                            withAnimation(.easeInOut(duration: 0.3)) {
+                }
+                .onChange(of: viewModel.comments) { _,_ in
+                    DispatchQueue.main.async {
+                        if viewModel.shouldScrollToBottom {
+                            withAnimation {
                                 proxy.scrollTo("commentTypingView", anchor: .bottom)
+                                viewModel.shouldScrollToBottom = false
                             }
                         }
                     }
-                    .onTapGesture {
-                        isCommentFocused = false
+                }
+                
+                .onChange(of: isCommentFocused) { _, newValue in
+                    if newValue {
+                        detentManager.updateDetent(to: .large)
                     }
+                    Task {
+                        try await Task.sleep(for: .seconds(0.5))
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            proxy.scrollTo("commentTypingView", anchor: .bottom)
+                        }
+                    }
+                }
+                .onTapGesture {
+                    isCommentFocused = false
                 }
             }
             .staccatoNavigationBar {
@@ -94,32 +99,11 @@ struct StaccatoDetailView: View {
                 }
                 
                 Button("삭제") {
-                    // TODO: - 삭제 버튼 시 alert가 sheet 뒤로 뜨는 이슈
-                    withAnimation {
-                        alertManager.show(
-                            .confirmCancelAlert(
-                                title: "삭제하시겠습니까?",
-                                message: "삭제를 누르면 복구할 수 없습니다") {
-                                    viewModel.deleteStaccato(staccatoId) {isSuccess in
-                                        if isSuccess,
-                                           let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
-                                            homeViewModel.staccatos.remove(at: indexToRemove)
-                                        }
-                                        navigationState.dismiss()
-                                    }
-                                }
-                        )
-                    }
+                    presentDeleteAlert()
                 }
             }
             .onChange(of: viewModel.staccatoDetail) { _, _ in
                 updateMapCamera()
-            }
-            .onChange(of: viewModel.shareLink) { _, newValue in
-                if newValue != nil {
-                    presentShareSheet()
-                    isShareLinkLoading = false
-                }
             }
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
@@ -128,17 +112,29 @@ struct StaccatoDetailView: View {
                 detentManager.updateDetent(geometry.size.height)
                 
                 if !hasLoadedInitialData {
-                    viewModel.getStaccatoDetail(staccatoId)
-                    hasLoadedInitialData = true
+                    Task {
+                        do {
+                            try await viewModel.getStaccatoDetail(staccatoId)
+                            try await viewModel.getComments(staccatoId)
+                            try await viewModel.postShareLink(staccatoId)
+                        } catch {
+                            print("❌ Error: \(error.localizedDescription)")
+                        }
+                        
+                        hasLoadedInitialData = true
+                    }
                 }
             }
             .fullScreenCover(isPresented: $isStaccatoModifySheetPresented) {
-                viewModel.getStaccatoDetail(staccatoId)
+                Task {
+                    try await viewModel.getStaccatoDetail(staccatoId)
+                }
             } content: {
                 if let staccatoDetail = viewModel.staccatoDetail {
                     StaccatoEditorView(staccato: staccatoDetail)
                 }
             }
+            .ignoresSafeArea(.container, edges: .bottom)
         }
     }
 }
@@ -148,6 +144,24 @@ struct StaccatoDetailView: View {
 
 private extension StaccatoDetailView {
 
+    func presentDeleteAlert() {
+        withAnimation {
+            alertManager.show(
+                .confirmCancelAlert(
+                    title: "삭제하시겠습니까?",
+                    message: "삭제를 누르면 복구할 수 없습니다") {
+                        viewModel.deleteStaccato(staccatoId) {isSuccess in
+                            if isSuccess,
+                               let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
+                                homeViewModel.staccatos.remove(at: indexToRemove)
+                            }
+                            navigationState.dismiss()
+                        }
+                    }
+            )
+        }
+    }
+    
     func updateMapCamera() {
         if let detail = viewModel.staccatoDetail {
             let coordinate = CLLocationCoordinate2D(
@@ -157,23 +171,6 @@ private extension StaccatoDetailView {
             homeViewModel.moveCamera(to: coordinate)
         }
     }
-
-    private func presentShareSheet() {
-        guard let shareLink = viewModel.shareLink else { return }
-        
-        let activityViewController = UIActivityViewController(
-            activityItems: [shareLink],
-            applicationActivities: nil
-        )
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController?.present(activityViewController, animated: true) {
-                viewModel.shareLink = nil
-            }
-        }
-    }
-
 }
 
 
@@ -205,14 +202,10 @@ private extension StaccatoDetailView {
         .padding(.horizontal, horizontalInset)
     }
     
+    @ViewBuilder
     var shareButton: some View {
-        Button {
-            isShareLinkLoading = true
-            viewModel.postShareLink()
-        } label: {
-            if isShareLinkLoading {
-                ProgressView()
-            } else {
+        if let link = viewModel.shareLink {
+            ShareLink(item: link) {
                 Image(StaccatoIcon.squareAndArrowUp)
                     .foregroundStyle(.gray3)
                     .fontWeight(.semibold)
@@ -220,7 +213,7 @@ private extension StaccatoDetailView {
             }
         }
     }
-
+    
     var locationSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(viewModel.staccatoDetail?.placeName ?? "")
@@ -343,8 +336,16 @@ private extension StaccatoDetailView {
         let isValid = !commentText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         
         return Button {
-            viewModel.postComment(commentText)
-            commentText.removeAll()
+            Task {
+                do {
+                    try await viewModel.postComment(staccatoId, commentText)
+                    try await viewModel.getComments(staccatoId)
+                    viewModel.shouldScrollToBottom = true
+                    commentText.removeAll()
+                } catch {
+                    print("❌ Error: \(error.localizedDescription)")
+                }
+            }
         } label: {
             Image(StaccatoIcon.arrowRightCircleFill)
                 .resizable()
@@ -451,7 +452,14 @@ private extension StaccatoDetailView {
                     .confirmCancelAlert(
                         title: "댓글을 삭제하시겠습니까?",
                         message: "삭제하면 되돌릴 수 없어요") {
-                            viewModel.deleteComment(comment.commentId)
+                            Task {
+                                do {
+                                    try await viewModel.deleteComment(comment.commentId)
+                                    try await viewModel.getComments(staccatoId)
+                                } catch {
+                                    print("❌ Error: \(error.localizedDescription)")
+                                }
+                            }
                         }
                 )
             } label: {
@@ -461,5 +469,4 @@ private extension StaccatoDetailView {
             .foregroundStyle(.red)
         }
     }
-
 }

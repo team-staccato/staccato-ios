@@ -22,7 +22,7 @@ struct HomeView: View {
     // NOTE: Managers
     @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @Environment(NavigationState.self) private var navigationState
-    @Environment(StaccatoAlertManager.self) private var alertManager
+    @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
 
     // NOTE: UI Visibility
@@ -61,7 +61,7 @@ struct HomeView: View {
                                value: detentManager.currentDetent.height)
                 
                 if alertManager.isPresented {
-                    StaccatoAlertView()
+                    StaccatoAlertView(alertManager: $alertManager)
                 }
             }
         }
@@ -106,8 +106,8 @@ struct HomeView: View {
         // 업데이트 안내 // TODO: 리팩토링
         .alert(isPresented: $showUpdateAlert) {
             Alert(
-                title: Text("업데이트 필요"),
-                message: Text("현재 버전은 앱이 정상적으로 작동하지 않습니다😢 \n새로운 버전으로 업데이트 해주세요."),
+                title: Text("업데이트 알림"),
+                message: Text("새로운 기능이 추가되었어요. 앱을 업데이트해주세요."),
                 dismissButton: .default(Text("업데이트하러 가기"), action: {
                     UIApplication.shared.open(AppVersionCheckManager.shared.appStoreURL)
                 })

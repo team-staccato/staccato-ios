@@ -311,7 +311,7 @@ extension MyPageView {
             VStack(alignment: .trailing, spacing: 10) {
                 Button {
                     print("\n========================================\n✅ 복구코드: \(viewModel.profile?.code ?? "없음")\n====================로그아웃====================")
-                    UIPasteboard.general.string = viewModel.profile?.code ?? ""
+                    UIPasteboard.general.string = viewModel.profile?.code ?? "복구코드 없음"
                     signinViewModel.logout()
                 } label: {
                     Text("로그아웃")

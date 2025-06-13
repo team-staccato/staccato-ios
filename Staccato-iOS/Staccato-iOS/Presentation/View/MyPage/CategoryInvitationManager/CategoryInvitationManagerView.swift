@@ -12,8 +12,8 @@ import SwiftUI
 struct CategoryInvitationManagerView: View {
     
     @EnvironmentObject private var viewModel: CategoryInvitationManagerViewModel
-    @Environment(StaccatoAlertManager.self) var alertManager
     
+    @State private var alertManager = StaccatoAlertManager()
     @State private var selectedType: InvitationType = .received
     
     var body: some View {
@@ -31,7 +31,7 @@ struct CategoryInvitationManagerView: View {
             }
             
             if alertManager.isPresented {
-                StaccatoAlertView()
+                StaccatoAlertView(alertManager: $alertManager)
             }
         }
         .onAppear {

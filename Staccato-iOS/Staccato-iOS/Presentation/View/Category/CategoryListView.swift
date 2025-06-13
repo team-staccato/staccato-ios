@@ -38,22 +38,24 @@ struct CategoryListView: View {
                     titleSection
                         .padding(.top, 37)
                         .padding(.horizontal, 18)
-                    
+
                     filterSection
                         .padding(.top, 10)
                         .padding(.horizontal, 18)
-                    
+
                     categoryList
                         .padding(.top, 10)
-                    
+
                     Spacer()
                 }
                 .background(Color.staccatoWhite)
                 .ignoresSafeArea(.container, edges: .bottom)
                 .frame(maxWidth: .infinity)
+
                 .onChange(of: geometry.size.height) { _, height in
                     detentManager.updateDetent(height)
                 }
+
                 .onAppear {
                     detentManager.updateDetent(geometry.size.height)
                 }
@@ -65,8 +67,6 @@ struct CategoryListView: View {
                     case .categoryDetail(let categoryId):
                         CategoryDetailView(categoryId, viewModel)
                             .environmentObject(detentManager)
-                    case .categoryAdd:
-                        CategoryEditorView(categoryViewModel: viewModel)
                     }
                 }
             }
@@ -190,6 +190,7 @@ private extension CategoryListView {
                     }
                 }
             }
+            .padding(.bottom, 10)
         }
     }
 

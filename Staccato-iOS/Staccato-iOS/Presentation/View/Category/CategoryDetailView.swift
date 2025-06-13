@@ -11,13 +11,13 @@ import Kingfisher
 struct CategoryDetailView: View {
     
     @Environment(NavigationState.self) var navigationState
-    @Environment(StaccatoAlertManager.self) var alertManager
     @EnvironmentObject var detentManager: BottomSheetDetentManager
     @EnvironmentObject var homeViewModel: HomeViewModel
     
     private let categoryId: Int64
     @ObservedObject var viewModel: CategoryViewModel
     
+    @State private var alertManager = StaccatoAlertManager()
     @State private var isStaccatoCreateViewPresented = false
     @State private var isCategoryModifyModalPresented = false
     @State private var isinvitationSheetPresented = false
@@ -31,24 +31,30 @@ struct CategoryDetailView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 16) {
-                    headerSection
-                    
-                    if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
-                        descriptionSection
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        headerSection
+                        
+                        if viewModel.categoryDetail?.description != nil && viewModel.categoryDetail?.description != "" {
+                            descriptionSection
+                        }
+                        
+                        if viewModel.categoryDetail?.isShared ?? false {
+                            sharedMemberSection
+                        }
+                        
+                        staccatoCollectionSection
+                            .padding(.bottom, ScreenUtils.safeAreaInsets.bottom)
                     }
-                    
-                    if viewModel.categoryDetail?.isShared ?? false {
-                        sharedMemberSection
-                    }
-                    
-                    staccatoCollectionSection
-                        .padding(.bottom, ScreenUtils.safeAreaInsets.bottom)
+                    .frame(width: ScreenUtils.width)
                 }
-                .frame(width: ScreenUtils.width)
+                .background(.staccatoWhite)
+                
+                if alertManager.isPresented {
+                    StaccatoAlertView(alertManager: $alertManager)
+                }
             }
-            .background(.staccatoWhite)
             
             .staccatoNavigationBar {
                 if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
@@ -57,29 +63,25 @@ struct CategoryDetailView: View {
                     }
                     
                     Button("삭제") {
-                        // TODO: - 삭제 버튼 시 alert가 sheet 뒤로 뜨는 이슈
                         presentDeleteAlert()
                     }
                 }
             }
-            
-            .onAppear {
-                detentManager.updateDetent(geometry.size.height)
+            .onChange(of: homeViewModel.staccatos) {
                 viewModel.getCategoryDetail(categoryId)
             }
-            
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
             }
-            
-            .onChange(of: homeViewModel.staccatos) {
+            .onAppear {
+                detentManager.updateDetent(geometry.size.height)
+                
                 viewModel.getCategoryDetail(categoryId)
             }
             
             .fullScreenCover(isPresented: $isStaccatoCreateViewPresented) {
                 StaccatoEditorView(category: viewModel.categoryDetail?.toCategoryCandidateModel())
             }
-            
             .fullScreenCover(isPresented: $isCategoryModifyModalPresented) {
                 CategoryEditorView(
                     categoryDetail: self.viewModel.categoryDetail,
@@ -87,8 +89,8 @@ struct CategoryDetailView: View {
                     categoryViewModel: viewModel
                 )
             }
+            .ignoresSafeArea(.container, edges: .bottom)
         }
-        .ignoresSafeArea(.container, edges: .bottom)
     }
 }
 

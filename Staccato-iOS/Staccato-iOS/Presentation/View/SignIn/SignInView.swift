@@ -2,7 +2,8 @@ import SwiftUI
 
 struct SignInView: View {
     @EnvironmentObject private var viewModel: SignInViewModel
-    @Environment(StaccatoAlertManager.self) var alertManager
+    
+    @State private var alertManager = StaccatoAlertManager()
     @State private var nickName: String = ""
     @State private var validationMessage: String?
     @State private var isLoading: Bool = false
@@ -84,9 +85,10 @@ struct SignInView: View {
                 }
                 
                 if alertManager.isPresented {
-                    StaccatoAlertView()
+                    StaccatoAlertView(alertManager: $alertManager)
                 }
             }
+            .dismissKeyboardOnGesture()
         }
     }
 }

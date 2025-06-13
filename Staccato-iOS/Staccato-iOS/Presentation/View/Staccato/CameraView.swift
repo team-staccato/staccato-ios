@@ -46,14 +46,19 @@ struct CameraView: UIViewControllerRepresentable {
             self.picker = picker
         }
 
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        func imagePickerController(
+            _ picker: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
+        ) {
             guard let selectedImage = info[.originalImage] as? UIImage else { return }
 
             switch self.picker.cameraMode {
             case .single:
                 self.picker.selectedImage = selectedImage
             case .multiple:
-                self.picker.imageList.append(UploadablePhoto(photo: selectedImage))
+                let newImage = UploadablePhoto(photo: selectedImage)
+                self.picker.imageList.append(newImage)
+                Task { try await newImage.uploadImage() }
             }
             self.picker.isPresented.wrappedValue.dismiss()
         }

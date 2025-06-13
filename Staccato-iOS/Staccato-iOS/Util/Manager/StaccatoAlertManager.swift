@@ -71,7 +71,7 @@ extension StaccatoAlertConfiguration {
 
     static func confirmCancelAlert(
         title: String?,
-        message: String?,
+        message: String? = nil,
         _ onConfirm: @escaping () -> Void
     ) -> StaccatoAlertConfiguration {
         .alert(
@@ -84,7 +84,7 @@ extension StaccatoAlertConfiguration {
 
     static func confirmAlert(
         title: String?,
-        message: String?,
+        message: String? = nil,
         onConfirm: @escaping () -> Void
     ) -> StaccatoAlertConfiguration {
         .alert(

@@ -7,6 +7,7 @@
 
 import GoogleMaps
 import GooglePlacesSwift
+import FirebaseCore
 import UIKit
 
 // Maps SDK 초기화를 위해 AppDelegate 구현
@@ -19,7 +20,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         let apiKey = Bundle.main.infoDictionary?["API_KEY"] as! String
         GMSServices.provideAPIKey(apiKey)
         let _ = PlacesClient.provideAPIKey(apiKey)
-
+        FirebaseApp.configure()
+        
         return true
     }
     

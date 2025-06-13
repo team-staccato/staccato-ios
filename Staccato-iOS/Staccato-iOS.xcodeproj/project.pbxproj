@@ -13,6 +13,8 @@
 		15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 15926B272D2EF06E00026F56 /* GoogleMaps */; };
 		3D69FDBC2DA2B43B0073D885 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 3D69FDBB2DA2B43B0073D885 /* Lottie */; };
 		79E999F42D4D11790066E0CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 79E999F32D4D11790066E0CA /* Alamofire */; };
+		A820C8772DFBEAA0003681E2 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = A820C8762DFBEAA0003681E2 /* FirebaseAnalytics */; };
+		A820C8792DFBEAA0003681E2 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A820C8782DFBEAA0003681E2 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +51,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A820C8792DFBEAA0003681E2 /* FirebaseMessaging in Frameworks */,
+				A820C8772DFBEAA0003681E2 /* FirebaseAnalytics in Frameworks */,
 				133087FD2D66D89800085E6F /* GooglePlaces in Frameworks */,
 				15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */,
 				79E999F42D4D11790066E0CA /* Alamofire in Frameworks */,
@@ -113,6 +117,8 @@
 				133087FE2D66D89800085E6F /* GooglePlacesSwift */,
 				151667762D7DEA9700F7F956 /* Kingfisher */,
 				3D69FDBB2DA2B43B0073D885 /* Lottie */,
+				A820C8762DFBEAA0003681E2 /* FirebaseAnalytics */,
+				A820C8782DFBEAA0003681E2 /* FirebaseMessaging */,
 			);
 			productName = "Staccato-iOS";
 			productReference = 137153882D26CDCA00EABE10 /* Staccato-iOS.app */;
@@ -148,6 +154,7 @@
 				133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 				151667752D7DEA9700F7F956 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				3D69FDBA2DA2B43B0073D885 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				A820C8752DFBEAA0003681E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 137153892D26CDCA00EABE10 /* Products */;
@@ -313,6 +320,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = "Staccato-iOS/Staccato-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -360,6 +368,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = "Staccato-iOS/Staccato-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -463,6 +472,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		A820C8752DFBEAA0003681E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.14.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -495,6 +512,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 79E999F22D4D11790066E0CA /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		A820C8762DFBEAA0003681E2 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A820C8752DFBEAA0003681E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		A820C8782DFBEAA0003681E2 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A820C8752DFBEAA0003681E2 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

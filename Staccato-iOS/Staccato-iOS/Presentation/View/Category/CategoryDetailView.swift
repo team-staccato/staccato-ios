@@ -65,6 +65,10 @@ struct CategoryDetailView: View {
                     Button("삭제") {
                         presentDeleteAlert()
                     }
+                } else {
+                    Button("나가기") {
+                        presentLeaveAlert()
+                    }
                 }
             }
             .onChange(of: homeViewModel.staccatos) {
@@ -272,7 +276,28 @@ private extension CategoryDetailView {
                     message: "삭제를 누르면 복구할 수 없습니다."
                 ) {
                     Task {
-                        let success = await viewModel.deleteCategory()
+                        let success = await viewModel.deleteCategory(.host)
+                        if success {
+                            navigationState.dismiss()
+                            
+                            if let staccatoIds = viewModel.categoryDetail?.staccatos.map(\.staccatoId) {
+                                homeViewModel.removeStaccatos(with: Set(staccatoIds))
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+    
+    func presentLeaveAlert() {
+        withAnimation {
+            alertManager.show(
+                .confirmCancelAlert(
+                    title: "카테고리를 나가시겠습니까?"
+                ) {
+                    Task {
+                        let success = await viewModel.deleteCategory(.member)
                         if success {
                             navigationState.dismiss()
                             

@@ -11,7 +11,7 @@
 /// - Usage:
 ///   ```swift
 ///   // SF Symbol 사용 예시
-///   Image(systemName: StaccatoIcon.chevronLeft.rawValue)
+///   Image(.chevronLeft)
 ///     .resizable()
 ///     .frame(width: 24, height: 24)
 ///   ```
@@ -19,9 +19,12 @@ enum StaccatoIcon: String {
     // MARK: - Toolbar
     case chevronLeft = "chevron.left"
 
-    // MARK: - Categories
-    case folderFill = "folder.fill"
+    // MARK: - CategoryList
+    case folderFillBadgePlus = "folder.fill.badge.plus"
     case sliderHorizontal3 = "slider.horizontal.3"
+    case line3HorizontalDecrease = "line.3.horizontal.decrease"
+    case arrowtriangleDownFill = "arrowtriangle.down.fill"
+    case photoBadgeExclamationmark = "photo.badge.exclamationmark"
 
     // MARK: - Category
     case pencilLine = "pencil.line"
@@ -30,14 +33,26 @@ enum StaccatoIcon: String {
     // MARK: - Category Creation/Update
     case camera = "camera"
     case xCircleFill = "x.circle.fill"
+    case xmark = "xmark"
+    case infoCircle = "info.circle"
 
     // MARK: - Staccato Creation/Update
     case location = "location"
     case minusCircle = "minus.circle"
+    case magnifyingGlass = "magnifyingglass"
 
     // MARK: - MyPage
     case pencilCircleFill = "pencil.circle.fill"
     case squareOnSquare = "square.on.square"
     case chevronRight = "chevron.right"
     case personCircleFill = "person.circle.fill"
+    
+    // MARK: - Staccato Detail
+    case arrowRightCircleFill = "arrow.right.circle.fill"
+    case trash = "trash"
+    case squareAndArrowUp = "square.and.arrow.up"
+    
+    // MARK: - Home
+    case plus = "plus"
+    case dotScope = "dot.scope"
 }

@@ -65,7 +65,9 @@ enum StaccatoFont {
 
     var lineSpacing: CGFloat {
         switch self {
-        case .title1, .title2, .body1, .body2:
+        case .title1:
+            return 25 - self.size
+        case .title2, .body1, .body2:
             return 20 - self.size
         case .body3:
             return 18 - self.size

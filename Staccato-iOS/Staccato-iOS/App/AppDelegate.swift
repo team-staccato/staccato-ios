@@ -25,28 +25,42 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         
         // FCM
         FirebaseApp.configure()
+        Messaging.messaging().delegate = self
         
-        //원격 알림 시스템에 앱을 등록
+        // 알림 센터 델리게이트 설정
         UNUserNotificationCenter.current().delegate = self
         
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: authOptions,
-            completionHandler: { _, _ in }
-        )
-        
-        application.registerForRemoteNotifications()
+        // 권한 요청 및 APNs 등록
+        requestNotificationPermission()
         
         return true
+    }
+    
+    private func requestNotificationPermission() {
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { granted, error in
+            if let error {
+                print("알림 권한 요청 에러: \(error)")
+                return
+            }
+            
+            Task { @MainActor in
+                if granted {
+                    print("✅ 권한 허용됨 - APNs 등록 시작")
+                    UIApplication.shared.registerForRemoteNotifications()
+                } else {
+                    print("❌ 권한 거부됨")
+                }
+            }
+        }
     }
     
     func application(
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        Messaging.messaging().delegate = self
         Messaging.messaging().apnsToken = deviceToken
-        getFCMToken()
+        registerFCMToken()
     }
     
     func application(
@@ -56,19 +70,21 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         print("APNs 토큰 등록 실패: \(error.localizedDescription)")
     }
     
-    private func getFCMToken() {
+    private func registerFCMToken() {
         Messaging.messaging().token { token, error in
-            if let error = error {
+            if let error {
                 print("FCM 토큰 가져오기 실패: \(error)")
-            } else if let token = token {
+            } else if let token {
+                let deviceID = UIDevice.current.identifierForVendor!.uuidString
                 print("FCM 토큰: \(token)")
-                // 서버에 토큰 전송 등의 작업 수행
+                Task { try await NotificationService.postNotificationToken(token, deviceID) }
             }
         }
     }
     
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("FCM 토큰: \(String(describing: fcmToken))")
+        let deviceID = UIDevice.current.identifierForVendor!.uuidString
+        print("FCM 토큰: \(String(describing: fcmToken)), deviceId: \(deviceID)")
     }
 }
 

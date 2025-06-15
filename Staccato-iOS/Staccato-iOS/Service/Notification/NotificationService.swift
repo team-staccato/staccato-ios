@@ -7,14 +7,14 @@
 
 import Foundation
 
-protocol NotificationServiceProtocol {
-
-    func getHasNotification() async throws -> GetHasNotificationResponse
+struct NotificationService {
+    static func postNotificationToken(_ token: String, _ deviceId: String) async throws {
+        try await NetworkService.shared.request(
+            endpoint: NotificationEndPoint.postNotificationToken(token, deviceId)
+        )
+    }
     
-}
-
-class NotificationService: NotificationServiceProtocol {
-    func getHasNotification() async throws -> GetHasNotificationResponse {
+    static func getHasNotification() async throws -> GetHasNotificationResponse {
         guard let hasNotification = try await NetworkService.shared.request(
             endpoint: NotificationEndPoint.getHasNotification,
             responseType: GetHasNotificationResponse.self

@@ -22,7 +22,7 @@ extension STNotificationManager {
     func getHasNotification(completion: @escaping (Bool) -> Void) {
         Task {
             do {
-                let response = try await STService.shared.notificationService.getHasNotification()
+                let response = try await NotificationService.getHasNotification()
                 completion(response.isExist)
             } catch {
                 print("Error: \(error)")

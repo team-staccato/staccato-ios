@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SignInView: View {
+    
     @EnvironmentObject private var viewModel: SignInViewModel
     
     @State private var alertManager = StaccatoAlertManager()

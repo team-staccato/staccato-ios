@@ -8,36 +8,38 @@
 import Foundation
 
 final class AuthTokenManager {
+    
+    private enum Key {
+        static let tokenKey = "authToken"
+        static let userIdKey = "userId"
+    }
 
     static let shared = AuthTokenManager()
     private init() {}
 
-    private let tokenKey = "authToken"
-    private let userIdKey = "userId"
-
     // 🔹 토큰(+유저아이디) 저장
     func saveToken(_ token: String) {
-        UserDefaults.standard.set(token, forKey: tokenKey)
+        UserDefaults.standard.set(token, forKey: Key.tokenKey)
         
         if let userId = parseUserID(from: token) {
-            UserDefaults.standard.set(userId, forKey: userIdKey)
+            UserDefaults.standard.set(userId, forKey: Key.userIdKey)
         }
     }
 
     // 🔹 저장된 토큰 가져오기
     func getToken() -> String? {
-        return UserDefaults.standard.string(forKey: tokenKey)
+        return UserDefaults.standard.string(forKey: Key.tokenKey)
     }
 
     // 🔹 저장된 유저 아이디 가져오기
     func getUserId() -> Int64? {
-        return UserDefaults.standard.object(forKey: userIdKey) as? Int64
+        return UserDefaults.standard.object(forKey: Key.userIdKey) as? Int64
     }
 
     // 🔹 토큰(+유저아이디) 삭제
     func clearToken() {
-        UserDefaults.standard.removeObject(forKey: tokenKey)
-        UserDefaults.standard.removeObject(forKey: userIdKey)
+        UserDefaults.standard.removeObject(forKey: Key.tokenKey)
+        UserDefaults.standard.removeObject(forKey: Key.userIdKey)
     }
 
 }

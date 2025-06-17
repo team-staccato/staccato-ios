@@ -63,7 +63,11 @@ struct CategoryDetailView: View {
                     }
                     
                     Button("삭제") {
-                        presentDeleteAlert()
+                        presentDeleteAlert(.host)
+                    }
+                } else {
+                    Button("나가기") {
+                        presentDeleteAlert(.member)
                     }
                 }
             }
@@ -264,15 +268,20 @@ private extension CategoryDetailView {
 
 private extension CategoryDetailView {
     
-    func presentDeleteAlert() {
+    enum Role {
+        case host
+        case member
+    }
+    
+    func presentDeleteAlert(_ state: Role) {
         withAnimation {
             alertManager.show(
                 .confirmCancelAlert(
-                    title: "삭제하시겠습니까?",
-                    message: "삭제를 누르면 복구할 수 없습니다."
+                    title: state == .host ? "삭제하시겠습니까?" : "카테고리를 나가시겠습니까?",
+                    message: state == .host ? "삭제를 누르면 복구할 수 없습니다." : nil
                 ) {
                     Task {
-                        let success = await viewModel.deleteCategory()
+                        let success = state == .host ? await viewModel.deleteCategory(.host) : await viewModel.deleteCategory(.member)
                         if success {
                             navigationState.dismiss()
                             

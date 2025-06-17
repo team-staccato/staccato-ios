@@ -9,6 +9,11 @@ import SwiftUI
 
 @MainActor
 final class CategoryViewModel: ObservableObject {
+    
+    enum State {
+        case host
+        case member
+    }
 
     // MARK: - Properties
 
@@ -48,14 +53,20 @@ final class CategoryViewModel: ObservableObject {
         }
     }
 
-    func deleteCategory() async -> Bool {
+    func deleteCategory(_ state: State) async -> Bool {
         guard let categoryDetail else {
             print("⚠️ \(StaccatoError.optionalBindingFailed) - delete category")
             return false
         }
 
         do {
-            try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
+            switch state {
+            case .host:
+                try await STService.shared.categoryService.deleteCategory(categoryDetail.categoryId)
+            case .member:
+                try await STService.shared.categoryService.deleteCategoryFromMe(categoryDetail.categoryId)
+            }
+            
             try await getCategoryList()
             return true
         } catch {
@@ -63,5 +74,4 @@ final class CategoryViewModel: ObservableObject {
             return false
         }
     }
-
 }

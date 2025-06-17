@@ -63,11 +63,11 @@ struct CategoryDetailView: View {
                     }
                     
                     Button("삭제") {
-                        presentDeleteAlert()
+                        presentDeleteAlert(.host)
                     }
                 } else {
                     Button("나가기") {
-                        presentLeaveAlert()
+                        presentDeleteAlert(.member)
                     }
                 }
             }
@@ -268,36 +268,20 @@ private extension CategoryDetailView {
 
 private extension CategoryDetailView {
     
-    func presentDeleteAlert() {
-        withAnimation {
-            alertManager.show(
-                .confirmCancelAlert(
-                    title: "삭제하시겠습니까?",
-                    message: "삭제를 누르면 복구할 수 없습니다."
-                ) {
-                    Task {
-                        let success = await viewModel.deleteCategory(.host)
-                        if success {
-                            navigationState.dismiss()
-                            
-                            if let staccatoIds = viewModel.categoryDetail?.staccatos.map(\.staccatoId) {
-                                homeViewModel.removeStaccatos(with: Set(staccatoIds))
-                            }
-                        }
-                    }
-                }
-            )
-        }
+    enum Role {
+        case host
+        case member
     }
     
-    func presentLeaveAlert() {
+    func presentDeleteAlert(_ state: Role) {
         withAnimation {
             alertManager.show(
                 .confirmCancelAlert(
-                    title: "카테고리를 나가시겠습니까?"
+                    title: state == .host ? "삭제하시겠습니까?" : "카테고리를 나가시겠습니까?",
+                    message: state == .host ? "삭제를 누르면 복구할 수 없습니다." : nil
                 ) {
                     Task {
-                        let success = await viewModel.deleteCategory(.member)
+                        let success = state == .host ? await viewModel.deleteCategory(.host) : await viewModel.deleteCategory(.member)
                         if success {
                             navigationState.dismiss()
                             

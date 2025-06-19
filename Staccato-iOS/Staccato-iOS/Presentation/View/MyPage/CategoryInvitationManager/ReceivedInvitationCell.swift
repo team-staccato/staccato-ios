@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct ReceivedInvitationCell: View {
     let invitation: ReceivedInvitationModel
@@ -13,113 +14,99 @@ struct ReceivedInvitationCell: View {
     let onAccept: () -> Void
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 18) {
             content
+                .padding(.horizontal, 22)
+            
             Divider()
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal)
-        .background(Color.white)
+        .padding(.vertical, 18)
     }
 
     private var content: some View {
-        HStack(alignment: .top, spacing: 12) {
+        VStack(spacing: 8) {
             HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    inviterInfo
-                    Text(invitation.categoryTitle)
-                        .typography(.body4)
-                        .foregroundColor(.staccatoBlack)
-                }
-
+                inviteInfo
                 Spacer()
-
+            }
+            
+            HStack {
+                Spacer()
                 actionButtons
             }
         }
     }
 
-    private var inviterInfo: some View {
-        HStack(spacing: 0) {
-            inviterProfileImage
-            Text("\(invitation.inviterNickname)")
-                .bold()
-                .foregroundColor(.staccatoBlack)
+    private var inviteInfo: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 5) {
+                KFImage.url(URL(string: invitation.inviterProfileImageUrl ?? ""))
+                    .fillPersonImage(width: 16, height: 16)
+                
+                Text(inviteCategoryString)
+                    .foregroundColor(.staccatoBlack)
+            }
+            
+            Text(invitation.categoryTitle)
                 .typography(.title3)
-
-            Text("님이 카테고리에 초대했어요.")
                 .foregroundColor(.staccatoBlack)
-                .typography(.title3)
+                .lineLimit(1)
         }
     }
-
-    private var inviterProfileImage: some View {
-        Group {
-            if let profileImageUrl = invitation.inviterProfileImageUrl,
-               let url = URL(string: profileImageUrl) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .padding(.trailing, 3)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(Circle())
-                            .frame(width: 16, height: 16)
-                            .padding(.trailing, 3)
-                    case .failure:
-                        Image(.personCircleFill)
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundStyle(.gray2)
-                            .frame(width: 16, height: 16)
-                            .padding(.trailing, 3)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-            } else {
-                Image(.personCircleFill)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.gray2)
-                    .frame(width: 16, height: 16)
-                    .padding(.trailing, 3)
-            }
+    
+    private var inviteCategoryString: AttributedString {
+        var text = AttributedString("\(invitation.inviterNickname)님이 카테고리에 초대했어요.")
+        if let inviter = text.range(of: "\(invitation.inviterNickname)") {
+            text[inviter].font = StaccatoFont.body4.font.weight(.bold)
         }
+        if let guide = text.range(of: "님이 카테고리에 초대했어요.") {
+            text[guide].font = StaccatoFont.body4.font
+        }
+        
+        return text
     }
 
     private var actionButtons: some View {
         HStack(spacing: 8) {
-            Button(action: {
+            Button {
                 onReject()
-            }) {
+            } label: {
                 Text("거절")
                     .typography(.body5)
                     .foregroundColor(.staccatoBlack)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(.gray2, lineWidth: 1)
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(.gray2, lineWidth: 0.5)
             )
-            .buttonStyle(.plain)
 
-            Button(action: {
+            Button {
                 onAccept()
-            }) {
+            } label: {
                 Text("수락")
                     .typography(.body5)
                     .foregroundColor(.staccatoWhite)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Color.staccatoBlue)
-            .cornerRadius(8)
-            .buttonStyle(.plain)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(.staccatoBlue)
+            .clipShape(RoundedRectangle(cornerRadius: 5))
         }
     }
+}
+
+// MARK: - Preview
+
+#Preview {
+    ReceivedInvitationCell(
+        invitation: ReceivedInvitationModel(
+            id: 1,
+            inviterId: 1,
+            inviterNickname: "호혜연해나닉네임짱긴",
+            inviterProfileImageUrl: nil,
+            categoryId: 1,
+            categoryTitle: "저기 사라진 별의 자리 아스라이 하얀 빛 한동안은 꺼내 볼 asdfasdfalsdkjfalksdjflkj"
+        ), onReject: {}, onAccept: {})
 }

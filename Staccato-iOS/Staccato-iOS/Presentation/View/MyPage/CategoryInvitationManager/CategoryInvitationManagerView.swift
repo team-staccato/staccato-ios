@@ -39,7 +39,7 @@ struct CategoryInvitationManagerView: View {
                 StaccatoAlertView(alertManager: $alertManager)
             }
         }
-        .toolbarBackgroundVisibility(.hidden)
+        .toolbar(.hidden)
         .onAppear {
             viewModel.fetchReceivedInvitations()
             viewModel.fetchSentInvitations()
@@ -188,9 +188,53 @@ private extension CategoryInvitationManagerView {
     }
 }
 
-#Preview {
+// MARK: - Preview
+
+#Preview("빈 화면") {
     NavigationStack {
         CategoryInvitationManagerView()
             .environmentObject(CategoryInvitationManagerViewModel())
+    }
+}
+
+#Preview("초대 있는 경우") {
+    @Previewable @State var viewModel = {
+        let vm = CategoryInvitationManagerViewModel()
+        vm.receivedInvitaions = [ReceivedInvitationModel(
+            id: 1,
+            inviterId: 1,
+            inviterNickname: "빙티",
+            inviterProfileImageUrl: nil,
+            categoryId: 1,
+            categoryTitle: "어쩔티비카테고리"
+        ), ReceivedInvitationModel(
+            id: 2,
+            inviterId: 2,
+            inviterNickname: "호혜연해나닉네임짱긴",
+            inviterProfileImageUrl: nil,
+            categoryId: 2,
+            categoryTitle: "저기 사라진 별의 자리 아스라이 하얀 빛 한동안은 꺼내 볼 asdfasdfalsdkjfalksdjflkj"
+        )]
+        vm.sentInvitaions = [SentInvitationModel(
+            id: 1,
+            inviteeId: 1,
+            inviteeNickname: "양양",
+            inviteeProfileImageUrl: nil,
+            categoryId: 1,
+            categoryTitle: "카테카테"
+        ), SentInvitationModel(
+            id: 2,
+            inviteeId: 2,
+            inviteeNickname: "호혜연해나닉네임짱긴",
+            inviteeProfileImageUrl: nil,
+            categoryId: 2,
+            categoryTitle: "카테고리이름이너무길어서어떡하냐진짜제발짧게해"
+        )]
+        return vm
+    }()
+    
+    NavigationStack {
+        CategoryInvitationManagerView()
+            .environmentObject(viewModel)
     }
 }

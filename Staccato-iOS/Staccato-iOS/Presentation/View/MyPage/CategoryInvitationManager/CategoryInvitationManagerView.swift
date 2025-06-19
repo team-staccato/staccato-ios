@@ -107,7 +107,9 @@ private extension CategoryInvitationManagerView {
         icon: String
     ) -> some View {
         Button {
-            selectedType = type
+            withAnimation {
+                selectedType = type
+            }
         } label: {
             HStack(spacing: 6) {
                 Text(text).typography(.title3)

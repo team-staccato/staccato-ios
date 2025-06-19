@@ -7,11 +7,10 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct CategoryInvitationManagerView: View {
     
     @EnvironmentObject private var viewModel: CategoryInvitationManagerViewModel
+    @Environment(\.dismiss) var dismiss
     
     @State private var alertManager = StaccatoAlertManager()
     @State private var selectedType: InvitationType = .received
@@ -19,14 +18,20 @@ struct CategoryInvitationManagerView: View {
     var body: some View {
         ZStack {
             VStack {
+                
+                navigationBar
+                
                 typeSwitchButtons
+                
                 Spacer()
+                
                 if viewModel.receivedInvitaions.isEmpty && selectedType == .received
                     || viewModel.sentInvitaions.isEmpty && selectedType == .sent {
                     emptyStateView
                 } else {
                     invitationList
                 }
+                
                 Spacer()
             }
             
@@ -34,6 +39,7 @@ struct CategoryInvitationManagerView: View {
                 StaccatoAlertView(alertManager: $alertManager)
             }
         }
+        .toolbarBackgroundVisibility(.hidden)
         .onAppear {
             viewModel.fetchReceivedInvitations()
             viewModel.fetchSentInvitations()
@@ -42,16 +48,57 @@ struct CategoryInvitationManagerView: View {
 }
 
 private extension CategoryInvitationManagerView {
-    var typeSwitchButtons: some View {
-        HStack {
+    var navigationBar: some View {
+        ZStack {
+            HStack(spacing: 0) {
+                Button  {
+                    dismiss()
+                } label: {
+                    Image(.chevronLeft)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 20)
+                        .padding(.leading, 16)
+                        .foregroundStyle(.gray3)
+                }
+                
+                Spacer()
+            }
+            
             HStack {
-                inviteTypeButton(type: .received, text: "받은 초대", icon: "tray.and.arrow.down")
-                inviteTypeButton(type: .sent, text: "보낸 초대", icon: "paperplane.fill")
+                Spacer()
+                
+                Text("카테고리 초대 관리")
+                    .typography(.title2)
+                    .foregroundStyle(.gray5)
+                
+                Spacer()
+            }
+        }
+        .frame(height: 56)
+    }
+    
+    var typeSwitchButtons: some View {
+        GeometryReader { geometry in
+            ZStack {
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(.staccatoWhite)
+                    .frame(width: (geometry.size.width - 60) / 2, height: 44)
+                    .padding(.vertical, 5)
+                    .padding(.horizontal, 8)
+                    .offset(x: selectedType == .received ? -(geometry.size.width - 32) * 0.25 : (geometry.size.width - 32) * 0.25)
+                    .animation(.easeInOut(duration: 0.3), value: selectedType)
+                
+                HStack(spacing: 6) {
+                    inviteTypeButton(type: .received, text: "받은 초대", icon: "tray.and.arrow.down")
+                    inviteTypeButton(type: .sent, text: "보낸 초대", icon: "paperplane.fill")
+                }
             }
             .background(.gray1)
-            .cornerRadius(8)
+            .cornerRadius(7)
             .padding(.horizontal, 16)
         }
+        .frame(height: 54)
     }
     
     func inviteTypeButton(
@@ -68,9 +115,7 @@ private extension CategoryInvitationManagerView {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 10)
-            .background(selectedType == type ? .staccatoWhite : .clear)
             .foregroundColor(selectedType == type ? .staccatoBlue : .gray3)
-            .cornerRadius(8)
         }
         .padding(.vertical, 5)
         .padding(.horizontal, 8)
@@ -146,5 +191,6 @@ private extension CategoryInvitationManagerView {
 #Preview {
     NavigationStack {
         CategoryInvitationManagerView()
+            .environmentObject(CategoryInvitationManagerViewModel())
     }
 }

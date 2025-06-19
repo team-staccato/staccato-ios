@@ -10,6 +10,7 @@ import PhotosUI
 
 struct MyPageView: View {
     
+    @Environment(NavigationState.self) var navigationState
     @EnvironmentObject private var viewModel: MyPageViewModel
     @EnvironmentObject private var signinViewModel: SignInViewModel
     

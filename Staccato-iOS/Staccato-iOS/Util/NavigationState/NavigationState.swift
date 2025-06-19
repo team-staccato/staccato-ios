@@ -10,7 +10,7 @@ import Observation
 
 // MARK: - Destinations
 
-enum HomeModalNavigationDestination: Hashable {
+enum NavigationDestination: Hashable {
     case staccatoDetail(_ staccatoId: Int64)
     case categoryDetail(_ categoryId: Int64)
 }
@@ -22,9 +22,9 @@ enum HomeModalNavigationDestination: Hashable {
 final class NavigationState {
 
     var path = NavigationPath()
-    private(set) var destinations: [HomeModalNavigationDestination] = []
+    private(set) var destinations: [NavigationDestination] = []
 
-    func navigate(to destination: HomeModalNavigationDestination) {
+    func navigate(to destination: NavigationDestination) {
         if case .staccatoDetail = destination,
            case .staccatoDetail = destinations.last,
            !path.isEmpty {

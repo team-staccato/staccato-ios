@@ -187,7 +187,6 @@ extension MyPageView {
         VStack {
             NavigationLink {
                 CategoryInvitationManagerView()
-                    .environmentObject(CategoryInvitationManagerViewModel())
             } label: {
                 HStack {
                     ZStack(alignment: .topTrailing) {

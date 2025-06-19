@@ -8,13 +8,12 @@
 import Foundation
 import SwiftUI
 
-class CategoryInvitationManagerViewModel: ObservableObject {
+@MainActor
+final class CategoryInvitationManagerViewModel: ObservableObject {
+    
     @Published var receivedInvitaions: [ReceivedInvitationModel] = []
     @Published var sentInvitaions: [SentInvitationModel] = []
-}
 
-@MainActor
-extension CategoryInvitationManagerViewModel {
     func fetchReceivedInvitations() {
         Task {
             do {

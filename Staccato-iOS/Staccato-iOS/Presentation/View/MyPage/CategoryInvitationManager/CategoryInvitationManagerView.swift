@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CategoryInvitationManagerView: View {
     
-    @EnvironmentObject private var viewModel: CategoryInvitationManagerViewModel
+    @StateObject var viewModel = CategoryInvitationManagerViewModel()
     @Environment(\.dismiss) var dismiss
     
     @State private var alertManager = StaccatoAlertManager()
@@ -194,8 +194,7 @@ private extension CategoryInvitationManagerView {
 
 #Preview("빈 화면") {
     NavigationStack {
-        CategoryInvitationManagerView()
-            .environmentObject(CategoryInvitationManagerViewModel())
+        CategoryInvitationManagerView(viewModel: CategoryInvitationManagerViewModel())
     }
 }
 
@@ -236,7 +235,6 @@ private extension CategoryInvitationManagerView {
     }()
     
     NavigationStack {
-        CategoryInvitationManagerView()
-            .environmentObject(viewModel)
+        CategoryInvitationManagerView(viewModel: viewModel)
     }
 }

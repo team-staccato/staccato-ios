@@ -11,10 +11,11 @@
 <br>
 
 ## 🍎 iOS
-| 줄리(김유림) | 규니(정승균) | 루엘(강재혁) | 영미(김영현) |
+| 줄리(김유림) | 영미(김영현)| 루엘(강재혁) | 규니(정승균) |
 |:-:|:-:|:-:|:-:|
-|<img width=150 src="https://avatars.githubusercontent.com/u/157277372?v=4">|<img width=150 src="https://avatars.githubusercontent.com/u/77708819?v=4">|<img width=150 src="https://avatars.githubusercontent.com/u/79886603?v=4">|<img width=150 src="https://avatars.githubusercontent.com/u/62226667?v=4">|
-|[yurim830](https://github.com/yurim830)|[seunggyun-jeong](https://github.com/seunggyun-jeong)|[kang-jae-heok](https://github.com/kang-jae-heok)|[k2634](https://github.com/k2645)|
+|<img width=150 src="https://avatars.githubusercontent.com/u/157277372?v=4">|<img width=150 src="https://avatars.githubusercontent.com/u/62226667?v=4">|<img width=150 src="https://avatars.githubusercontent.com/u/79886603?v=4">|<img width=150 src="https://avatars.githubusercontent.com/u/77708819?v=4">|
+|[yurim830](https://github.com/yurim830)|[k2634](https://github.com/k2645)|[kang-jae-heok](https://github.com/kang-jae-heok)|[seunggyun-jeong](https://github.com/seunggyun-jeong)|
+|2025.01 - ing | 2025.05 - ing | 2025.01 - 06 | 2025.01 - 2025.05 |
 
 <br>
 

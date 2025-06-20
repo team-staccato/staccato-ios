@@ -66,10 +66,8 @@ struct StaccatoAlertView: View {
             Spacer()
             if let secondaryButton = alertManager.configuration?.secondaryButton {
                 Button(secondaryButton.title) {
-                    withAnimation {
-                        alertManager.hide()
-                        secondaryButton.action?()
-                    }
+                    alertManager.hide()
+                    secondaryButton.action?()
                 }
                 .buttonStyle(.staccatoFilled(verticalPadding: 10, foregroundColor: .gray4, backgroundColor: .gray1))
                 .frame(width: 88)
@@ -77,10 +75,8 @@ struct StaccatoAlertView: View {
             
             if let primaryButton = alertManager.configuration?.primaryButton {
                 Button(primaryButton.title) {
-                    withAnimation {
-                        alertManager.hide()
-                        primaryButton.action?()
-                    }
+                    alertManager.hide()
+                    primaryButton.action?()
                 }
                 .buttonStyle(.staccatoFilled(verticalPadding: 10))
                 .frame(width: 88)

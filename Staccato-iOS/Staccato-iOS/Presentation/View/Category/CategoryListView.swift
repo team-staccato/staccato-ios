@@ -59,7 +59,7 @@ struct CategoryListView: View {
                 .onAppear {
                     detentManager.updateDetent(geometry.size.height)
                 }
-                .navigationDestination(for: HomeModalNavigationDestination.self) { destination in
+                .navigationDestination(for: NavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail(let staccatoId):
                         StaccatoDetailView(staccatoId)

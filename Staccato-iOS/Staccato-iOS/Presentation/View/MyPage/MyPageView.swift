@@ -10,6 +10,7 @@ import PhotosUI
 
 struct MyPageView: View {
     
+    @Environment(NavigationState.self) var navigationState
     @EnvironmentObject private var viewModel: MyPageViewModel
     @EnvironmentObject private var signinViewModel: SignInViewModel
     
@@ -186,7 +187,6 @@ extension MyPageView {
         VStack {
             NavigationLink {
                 CategoryInvitationManagerView()
-                    .environmentObject(CategoryInvitationManagerViewModel())
             } label: {
                 HStack {
                     ZStack(alignment: .topTrailing) {

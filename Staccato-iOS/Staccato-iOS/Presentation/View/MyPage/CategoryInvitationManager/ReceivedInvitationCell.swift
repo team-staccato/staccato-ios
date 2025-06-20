@@ -30,10 +30,7 @@ struct ReceivedInvitationCell: View {
                 Spacer()
             }
             
-            HStack {
-                Spacer()
-                actionButtons
-            }
+            actionButtons
         }
     }
 
@@ -68,19 +65,21 @@ struct ReceivedInvitationCell: View {
 
     private var actionButtons: some View {
         HStack(spacing: 8) {
+            Spacer()
+            
             Button {
                 onReject()
             } label: {
                 Text("거절")
                     .typography(.body5)
                     .foregroundColor(.staccatoBlack)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 5)
+                            .stroke(.gray2, lineWidth: 0.5)
+                    )
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 5)
-                    .stroke(.gray2, lineWidth: 0.5)
-            )
 
             Button {
                 onAccept()
@@ -88,11 +87,11 @@ struct ReceivedInvitationCell: View {
                 Text("수락")
                     .typography(.body5)
                     .foregroundColor(.staccatoWhite)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(.staccatoBlue)
+                    .clipShape(RoundedRectangle(cornerRadius: 5))
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(.staccatoBlue)
-            .clipShape(RoundedRectangle(cornerRadius: 5))
         }
     }
 }

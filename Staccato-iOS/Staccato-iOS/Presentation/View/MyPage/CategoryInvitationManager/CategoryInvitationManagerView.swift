@@ -127,47 +127,7 @@ private extension CategoryInvitationManagerView {
 
 
 private extension CategoryInvitationManagerView {
-    var invitationList: some View {
-        List {
-            if selectedType == .received {
-                ForEach(viewModel.receivedInvitaions) { invite in
-                    ReceivedInvitationCell(
-                        invitation: invite,
-                        onReject: {
-                            alertManager.show(
-                                .confirmCancelAlert(
-                                    title: "정말 거절하시겠습니까?",
-                                    message: "친구가 실망할지도 몰라요!") {
-                                        viewModel.rejectInvite(invite.id)
-                                    }
-                            )
-                        },
-                        onAccept: { viewModel.acceptInvite(invite.id) }
-                    )
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
-                }
-            } else {
-                ForEach(viewModel.sentInvitaions) { invite in
-                    SentInvitationCell(invitation: invite) {
-                        alertManager.show(
-                            .confirmCancelAlert(
-                                title: "정말 취소하시겠습니까?",
-                                message: "취소하더라도 나중에 다시 초대를 보낼 수 있어요.") {
-                                    viewModel.cancelInvite(invite.id)
-                                }
-                        )
-                    }
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets())
-                }
-            }
-        }
-        .listStyle(.plain)
-    }
-}
-
-private extension CategoryInvitationManagerView {
+    
     var emptyStateView: some View {
         VStack(alignment: .center, spacing: 10) {
             Image(.staccatoCharacterGray)
@@ -185,6 +145,64 @@ private extension CategoryInvitationManagerView {
         .frame(maxWidth: .infinity)
         .padding(.top, 11)
         .padding(.bottom, 28)
+    }
+    
+    var invitationList: some View {
+        List {
+            if selectedType == .received {
+                receivedInvitationRows
+            } else {
+                sentInvitationRows
+            }
+        }
+        .listStyle(.plain)
+    }
+    
+    var receivedInvitationRows: some View {
+        ForEach(viewModel.receivedInvitaions) { invite in
+            ReceivedInvitationCell(
+                invitation: invite,
+                onReject: { handleRejectInvitation(invite.id) },
+                onAccept: { viewModel.acceptInvite(invite.id) }
+            )
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets())
+            .buttonStyle(PlainButtonStyle())
+        }
+    }
+
+    var sentInvitationRows: some View {
+        ForEach(viewModel.sentInvitaions) { invite in
+            SentInvitationCell(
+                invitation: invite,
+                onCancel: { handleCancelInvitation(invite.id) }
+            )
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets())
+            .buttonStyle(PlainButtonStyle())
+        }
+    }
+
+    func handleRejectInvitation(_ inviteId: Int64) {
+        alertManager.show(
+            .confirmCancelAlert(
+                title: "정말 거절하시겠습니까?",
+                message: "친구가 실망할지도 몰라요!"
+            ) {
+                viewModel.rejectInvite(inviteId)
+            }
+        )
+    }
+
+    func handleCancelInvitation(_ inviteId: Int64) {
+        alertManager.show(
+            .confirmCancelAlert(
+                title: "정말 취소하시겠습니까?",
+                message: "취소하더라도 나중에 다시 초대를 보낼 수 있어요."
+            ) {
+                viewModel.cancelInvite(inviteId)
+            }
+        )
     }
 }
 

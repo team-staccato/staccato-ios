@@ -25,8 +25,9 @@ import SwiftUI
 /// }
 /// ```
 struct StaccatoTextField: View {
+    
     @Binding var text: String
-    @FocusState<Bool>.Binding var isFocused: Bool
+    @FocusState var isFocused: Bool
 
     let placeholder: String
     let maximumTextLength: Int
@@ -47,6 +48,9 @@ struct StaccatoTextField: View {
                     if newValue.count > maximumTextLength {
                         text = String(newValue.prefix(maximumTextLength))
                     }
+                }
+                .onTapGesture {
+                    isFocused = true
                 }
 
             HStack {

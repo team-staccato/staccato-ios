@@ -36,9 +36,9 @@ struct CategoryInvitationManagerView: View {
                 Spacer()
             }
             
-            if alertManager.isPresented {
-                StaccatoAlertView(alertManager: $alertManager)
-            }
+            StaccatoAlertView(alertManager: $alertManager)
+                .opacity(alertManager.isPresented ? 1 : 0)
+                .allowsHitTesting(alertManager.isPresented)
         }
         .toolbar(.hidden)
         .onAppear {
@@ -49,6 +49,7 @@ struct CategoryInvitationManagerView: View {
 }
 
 private extension CategoryInvitationManagerView {
+    
     var navigationBar: some View {
         ZStack {
             HStack(spacing: 0) {
@@ -102,11 +103,7 @@ private extension CategoryInvitationManagerView {
         .frame(height: 54)
     }
     
-    func inviteTypeButton(
-        type: InvitationType,
-        text: String,
-        icon: String
-    ) -> some View {
+    func inviteTypeButton(type: InvitationType, text: String, icon: String) -> some View {
         Button {
             withAnimation {
                 selectedType = type

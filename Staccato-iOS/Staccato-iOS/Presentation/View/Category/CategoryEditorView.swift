@@ -9,14 +9,13 @@ import SwiftUI
 import PhotosUI
 
 struct CategoryEditorView: View {
+    
     @Environment(\.dismiss) var dismiss
     @Environment(NavigationState.self) private var navigationState
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: CategoryEditorViewModel
-
     @FocusState private var isTitleFocused: Bool
-
     @FocusState private var isDescriptionFocused: Bool
 
     init(
@@ -203,7 +202,7 @@ extension CategoryEditorView {
 
             StaccatoTextField(
                 text: $viewModel.categoryTitle,
-                isFocused: $isTitleFocused,
+                isFocused: _isTitleFocused,
                 placeholder: "카테고리 제목을 입력해주세요(최대 30자)",
                 maximumTextLength: 30
             )

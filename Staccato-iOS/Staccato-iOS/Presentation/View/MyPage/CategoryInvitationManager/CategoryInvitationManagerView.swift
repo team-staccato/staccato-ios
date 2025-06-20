@@ -23,12 +23,13 @@ struct CategoryInvitationManagerView: View {
                 
                 typeSwitchButtons
                 
-                Spacer()
-                
                 if viewModel.receivedInvitaions.isEmpty && selectedType == .received
                     || viewModel.sentInvitaions.isEmpty && selectedType == .sent {
                     emptyStateView
+                        .padding(.top, 210)
                 } else {
+                    Spacer()
+                    
                     invitationList
                 }
                 
@@ -169,11 +170,15 @@ private extension CategoryInvitationManagerView {
 private extension CategoryInvitationManagerView {
     var emptyStateView: some View {
         VStack(alignment: .center, spacing: 10) {
-            Image(.staccatoCharacter)
+            Image(.staccatoCharacterGray)
+                .resizable()
+                .frame(width: 110, height: 110)
+            
             let text = selectedType == .received ?
             "아직 친구에게 받은 초대가 없어요!" :
             "보낸 초대가 없어요!\n카테고리에서 친구를 초대해보세요."
-            Text(text) .typography(.body4)
+            Text(text)
+                .typography(.body4)
                 .foregroundStyle(.gray3)
                 .multilineTextAlignment(.center)
         }

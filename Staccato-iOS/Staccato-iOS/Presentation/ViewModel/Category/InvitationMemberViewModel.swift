@@ -56,7 +56,14 @@ final class InvitationMemberViewModel {
     private func bind() {
         nameSubject
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .sink { self.getSearchedMember($0) }
+            .removeDuplicates()
+            .sink { [weak self] searchText in
+                if searchText.isEmpty {
+                    self?.searchMembers = []
+                } else {
+                    self?.getSearchedMember(searchText)
+                }
+            }
             .store(in: &cancellables)
     }
 }

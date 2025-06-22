@@ -21,7 +21,7 @@ struct InvitationMemberView: View {
     }
     
     var body: some View {
-        VStack(alignment: .center) {
+        VStack(alignment: .center, spacing: 0) {
             titleBarView
                 .padding(.leading, 16)
                 .padding([.top, .trailing], 18)
@@ -31,24 +31,19 @@ struct InvitationMemberView: View {
                 .padding([.leading, .trailing], 16)
                 .presentationCornerRadius(5)
             
-            if viewModel.selectedMembers.isEmpty && viewModel.searchMembers.isEmpty {
-                staccatoEmptyView
-                .padding(.top, 111)
+            if !viewModel.selectedMembers.isEmpty {
+                selectedListView
+                    .padding([.top, .leading], 16)
+                
+                Divider()
+                    .padding(.top, 15)
+            }
+            
+            if !viewModel.searchMembers.isEmpty {
+                searchListView
             } else {
-                Group {
-                    if !viewModel.selectedMembers.isEmpty {
-                        selectedListView
-                            .padding([.top, .leading], 16)
-                    }
-                    
-                    if !viewModel.searchMembers.isEmpty {
-                        searchListView
-                            .padding(.top, 17)
-                    } else {
-                        staccatoEmptyView
-                            .padding(.top, 111)
-                    }
-                }
+                staccatoEmptyView
+                    .padding(.top, viewModel.selectedMembers.isEmpty ? 111 : 80)
             }
             
             Spacer()
@@ -177,12 +172,12 @@ private extension InvitationMemberView {
         ScrollView(.vertical, showsIndicators: false) {
             LazyVStack(alignment: .leading, spacing: 0) {
                 ForEach(viewModel.searchMembers) { member in
-                    Divider()
-                    
                     SearchMemberRow(member: member) { member in
                         viewModel.toggleMemberSelection(member)
                     }
                     .frame(height: 60)
+                    
+                    Divider()
                 }
             }
         }

@@ -56,10 +56,10 @@ struct StaccatoEditorView: View {
 
                 saveButton
             }
+            .padding(.horizontal, 24)
         }
         .dismissKeyboardOnGesture()
         .scrollIndicators(.hidden)
-        .padding(.horizontal, 24)
 
         .onAppear {
             if viewModel.editorMode == .create,

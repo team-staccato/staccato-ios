@@ -97,20 +97,12 @@ private extension CategoryListCell {
 
     var peopleWithStack: some View {
         HStack(spacing: -5) {
-            ForEach(categoryInfo.members, id: \.self) { member in
-                if let profileStr = member.memberImageUrl,
-                   let profileURL = URL(string: profileStr) {
-                    KFImage(profileURL)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .clipShape(Circle())
-                        .overlay {
-                            Circle().stroke(Color.white, lineWidth: 1)
-                        }
-                        .frame(width: 24, height: 24)
-                } else {
-                    Image(.personCircleFill)
-                }
+            ForEach(categoryInfo.members, id: \.memberId) { member in
+                KFImage(URL(string: member.memberImageUrl ?? ""))
+                    .fillPersonImage(width: 24, height: 24)
+                    .overlay {
+                        Circle().stroke(Color.white, lineWidth: 1)
+                    }
             }
 
             let peoplecount = categoryInfo.members.count

@@ -10,6 +10,7 @@ import PhotosUI
 
 struct MyPageView: View {
     
+    @Environment(\.openURL) var openURL
     @Environment(NavigationState.self) var navigationState
     @EnvironmentObject private var viewModel: MyPageViewModel
     @EnvironmentObject private var signinViewModel: SignInViewModel
@@ -18,6 +19,7 @@ struct MyPageView: View {
     @State var isPhotoInputPresented = false
     @State var showCamera = false
     @State var isPhotoPickerPresented = false
+    @State private var showSettingAlert: Bool = false
     
     @State private var photoItem: PhotosPickerItem?
     @State private var capturedImage: UIImage?
@@ -120,7 +122,13 @@ extension MyPageView {
         
         .confirmationDialog("프로필 이미지를 변경해요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                showCamera = true
+                CameraView.checkCameraPermission { granted in
+                    if granted {
+                        showCamera = granted
+                    } else {
+                        showSettingAlert = true
+                    }
+                }
             }
             
             Button("앨범에서 가져오기") {
@@ -134,6 +142,18 @@ extension MyPageView {
             CameraView(selectedImage: $capturedImage)
                 .background(.staccatoBlack)
         }
+        
+        .alert(isPresented: $showSettingAlert) {
+            Alert(
+                title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
+                message: Text("설정 > {앱 이름} 탭에서 접근을 활성화 할 수 있습니다."),
+                primaryButton: .default(Text("설정으로 이동"), action: {
+                    openURL(URL(string: UIApplication.openSettingsURLString)!)
+                }),
+                secondaryButton: .cancel(Text("취소"))
+            )
+        }
+        
         .onChange(of: capturedImage, { _, newValue in
             loadTransferable(from: newValue)
         })

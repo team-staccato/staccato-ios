@@ -6,9 +6,16 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct CameraView: UIViewControllerRepresentable {
-    let cameraMode: CameraMode
+    
+    enum CameraMode {
+        case single
+        case multiple
+    }
+    
+    private let cameraMode: CameraMode
     @Binding var selectedImage: UIImage?
     @Binding var imageList: [UploadablePhoto]
     @Environment(\.presentationMode) var isPresented
@@ -63,9 +70,20 @@ struct CameraView: UIViewControllerRepresentable {
             self.picker.isPresented.wrappedValue.dismiss()
         }
     }
+}
 
-    enum CameraMode {
-        case single
-        case multiple
+extension CameraView {
+    static func checkCameraPermission(completion: @escaping (Bool) -> Void) {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: completion(true)
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                Task { @MainActor in
+                    completion(granted)
+                }
+            }
+        case .denied, .restricted: completion(false)
+        @unknown default: completion(false)
+        }
     }
 }

@@ -12,11 +12,13 @@ import Lottie
 struct StaccatoEditorView: View {
     
     @Environment(\.dismiss) var dismiss
+    @Environment(\.openURL) var openURL
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: StaccatoEditorViewModel
     @State private var showLocationAlert: Bool = false
     @State private var isPhotoFull: Bool = false
+    @State private var showSettingAlert: Bool = false
 
     @FocusState var isTitleFocused: Bool
     
@@ -133,7 +135,13 @@ extension StaccatoEditorView {
         
         .confirmationDialog("사진을 첨부해 보세요", isPresented: $viewModel.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                viewModel.showCamera = true
+                CameraView.checkCameraPermission { granted in
+                    if granted {
+                        viewModel.showCamera = granted
+                    } else {
+                        showSettingAlert = true
+                    }
+                }
             }
 
             Button("앨범에서 가져오기") {
@@ -157,6 +165,17 @@ extension StaccatoEditorView {
         .fullScreenCover(isPresented: $viewModel.showCamera) {
             CameraView(cameraMode: .multiple, imageList: self.$viewModel.photos)
                 .background(.black)
+        }
+        
+        .alert(isPresented: $showSettingAlert) {
+            Alert(
+                title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
+                message: Text("설정 > {앱 이름} 탭에서 접근을 활성화 할 수 있습니다."),
+                primaryButton: .default(Text("설정으로 이동"), action: {
+                    openURL(URL(string: UIApplication.openSettingsURLString)!)
+                }),
+                secondaryButton: .cancel(Text("취소"))
+            )
         }
         
         .onChange(of: viewModel.uploadSuccess, { _, uploadSuccess in

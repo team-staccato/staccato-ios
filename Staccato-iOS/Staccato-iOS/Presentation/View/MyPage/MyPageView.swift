@@ -112,7 +112,9 @@ extension MyPageView {
                 title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
                 message: Text("설정에서 카메라 접근을 활성화 해주세요."),
                 primaryButton: .default(Text("설정으로 이동"), action: {
-                    openURL(URL(string: UIApplication.openSettingsURLString)!)
+                    if let settingURL = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(settingURL)
+                    }
                 }),
                 secondaryButton: .cancel(Text("취소"))
             )

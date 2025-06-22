@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "staccato_login_logo.png",
+      "filename" : "staccato_logo.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "staccato_login_logo@2x.png",
+      "filename" : "staccato_logo@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "staccato_login_logo@3x.png",
+      "filename" : "staccato_logo@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -28,12 +28,12 @@ struct InvitationMemberView: View {
             
             searchBarView
                 .padding(.top, 20)
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, 16)
                 .presentationCornerRadius(5)
             
             if !viewModel.selectedMembers.isEmpty {
                 selectedListView
-                    .padding([.top, .leading], 16)
+                    .padding([.top, .horizontal], 16)
                 
                 Divider()
                     .padding(.top, 15)

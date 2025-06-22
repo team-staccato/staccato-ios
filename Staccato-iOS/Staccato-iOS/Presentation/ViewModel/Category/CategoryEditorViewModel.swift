@@ -11,6 +11,12 @@ import PhotosUI
 
 @Observable
 final class CategoryEditorViewModel {
+    
+    // MARK: - Editor Type
+    enum CategoryEditorType {
+        case modify
+        case create
+    }
 
     // MARK: - CategoryDetail
     let categoryDetail: CategoryDetailModel?
@@ -53,6 +59,9 @@ final class CategoryEditorViewModel {
     var id: Int64?
     var editorType: CategoryEditorType = .create
     private let categoryViewModel: CategoryViewModel
+    
+    private var lastAPICallTime: Date = .distantPast
+    private let throttleInterval: TimeInterval = 2.0
 
     init(
         categoryDetail: CategoryDetailModel? = nil,
@@ -106,7 +115,6 @@ final class CategoryEditorViewModel {
     }
 
     func uploadImage() async throws {
-       
         do {
             let requestBody = PostImageRequest(image: selectedPhoto)
             let imageUrl = try await STService.shared.imageService.uploadImage(requestBody)
@@ -116,8 +124,46 @@ final class CategoryEditorViewModel {
             catchError = true
         }
     }
+    
+    func getImage(_ url: String) {
+        Task {
+            guard let url = URL(string: url) else {
+                self.selectedPhoto = nil
+                return
+            }
 
-    func createCategory() async -> Int64? {
+            let loadedImage = await Task {
+                do {
+                    let (data, _) = try await URLSession.shared.data(from: url)
+                    return UIImage(data: data)
+                } catch {
+                    print("이미지 다운로드 실패: \(error)")
+                    return nil
+                }
+            }
+            .value
+
+            self.selectedPhoto = loadedImage
+        }
+    }
+
+    func saveCategory(_ type: CategoryEditorType, completion: ((Int64?) -> Void)? = nil) async {
+        let now = Date()
+        let timeSinceLastCall = now.timeIntervalSince(lastAPICallTime)
+        
+        guard timeSinceLastCall >= throttleInterval else { return }
+        
+        lastAPICallTime = now
+        
+        switch type {
+        case .create:
+            await completion?(createCategory())
+        case .modify:
+            await modifyCategory()
+        }
+    }
+    
+    private func createCategory() async -> Int64? {
         let startAt: String? = isPeriodSettingActive ? selectedStartDate?.formattedAsRequestDate : nil
         let endAt: String? = isPeriodSettingActive ? selectedEndDate?.formattedAsRequestDate : nil
         
@@ -143,7 +189,7 @@ final class CategoryEditorViewModel {
         }
     }
 
-    func modifyCategory() async {
+    private func modifyCategory() async {
         let startAt: String? = isPeriodSettingActive ? selectedStartDate?.formattedAsRequestDate : nil
         let endAt: String? = isPeriodSettingActive ? selectedEndDate?.formattedAsRequestDate : nil
 
@@ -168,34 +214,4 @@ final class CategoryEditorViewModel {
             catchError = true
         }
     }
-
-    func getImage(_ url: String) {
-        Task {
-            guard let url = URL(string: url) else {
-                self.selectedPhoto = nil
-                return
-            }
-
-            let loadedImage = await Task {
-                do {
-                    let (data, _) = try await URLSession.shared.data(from: url)
-                    return UIImage(data: data)
-                } catch {
-                    print("이미지 다운로드 실패: \(error)")
-                    return nil
-                }
-            }
-            .value
-
-            self.selectedPhoto = loadedImage
-        }
-    }
-
-
-    // MARK: - Editor Type
-    enum CategoryEditorType {
-        case modify
-        case create
-    }
-
 }

@@ -64,11 +64,13 @@ struct CategoryEditorView: View {
                     Task {
                         switch viewModel.editorType {
                         case .create:
-                            if let categoryId: Int64 = await viewModel.createCategory() {
+                            await viewModel.saveCategory(.create) { categoryId in
+                                guard let categoryId else { return }
+                                
                                 navigationState.navigate(to: .categoryDetail(categoryId))
                             }
                         case .modify:
-                            await viewModel.modifyCategory()
+                            await viewModel.saveCategory(.modify)
                             
                             // 마커 업데이트
                             if let staccatoIds = viewModel.categoryDetail?.staccatos.map({ $0.staccatoId }) {

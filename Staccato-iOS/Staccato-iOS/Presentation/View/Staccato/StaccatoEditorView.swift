@@ -380,10 +380,10 @@ extension StaccatoEditorView {
             Task {
                 switch viewModel.editorMode {
                 case .create:
-                    await viewModel.createStaccato()
+                    await viewModel.saveStaccato(.create)
                     homeViewModel.fetchStaccatos()
                 case .modify(let id):
-                    await viewModel.modifyStaccato(staccatoId: id)
+                    await viewModel.saveStaccato(.modify(id: id))
 
                     // 마커 좌표 업데이트
                     if let newCoordinate = viewModel.selectedPlace?.coordinate {

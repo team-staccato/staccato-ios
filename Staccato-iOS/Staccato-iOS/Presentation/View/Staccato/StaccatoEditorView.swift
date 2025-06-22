@@ -99,6 +99,17 @@ struct StaccatoEditorView: View {
                   message: nil,
                   dismissButton: .default(Text("확인")) { isPhotoFull = false })
         }
+        
+        .alert(isPresented: $showSettingAlert) {
+            Alert(
+                title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
+                message: Text("설정에서 카메라 접근을 활성화 해주세요."),
+                primaryButton: .default(Text("설정으로 이동"), action: {
+                    openURL(URL(string: UIApplication.openSettingsURLString)!)
+                }),
+                secondaryButton: .cancel(Text("취소"))
+            )
+        }
 
         .alert("위치 권한 필요", isPresented: $showLocationAlert) {
             Button("설정 열기") {
@@ -109,7 +120,6 @@ struct StaccatoEditorView: View {
             Text("Staccato 사용을 위해 설정에서 위치 접근 권한을 허용해주세요.")
         }
     }
-
 }
 
 extension StaccatoEditorView {
@@ -165,17 +175,6 @@ extension StaccatoEditorView {
         .fullScreenCover(isPresented: $viewModel.showCamera) {
             CameraView(cameraMode: .multiple, imageList: self.$viewModel.photos)
                 .background(.black)
-        }
-        
-        .alert(isPresented: $showSettingAlert) {
-            Alert(
-                title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
-                message: Text("설정 > {앱 이름} 탭에서 접근을 활성화 할 수 있습니다."),
-                primaryButton: .default(Text("설정으로 이동"), action: {
-                    openURL(URL(string: UIApplication.openSettingsURLString)!)
-                }),
-                secondaryButton: .cancel(Text("취소"))
-            )
         }
         
         .onChange(of: viewModel.uploadSuccess, { _, uploadSuccess in

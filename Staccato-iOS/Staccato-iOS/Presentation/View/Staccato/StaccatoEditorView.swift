@@ -17,7 +17,6 @@ struct StaccatoEditorView: View {
     @State private var viewModel: StaccatoEditorViewModel
     @State private var showLocationAlert: Bool = false
     @State private var isPhotoFull: Bool = false
-
     @FocusState var isTitleFocused: Bool
     
     let columns = [GridItem(.flexible(), spacing: 7), GridItem(.flexible(), spacing: 7), GridItem(.flexible(), spacing: 7)]

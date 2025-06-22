@@ -202,7 +202,7 @@ extension CategoryEditorView {
 
             StaccatoTextField(
                 text: $viewModel.categoryTitle,
-                isFocused: _isTitleFocused,
+                isFocused: $isTitleFocused,
                 placeholder: "카테고리 제목을 입력해주세요(최대 30자)",
                 maximumTextLength: 30
             )

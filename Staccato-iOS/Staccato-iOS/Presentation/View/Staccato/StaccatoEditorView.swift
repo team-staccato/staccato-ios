@@ -258,7 +258,7 @@ extension StaccatoEditorView {
 
             StaccatoTextField(
                 text: $viewModel.title,
-                isFocused: _isTitleFocused,
+                isFocused: $isTitleFocused,
                 placeholder: "어떤 순간이었나요? 제목을 입력해 주세요",
                 maximumTextLength: 30
             )

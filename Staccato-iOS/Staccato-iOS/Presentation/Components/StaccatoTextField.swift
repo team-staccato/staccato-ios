@@ -27,7 +27,7 @@ import SwiftUI
 struct StaccatoTextField: View {
     
     @Binding var text: String
-    @FocusState var isFocused: Bool
+    @FocusState<Bool>.Binding var isFocused: Bool
 
     let placeholder: String
     let maximumTextLength: Int

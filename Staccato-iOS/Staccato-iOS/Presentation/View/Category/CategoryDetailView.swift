@@ -168,10 +168,12 @@ private extension CategoryDetailView {
                 .padding(.leading, 4)
             
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 10) {
+                HStack(alignment: .top, spacing: 0) {
                     if viewModel.categoryDetail?.members[0].id == AuthTokenManager.shared.getUserId() {
                         invitationButton
+                            .padding(.trailing, 10)
                     }
+                    
                     ForEach(viewModel.categoryDetail?.members ?? []) { member in
                         CategoryDetailMemberCell(member: member)
                     }

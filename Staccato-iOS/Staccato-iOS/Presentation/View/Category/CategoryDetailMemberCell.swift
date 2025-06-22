@@ -32,7 +32,7 @@ struct CategoryDetailMemberCell: View {
                             .stroke(Color.white, lineWidth: 1)
                     }
                 }
-                .padding(.horizontal, 3)
+                .padding(.horizontal, 8)
             
             HStack(spacing: 2) {
                 if member.memberRole == .host {

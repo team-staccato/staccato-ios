@@ -11,10 +11,12 @@ import PhotosUI
 struct CategoryEditorView: View {
     
     @Environment(\.dismiss) var dismiss
+    @Environment(\.openURL) var openURL
     @Environment(NavigationState.self) private var navigationState
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: CategoryEditorViewModel
+    @State private var showSettingAlert: Bool = false
     @FocusState private var isTitleFocused: Bool
     @FocusState private var isDescriptionFocused: Bool
 
@@ -62,11 +64,13 @@ struct CategoryEditorView: View {
                     Task {
                         switch viewModel.editorType {
                         case .create:
-                            if let categoryId: Int64 = await viewModel.createCategory() {
+                            await viewModel.saveCategory(.create) { categoryId in
+                                guard let categoryId else { return }
+                                
                                 navigationState.navigate(to: .categoryDetail(categoryId))
                             }
                         case .modify:
-                            await viewModel.modifyCategory()
+                            await viewModel.saveCategory(.modify)
                             
                             // 마커 업데이트
                             if let staccatoIds = viewModel.categoryDetail?.staccatos.map({ $0.staccatoId }) {
@@ -79,7 +83,7 @@ struct CategoryEditorView: View {
                     }
                 }
                 .buttonStyle(.staccatoFullWidth)
-                .disabled(viewModel.isSubmitButtonDisabled)
+                .disabled(viewModel.isSubmitButtonDisabled || viewModel.isSaving)
             }
             .animation(.easeIn(duration: 0.15), value: viewModel.isPeriodSettingActive)
         }
@@ -149,7 +153,13 @@ extension CategoryEditorView {
 
         .confirmationDialog("사진을 첨부해 보세요", isPresented: $viewModel.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                viewModel.showCamera = true
+                CameraView.checkCameraPermission { granted in
+                    if granted {
+                        viewModel.showCamera = granted
+                    } else {
+                        showSettingAlert = true
+                    }
+                }
             }
 
             Button("앨범에서 가져오기") {
@@ -166,6 +176,19 @@ extension CategoryEditorView {
         } content: {
             CameraView(selectedImage: $viewModel.selectedPhoto)
                 .background(.staccatoBlack)
+        }
+        
+        .alert(isPresented: $showSettingAlert) {
+            Alert(
+                title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
+                message: Text("설정에서 카메라 접근을 활성화 해주세요."),
+                primaryButton: .default(Text("설정으로 이동"), action: {
+                    if let settingURL = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(settingURL)
+                    }
+                }),
+                secondaryButton: .cancel(Text("취소"))
+            )
         }
     }
 

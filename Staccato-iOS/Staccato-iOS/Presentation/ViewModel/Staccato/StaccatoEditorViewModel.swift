@@ -12,8 +12,8 @@ import PhotosUI
 final class StaccatoEditorViewModel {
 
     enum StaccatoEditorMode: Equatable {
-        case modify(id: Int64)
         case create
+        case modify(id: Int64)
     }
 
     let editorMode: StaccatoEditorMode
@@ -51,6 +51,10 @@ final class StaccatoEditorViewModel {
     var selectedCategory: CategoryCandidateModel?
 
     var uploadSuccess = false
+    
+    var isSaving = false
+    private var lastAPICallTime: Date = .distantPast
+    private let throttleInterval: TimeInterval = 2.0
 
     /// Create Staccato
     init(selectedCategory: CategoryCandidateModel? = nil) {
@@ -132,7 +136,28 @@ final class StaccatoEditorViewModel {
 // MARK: - Network
 
 extension StaccatoEditorViewModel {
-    func createStaccato() async {
+    
+    func saveStaccato(_ type: StaccatoEditorMode) async {
+        guard !isSaving else { return }
+        
+        let now = Date()
+        let timeSinceLastCall = now.timeIntervalSince(lastAPICallTime)
+        
+        guard timeSinceLastCall >= throttleInterval else { return }
+        
+        lastAPICallTime = now
+        
+        switch type {
+        case .create:
+            await createStaccato()
+        case .modify(let staccatoId):
+            await modifyStaccato(staccatoId: staccatoId)
+        }
+    }
+    
+    private func createStaccato() async {
+        isSaving = true
+        
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
@@ -157,9 +182,13 @@ extension StaccatoEditorViewModel {
             self.catchError = true
             self.errorMessage = error.localizedDescription
         }
+        
+        isSaving = false
     }
 
-    func modifyStaccato(staccatoId: Int64) async {
+    private func modifyStaccato(staccatoId: Int64) async {
+        isSaving = true
+        
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
@@ -184,6 +213,8 @@ extension StaccatoEditorViewModel {
             self.catchError = true
             self.errorMessage = error.localizedDescription
         }
+        
+        isSaving = false
     }
 
     func getCategoryCandidates() {

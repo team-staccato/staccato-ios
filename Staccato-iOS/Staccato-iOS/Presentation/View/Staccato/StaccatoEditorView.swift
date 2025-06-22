@@ -12,11 +12,14 @@ import Lottie
 struct StaccatoEditorView: View {
     
     @Environment(\.dismiss) var dismiss
+    @Environment(\.openURL) var openURL
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: StaccatoEditorViewModel
     @State private var showLocationAlert: Bool = false
     @State private var isPhotoFull: Bool = false
+    @State private var showSettingAlert: Bool = false
+
     @FocusState var isTitleFocused: Bool
     
     let columns = [GridItem(.flexible(), spacing: 7), GridItem(.flexible(), spacing: 7), GridItem(.flexible(), spacing: 7)]
@@ -53,10 +56,10 @@ struct StaccatoEditorView: View {
 
                 saveButton
             }
+            .padding(.horizontal, 24)
         }
         .dismissKeyboardOnGesture()
         .scrollIndicators(.hidden)
-        .padding(.horizontal, 24)
 
         .onAppear {
             if viewModel.editorMode == .create,
@@ -96,6 +99,19 @@ struct StaccatoEditorView: View {
                   message: nil,
                   dismissButton: .default(Text("확인")) { isPhotoFull = false })
         }
+        
+        .alert(isPresented: $showSettingAlert) {
+            Alert(
+                title: Text("현재 카메라 사용에 대한 접근 권한이 없습니다."),
+                message: Text("설정에서 카메라 접근을 활성화 해주세요."),
+                primaryButton: .default(Text("설정으로 이동"), action: {
+                    if let settingURL = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(settingURL)
+                    }
+                }),
+                secondaryButton: .cancel(Text("취소"))
+            )
+        }
 
         .alert("위치 권한 필요", isPresented: $showLocationAlert) {
             Button("설정 열기") {
@@ -106,7 +122,6 @@ struct StaccatoEditorView: View {
             Text("Staccato 사용을 위해 설정에서 위치 접근 권한을 허용해주세요.")
         }
     }
-
 }
 
 extension StaccatoEditorView {
@@ -132,7 +147,13 @@ extension StaccatoEditorView {
         
         .confirmationDialog("사진을 첨부해 보세요", isPresented: $viewModel.isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
-                viewModel.showCamera = true
+                CameraView.checkCameraPermission { granted in
+                    if granted {
+                        viewModel.showCamera = granted
+                    } else {
+                        showSettingAlert = true
+                    }
+                }
             }
 
             Button("앨범에서 가져오기") {
@@ -360,10 +381,10 @@ extension StaccatoEditorView {
             Task {
                 switch viewModel.editorMode {
                 case .create:
-                    await viewModel.createStaccato()
+                    await viewModel.saveStaccato(.create)
                     homeViewModel.fetchStaccatos()
                 case .modify(let id):
-                    await viewModel.modifyStaccato(staccatoId: id)
+                    await viewModel.saveStaccato(.modify(id: id))
 
                     // 마커 좌표 업데이트
                     if let newCoordinate = viewModel.selectedPlace?.coordinate {
@@ -373,7 +394,7 @@ extension StaccatoEditorView {
             }
         }
         .buttonStyle(.staccatoFullWidth)
-        .disabled(!viewModel.isReadyToSave)
+        .disabled(!viewModel.isReadyToSave || viewModel.isSaving)
     }
 
     // MARK: - Components

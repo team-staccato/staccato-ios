@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import Kingfisher
 
 struct MyPageView: View {
     
@@ -69,54 +70,17 @@ extension MyPageView {
         Button {
             isPhotoInputPresented = true
         } label: {
-            ZStack {
-                if let selectedPhoto {
-                    Image(uiImage: selectedPhoto)
+            KFImage.url(URL(string: viewModel.profile?.profileImageUrl ?? ""))
+                .fillPersonImage(width: 84, height: 84)
+                .overlay(alignment: .bottomTrailing) {
+                    Image(.pencilCircleFill)
                         .resizable()
-                        .clipShape(Circle())
-                } else if let profileImageUrl = viewModel.profile?.profileImageUrl,
-                          let url = URL(string: profileImageUrl) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .clipShape(Circle())
-                        case .failure:
-                            Image(.personCircleFill)
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundStyle(.gray2)
-                        @unknown default:
-                            EmptyView()
-                        }
-                    }
-                } else {
-                    Image(.personCircleFill)
-                        .resizable()
-                        .foregroundStyle(.gray2)
                         .scaledToFit()
+                        .foregroundStyle(.gray5)
+                        .frame(width: 20, height: 20)
                 }
-                
-                VStack {
-                    Spacer()
-                    
-                    HStack {
-                        Spacer()
-                        
-                        Image(.pencilCircleFill)
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundStyle(.gray5)
-                            .frame(width: 20, height: 20)
-                    }
-                }
-            }
+            
         }
-        .frame(width: 84, height: 84)
         
         .confirmationDialog("프로필 이미지를 변경해요", isPresented: $isPhotoInputPresented, titleVisibility: .visible, actions: {
             Button("카메라 열기") {
@@ -137,6 +101,7 @@ extension MyPageView {
         .onChange(of: capturedImage, { _, newValue in
             loadTransferable(from: newValue)
         })
+        
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
         }
@@ -153,10 +118,11 @@ extension MyPageView {
             UIPasteboard.general.string = "복구코드 붙여넣기"
             copyButtonPressed.toggle()
             UIPasteboard.general.string = viewModel.profile?.code ?? ""
-            showToast = true
+            withAnimation { showToast = true }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                showToast = false
+            Task {
+                try await Task.sleep(for: .seconds(1))
+                withAnimation { showToast = false }
             }
         } label: {
             HStack(spacing: 10) {
@@ -178,7 +144,7 @@ extension MyPageView {
             .padding()
             .background(Color.staccatoBlack.opacity(0.8))
             .foregroundColor(.staccatoWhite)
-            .cornerRadius(10)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .padding(.bottom, 50)
             .transition(.opacity)
     }

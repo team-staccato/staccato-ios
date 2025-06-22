@@ -264,7 +264,7 @@ private extension StaccatoDetailView {
                         }
                         
                     } label: {
-                        feeling.image
+                        feeling.colorImage
                             .resizable()
                             .frame(width: 60, height: 60)
                             .opacity(viewModel.selectedFeeling == feeling ? 1 : 0.3)

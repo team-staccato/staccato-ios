@@ -83,7 +83,7 @@ struct CategoryEditorView: View {
                     }
                 }
                 .buttonStyle(.staccatoFullWidth)
-                .disabled(viewModel.isSubmitButtonDisabled)
+                .disabled(viewModel.isSubmitButtonDisabled || viewModel.isSaving)
             }
             .animation(.easeIn(duration: 0.15), value: viewModel.isPeriodSettingActive)
         }

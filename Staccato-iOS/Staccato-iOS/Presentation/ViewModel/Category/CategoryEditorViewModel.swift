@@ -60,6 +60,7 @@ final class CategoryEditorViewModel {
     var editorType: CategoryEditorType = .create
     private let categoryViewModel: CategoryViewModel
     
+    var isSaving = false
     private var lastAPICallTime: Date = .distantPast
     private let throttleInterval: TimeInterval = 2.0
 
@@ -148,6 +149,8 @@ final class CategoryEditorViewModel {
     }
 
     func saveCategory(_ type: CategoryEditorType, completion: ((Int64?) -> Void)? = nil) async {
+        guard !isSaving else { return }
+        
         let now = Date()
         let timeSinceLastCall = now.timeIntervalSince(lastAPICallTime)
         
@@ -164,6 +167,8 @@ final class CategoryEditorViewModel {
     }
     
     private func createCategory() async -> Int64? {
+        isSaving = true
+        
         let startAt: String? = isPeriodSettingActive ? selectedStartDate?.formattedAsRequestDate : nil
         let endAt: String? = isPeriodSettingActive ? selectedEndDate?.formattedAsRequestDate : nil
         
@@ -181,15 +186,19 @@ final class CategoryEditorViewModel {
             let response = try await STService.shared.categoryService.postCategory(body)
             try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
+            isSaving = false
             return response.categoryId
         } catch {
             errorMessage = error.localizedDescription
             catchError = true
+            isSaving = false
             return nil
         }
     }
 
     private func modifyCategory() async {
+        isSaving = true
+        
         let startAt: String? = isPeriodSettingActive ? selectedStartDate?.formattedAsRequestDate : nil
         let endAt: String? = isPeriodSettingActive ? selectedEndDate?.formattedAsRequestDate : nil
 
@@ -213,5 +222,7 @@ final class CategoryEditorViewModel {
             errorMessage = error.localizedDescription
             catchError = true
         }
+        
+        isSaving = false
     }
 }

@@ -392,7 +392,7 @@ extension StaccatoEditorView {
             }
         }
         .buttonStyle(.staccatoFullWidth)
-        .disabled(!viewModel.isReadyToSave)
+        .disabled(!viewModel.isReadyToSave || viewModel.isSaving)
     }
 
     // MARK: - Components

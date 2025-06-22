@@ -52,6 +52,7 @@ final class StaccatoEditorViewModel {
 
     var uploadSuccess = false
     
+    var isSaving = false
     private var lastAPICallTime: Date = .distantPast
     private let throttleInterval: TimeInterval = 2.0
 
@@ -137,6 +138,8 @@ final class StaccatoEditorViewModel {
 extension StaccatoEditorViewModel {
     
     func saveStaccato(_ type: StaccatoEditorMode) async {
+        guard !isSaving else { return }
+        
         let now = Date()
         let timeSinceLastCall = now.timeIntervalSince(lastAPICallTime)
         
@@ -153,6 +156,8 @@ extension StaccatoEditorViewModel {
     }
     
     private func createStaccato() async {
+        isSaving = true
+        
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
@@ -177,9 +182,13 @@ extension StaccatoEditorViewModel {
             self.catchError = true
             self.errorMessage = error.localizedDescription
         }
+        
+        isSaving = false
     }
 
     private func modifyStaccato(staccatoId: Int64) async {
+        isSaving = true
+        
         guard let selectedCategoryId = self.selectedCategory?.categoryId else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
@@ -204,6 +213,8 @@ extension StaccatoEditorViewModel {
             self.catchError = true
             self.errorMessage = error.localizedDescription
         }
+        
+        isSaving = false
     }
 
     func getCategoryCandidates() {

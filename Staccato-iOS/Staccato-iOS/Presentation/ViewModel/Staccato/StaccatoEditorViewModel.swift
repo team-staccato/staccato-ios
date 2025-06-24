@@ -31,6 +31,7 @@ final class StaccatoEditorViewModel {
 
     var photos: [UploadablePhoto] = []
     var draggedPhoto: UploadablePhoto?
+    var dragSessionID: UUID? = nil
     var selectedPhotos: [PhotosPickerItem] = []
     var showCamera = false
     var isPhotoInputPresented = false

@@ -235,6 +235,7 @@ extension StaccatoEditorView {
                 Image(uiImage: photo.photo)
                     .resizable()
                     .scaledToFill()
+                    .opacity(viewModel.draggedPhoto?.id == photo.id ? 0.5 : 1.0)
 
                 if photo.isUploading {
                     Color.staccatoWhite.opacity(0.8)
@@ -285,14 +286,19 @@ extension StaccatoEditorView {
                         .offset(x: 5, y: -5)
                 }
             }
+
             .onDrag {
-                self.viewModel.draggedPhoto = photo
+                if viewModel.dragSessionID == nil {
+                    viewModel.draggedPhoto = photo
+                    viewModel.dragSessionID = UUID()
+                }
                 return NSItemProvider(object: photo.id.uuidString as NSString)
             }
             .onDrop(of: [.text], delegate: PhotoDropDelegate(
                 targetPhoto: photo,
                 photos: $viewModel.photos,
-                draggedPhoto: $viewModel.draggedPhoto
+                draggedPhoto: $viewModel.draggedPhoto,
+                dragSessionID: $viewModel.dragSessionID
             ))
         }
         .aspectRatio(1, contentMode: .fit)
@@ -442,9 +448,17 @@ private struct PhotoDropDelegate: DropDelegate {
     let targetPhoto: UploadablePhoto
     @Binding var photos: [UploadablePhoto]
     @Binding var draggedPhoto: UploadablePhoto?
+    @Binding var dragSessionID: UUID?
 
     func performDrop(info: DropInfo) -> Bool {
         draggedPhoto = nil
+
+        // TODO: 리팩토링 - dragSessionID 초기화
+        // 리렌더링 시 .onDrag가 다시 실행되기 때문에, 즉시 초기화하면 리렌더링 시점에 draggingPhoto가 다시 set됨.
+        // 더 좋은 방법이 생각 안 나서 일단 안전하게 리렌더링이 끝난 후에 초기화하고자 2초 지연시킴
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            dragSessionID = nil
+        }
         return true
     }
 

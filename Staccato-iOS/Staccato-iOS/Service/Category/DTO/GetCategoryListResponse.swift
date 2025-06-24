@@ -19,6 +19,7 @@ struct GetCategoryListResponse: Decodable {
         let startAt: String?
         let endAt: String?
         let isShared: Bool
+        let totalMemberCount: Int
         let members: [MemberResponse]
         let staccatoCount: Int
     }

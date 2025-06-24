@@ -105,9 +105,9 @@ private extension CategoryListCell {
                     }
             }
 
-            let peoplecount = categoryInfo.members.count
-            if peoplecount > 3 {
-                Text("+\(peoplecount - 3)")
+            let extraMemberCount = categoryInfo.totalMemberCount - 3
+            if extraMemberCount > 0 {
+                Text("+\(extraMemberCount)")
                     .typography(.body5)
                     .foregroundStyle(colorType.textColor)
                     .background(

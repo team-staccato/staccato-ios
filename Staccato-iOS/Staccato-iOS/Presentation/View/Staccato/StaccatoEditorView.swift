@@ -255,6 +255,18 @@ extension StaccatoEditorView {
             }
             .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
             .clipShape(.rect(cornerRadius: 5))
+
+            .overlay(alignment: .bottomLeading) {
+                if let index = viewModel.photos.firstIndex(of: photo) {
+                    Text(String(index + 1))
+                        .typography(.title3) // TODO: 바뀐 폰트 적용
+                        .frame(width: 16, height: 16)
+                        .foregroundStyle(.staccatoWhite)
+                        .background(Color.staccatoBlue70)
+                        .clipShape(Circle())
+                        .padding(5)
+                }
+            }
             .overlay(alignment: .topTrailing) {
                 Button {
                     if let index = viewModel.photos.firstIndex(of: photo) {

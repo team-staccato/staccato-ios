@@ -252,7 +252,7 @@ private extension StaccatoDetailView {
                 .typography(.title2)
                 .foregroundStyle(.staccatoBlack)
             
-            HStack {
+            HStack(spacing: (ScreenUtils.width - 40 - 255) / 4) {
                 ForEach(FeelingType.allCases, id: \.id) { feeling in
                     Button {
                         let previousFeeling = viewModel.selectedFeeling

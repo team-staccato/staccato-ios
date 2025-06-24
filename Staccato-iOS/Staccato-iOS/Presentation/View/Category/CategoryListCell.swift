@@ -34,7 +34,9 @@ struct CategoryListCell: View {
                 Spacer()
 
                 HStack {
-                    peopleWithStack
+                    if categoryInfo.isShared {
+                        peopleWithStack
+                    }
                     Spacer()
                     staccatoCountView
                 }

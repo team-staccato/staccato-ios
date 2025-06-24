@@ -124,8 +124,13 @@ struct StaccatoEditorView: View {
     }
 }
 
+
+// MARK: - UI Components
+
 extension StaccatoEditorView {
+
     // MARK: - Photo
+
     private var photoInputSection: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 3) {
@@ -268,11 +273,22 @@ extension StaccatoEditorView {
                         .offset(x: 5, y: -5)
                 }
             }
+            .onDrag {
+                self.viewModel.draggedPhoto = photo
+                return NSItemProvider(object: photo.id.uuidString as NSString)
+            }
+            .onDrop(of: [.text], delegate: PhotoDropDelegate(
+                targetPhoto: photo,
+                photos: $viewModel.photos,
+                draggedPhoto: $viewModel.draggedPhoto
+            ))
         }
         .aspectRatio(1, contentMode: .fit)
     }
 
+
     // MARK: - Title
+
     private var titleInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "스타카토 제목")
@@ -287,7 +303,9 @@ extension StaccatoEditorView {
         }
     }
 
+
     // MARK: - Location
+
     private var locationInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
@@ -333,7 +351,9 @@ extension StaccatoEditorView {
         }
     }
 
+
     // MARK: - Date
+
     private var dateInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
@@ -351,6 +371,7 @@ extension StaccatoEditorView {
     }
 
     // MARK: - Category
+
     private var categorySelectSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
@@ -375,7 +396,9 @@ extension StaccatoEditorView {
         }
     }
 
+
     // MARK: - Save
+
     private var saveButton: some View {
         Button("저장") {
             Task {
@@ -397,7 +420,44 @@ extension StaccatoEditorView {
         .disabled(!viewModel.isReadyToSave || viewModel.isSaving)
     }
 
-    // MARK: - Components
+}
+
+
+// MARK: - Drop Delegate
+
+private struct PhotoDropDelegate: DropDelegate {
+
+    let targetPhoto: UploadablePhoto
+    @Binding var photos: [UploadablePhoto]
+    @Binding var draggedPhoto: UploadablePhoto?
+
+    func performDrop(info: DropInfo) -> Bool {
+        draggedPhoto = nil
+        return true
+    }
+
+    func dropEntered(info: DropInfo) {
+        guard let dragged = draggedPhoto,
+              dragged != targetPhoto,
+              let fromIndex = photos.firstIndex(of: dragged),
+              let toIndex = photos.firstIndex(of: targetPhoto) else {
+            return
+        }
+
+        withAnimation {
+            photos.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex)
+        }
+    }
+
+}
+
+
+// MARK: - Helper
+
+private extension StaccatoEditorView {
+
+    // MARK: SectionTitle generator
+
     private func sectionTitle(title: String) -> some View {
         return Group {
             Text(title)
@@ -408,4 +468,5 @@ extension StaccatoEditorView {
         .typography(.title2)
         .padding(.bottom, 8)
     }
+
 }

@@ -475,6 +475,10 @@ private struct PhotoDropDelegate: DropDelegate {
         }
     }
 
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+
 }
 
 

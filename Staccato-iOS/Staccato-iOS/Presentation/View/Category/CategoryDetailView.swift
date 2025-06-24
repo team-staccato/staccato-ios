@@ -255,11 +255,11 @@ private extension CategoryDetailView {
             Image(.staccatoCharacter)
                 .resizable()
                 .scaledToFit()
-                .padding(.horizontal, 80)
+                .padding(.horizontal, 116)
             
-            Text("스타카토를 아직 찍지 않으셨군요!\n스타카토를 찍어볼까요?")
-                .typography(.body2)
-                .foregroundStyle(.staccatoBlack)
+            Text("카테고리가 비어있어요.\n스타카토를 찍어볼까요?")
+                .typography(.body3)
+                .foregroundStyle(.gray4)
                 .multilineTextAlignment(.center)
         }
     }

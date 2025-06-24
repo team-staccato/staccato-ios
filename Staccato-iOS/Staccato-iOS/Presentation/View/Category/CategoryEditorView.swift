@@ -300,9 +300,10 @@ extension CategoryEditorView {
                                 viewModel.categoryColorTemp = colorType
                             }
                         if viewModel.categoryColorTemp == colorType {
-                            Image(.icCheckmark)
-                                .font(.system(size: 20, weight: .heavy))
-                                .foregroundColor(.white)
+                            Image(StaccatoIcon.chevronDown)
+                                .font(.system(size: 18, weight: .heavy))
+                                .foregroundColor(.staccatoWhite)
+                                .padding(.top, 1)
                         }
                     }
                 }

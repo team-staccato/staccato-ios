@@ -30,11 +30,12 @@ enum StaccatoIcon: String {
     case pencilLine = "pencil.line"
     case calendar = "calendar"
 
-    // MARK: - Category Creation/Update
+    // MARK: - Category Edit
     case camera = "camera"
     case xCircleFill = "x.circle.fill"
     case xmark = "xmark"
     case infoCircle = "info.circle"
+    case chevronDown = "chevron.down"
 
     // MARK: - Staccato Creation/Update
     case location = "location"

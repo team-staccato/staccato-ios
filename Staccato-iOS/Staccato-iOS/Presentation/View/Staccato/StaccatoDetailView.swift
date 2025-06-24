@@ -56,10 +56,10 @@ struct StaccatoDetailView: View {
                             
                             commentSection
                             
+                            Spacer()
+                            
                             commentTypingView
                                 .id("commentTypingView")
-                            
-                            Spacer()
                         }
                     }
                     
@@ -252,7 +252,7 @@ private extension StaccatoDetailView {
                 .typography(.title2)
                 .foregroundStyle(.staccatoBlack)
             
-            HStack {
+            HStack(spacing: (ScreenUtils.width - 40 - 255) / 4) {
                 ForEach(FeelingType.allCases, id: \.id) { feeling in
                     Button {
                         let previousFeeling = viewModel.selectedFeeling
@@ -264,9 +264,9 @@ private extension StaccatoDetailView {
                         }
                         
                     } label: {
-                        feeling.image
+                        feeling.colorImage
                             .resizable()
-                            .frame(width: 60, height: 60)
+                            .frame(width: 51, height: 51)
                             .opacity(viewModel.selectedFeeling == feeling ? 1 : 0.3)
                     }
                 }
@@ -285,11 +285,13 @@ private extension StaccatoDetailView {
             Group {
                 if viewModel.comments.isEmpty {
                     VStack(spacing: 10) {
-                        Image(.staccatoCharacter)
+                        Image(.staccatoCharacterGray)
+                            .resizable()
+                            .frame(width: 110, height: 110)
                         
-                        Text("코멘트가 없어요! 코멘트를 달아보세요.")
-                            .typography(.body2)
-                            .foregroundStyle(.staccatoBlack)
+                        Text("코멘트를 남겨보세요!")
+                            .typography(.body4)
+                            .foregroundStyle(.gray3)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 11)
@@ -330,6 +332,7 @@ private extension StaccatoDetailView {
         }
         .padding(.horizontal, 10)
         .padding(.top, 10)
+        .padding(.bottom, ScreenUtils.safeAreaInsets.bottom)
     }
 
     var commentSubmitButton: some View {

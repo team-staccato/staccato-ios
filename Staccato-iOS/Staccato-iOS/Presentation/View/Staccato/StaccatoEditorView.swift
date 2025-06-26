@@ -19,6 +19,7 @@ struct StaccatoEditorView: View {
     @State private var showLocationAlert: Bool = false
     @State private var isPhotoFull: Bool = false
     @State private var showSettingAlert: Bool = false
+    @State private var isPhotoFocused: Bool = false
 
     @FocusState var isTitleFocused: Bool
     
@@ -124,8 +125,13 @@ struct StaccatoEditorView: View {
     }
 }
 
+
+// MARK: - UI Components
+
 extension StaccatoEditorView {
+
     // MARK: - Photo
+
     private var photoInputSection: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 3) {
@@ -226,10 +232,15 @@ extension StaccatoEditorView {
 
     private func photoPreview(photo: UploadablePhoto) -> some View {
         GeometryReader { geometry in
+            let photoImage = Image(uiImage: photo.photo)
+                .resizable()
+                .scaledToFill()
+                .clipShape(.rect(cornerRadius: 5))
+                .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
+
             ZStack {
-                Image(uiImage: photo.photo)
-                    .resizable()
-                    .scaledToFill()
+                photoImage
+                    .opacity(viewModel.draggingPhoto?.id == photo.id ? 0.6 : 1.0)
 
                 if photo.isUploading {
                     Color.staccatoWhite.opacity(0.8)
@@ -250,6 +261,7 @@ extension StaccatoEditorView {
             }
             .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
             .clipShape(.rect(cornerRadius: 5))
+
             .overlay(alignment: .topTrailing) {
                 Button {
                     if let index = viewModel.photos.firstIndex(of: photo) {
@@ -264,15 +276,39 @@ extension StaccatoEditorView {
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(.red, .gray3)
                         .background(Circle().fill(.staccatoWhite))
-                        .frame(width: 25, height: 25)
-                        .offset(x: 5, y: -5)
+                        .frame(width: 20, height: 20)
+                        .offset(x: 4, y: -4)
+                }
+            }
+
+            .draggable(photo.id.uuidString) {
+                photoImage // Drag preview
+                    .opacity(0.6)
+                    .onAppear {
+                        viewModel.draggingPhoto = photo
+                    }
+            }
+            .dropDestination(for: String.self) { items, location in
+                viewModel.draggingPhoto = nil
+                return false
+            } isTargeted: { status in
+                if let draggingItem = viewModel.draggingPhoto, status, draggingItem != photo {
+                    if let sourceIndex = viewModel.photos.firstIndex(of: draggingItem),
+                       let destination = viewModel.photos.firstIndex(of: photo) {
+                        withAnimation(.bouncy) {
+                            let sourceItem = viewModel.photos.remove(at: sourceIndex)
+                            viewModel.photos.insert(sourceItem, at: destination )
+                        }
+                    }
                 }
             }
         }
         .aspectRatio(1, contentMode: .fit)
     }
 
+
     // MARK: - Title
+
     private var titleInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "스타카토 제목")
@@ -287,7 +323,9 @@ extension StaccatoEditorView {
         }
     }
 
+
     // MARK: - Location
+
     private var locationInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "장소")
@@ -333,7 +371,9 @@ extension StaccatoEditorView {
         }
     }
 
+
     // MARK: - Date
+
     private var dateInputSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "날짜 및 시간")
@@ -351,6 +391,7 @@ extension StaccatoEditorView {
     }
 
     // MARK: - Category
+
     private var categorySelectSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
@@ -375,7 +416,9 @@ extension StaccatoEditorView {
         }
     }
 
+
     // MARK: - Save
+
     private var saveButton: some View {
         Button("저장") {
             Task {
@@ -397,7 +440,15 @@ extension StaccatoEditorView {
         .disabled(!viewModel.isReadyToSave || viewModel.isSaving)
     }
 
-    // MARK: - Components
+}
+
+
+// MARK: - Helper
+
+private extension StaccatoEditorView {
+
+    // MARK: SectionTitle generator
+
     private func sectionTitle(title: String) -> some View {
         return Group {
             Text(title)
@@ -408,4 +459,5 @@ extension StaccatoEditorView {
         .typography(.title2)
         .padding(.bottom, 8)
     }
+
 }

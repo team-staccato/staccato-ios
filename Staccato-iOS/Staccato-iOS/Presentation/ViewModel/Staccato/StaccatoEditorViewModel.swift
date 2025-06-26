@@ -30,6 +30,7 @@ final class StaccatoEditorViewModel {
     var errorMessage: String?
 
     var photos: [UploadablePhoto] = []
+    var draggingPhoto: UploadablePhoto?
     var selectedPhotos: [PhotosPickerItem] = []
     var showCamera = false
     var isPhotoInputPresented = false

@@ -19,6 +19,7 @@ struct StaccatoEditorView: View {
     @State private var showLocationAlert: Bool = false
     @State private var isPhotoFull: Bool = false
     @State private var showSettingAlert: Bool = false
+    @State private var isPhotoFocused: Bool = false
 
     @FocusState var isTitleFocused: Bool
     
@@ -235,7 +236,7 @@ extension StaccatoEditorView {
                 Image(uiImage: photo.photo)
                     .resizable()
                     .scaledToFill()
-                    .opacity(viewModel.draggedPhoto?.id == photo.id ? 0.7 : 1.0)
+                    .opacity(viewModel.draggingPhoto?.id == photo.id ? 0.7 : 1.0)
 
                 if photo.isUploading {
                     Color.staccatoWhite.opacity(0.8)
@@ -276,19 +277,31 @@ extension StaccatoEditorView {
                 }
             }
 
-            .onDrag {
-                if viewModel.dragSessionID == nil {
-                    viewModel.draggedPhoto = photo
-                    viewModel.dragSessionID = UUID()
-                }
-                return NSItemProvider(object: photo.id.uuidString as NSString)
+            .draggable(photo.id.uuidString) {
+                Image(uiImage: photo.photo)
+                    .resizable()
+                    .scaledToFill()
+                    .opacity(viewModel.draggingPhoto?.id == photo.id ? 0.7 : 1.0)
+                    .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
+                    .clipShape(.rect(cornerRadius: 5))
+                    .onAppear {
+                        viewModel.draggingPhoto = photo
+                    }
             }
-            .onDrop(of: [.text], delegate: PhotoDropDelegate(
-                targetPhoto: photo,
-                photos: $viewModel.photos,
-                draggedPhoto: $viewModel.draggedPhoto,
-                dragSessionID: $viewModel.dragSessionID
-            ))
+            .dropDestination(for: String.self) { items, location in
+                viewModel.draggingPhoto = nil
+                return false
+            } isTargeted: { status in
+                if let draggingItem = viewModel.draggingPhoto, status, draggingItem != photo {
+                    if let sourceIndex = viewModel.photos.firstIndex(of: draggingItem),
+                       let destination = viewModel.photos.firstIndex(of: photo) {
+                        withAnimation(.bouncy) {
+                            let sourceItem = viewModel.photos.remove(at: sourceIndex)
+                            viewModel.photos.insert(sourceItem, at: destination )
+                        }
+                    }
+                }
+            }
         }
         .aspectRatio(1, contentMode: .fit)
     }
@@ -425,47 +438,6 @@ extension StaccatoEditorView {
         }
         .buttonStyle(.staccatoFullWidth)
         .disabled(!viewModel.isReadyToSave || viewModel.isSaving)
-    }
-
-}
-
-
-// MARK: - Drop Delegate
-
-private struct PhotoDropDelegate: DropDelegate {
-
-    let targetPhoto: UploadablePhoto
-    @Binding var photos: [UploadablePhoto]
-    @Binding var draggedPhoto: UploadablePhoto?
-    @Binding var dragSessionID: UUID?
-
-    func performDrop(info: DropInfo) -> Bool {
-        draggedPhoto = nil
-
-        // TODO: 리팩토링 - dragSessionID 초기화
-        // 리렌더링 시 .onDrag가 다시 실행되기 때문에, 즉시 초기화하면 리렌더링 시점에 draggingPhoto가 다시 set됨.
-        // 더 좋은 방법이 생각 안 나서 일단 안전하게 리렌더링이 끝난 후에 초기화하고자 1.5초 지연시킴
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            dragSessionID = nil
-        }
-        return true
-    }
-
-    func dropEntered(info: DropInfo) {
-        guard let dragged = draggedPhoto,
-              dragged != targetPhoto,
-              let fromIndex = photos.firstIndex(of: dragged),
-              let toIndex = photos.firstIndex(of: targetPhoto) else {
-            return
-        }
-
-        withAnimation {
-            photos.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex)
-        }
-    }
-
-    func dropUpdated(info: DropInfo) -> DropProposal? {
-        return DropProposal(operation: .move)
     }
 
 }

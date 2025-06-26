@@ -232,11 +232,15 @@ extension StaccatoEditorView {
 
     private func photoPreview(photo: UploadablePhoto) -> some View {
         GeometryReader { geometry in
+            let photoImage = Image(uiImage: photo.photo)
+                .resizable()
+                .scaledToFill()
+                .clipShape(.rect(cornerRadius: 5))
+                .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
+
             ZStack {
-                Image(uiImage: photo.photo)
-                    .resizable()
-                    .scaledToFill()
-                    .opacity(viewModel.draggingPhoto?.id == photo.id ? 0.7 : 1.0)
+                photoImage
+                    .opacity(viewModel.draggingPhoto?.id == photo.id ? 0.6 : 1.0)
 
                 if photo.isUploading {
                     Color.staccatoWhite.opacity(0.8)
@@ -278,12 +282,8 @@ extension StaccatoEditorView {
             }
 
             .draggable(photo.id.uuidString) {
-                Image(uiImage: photo.photo)
-                    .resizable()
-                    .scaledToFill()
-                    .opacity(viewModel.draggingPhoto?.id == photo.id ? 0.7 : 1.0)
-                    .frame(width: geometry.size.width - 5, height: geometry.size.width - 5)
-                    .clipShape(.rect(cornerRadius: 5))
+                photoImage // Drag preview
+                    .opacity(0.6)
                     .onAppear {
                         viewModel.draggingPhoto = photo
                     }

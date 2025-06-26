@@ -12,7 +12,7 @@ struct CategoryEditorView: View {
     
     @Environment(\.dismiss) var dismiss
     @Environment(\.openURL) var openURL
-    @Environment(NavigationState.self) private var navigationState
+    @Environment(NavigationManager.self) private var navigationManager
     @EnvironmentObject var homeViewModel: HomeViewModel
 
     @State private var viewModel: CategoryEditorViewModel
@@ -67,7 +67,7 @@ struct CategoryEditorView: View {
                             await viewModel.saveCategory(.create) { categoryId in
                                 guard let categoryId else { return }
                                 
-                                navigationState.navigate(to: .categoryDetail(categoryId))
+                                navigationManager.navigate(to: .categoryDetail(categoryId))
                             }
                         case .modify:
                             await viewModel.saveCategory(.modify)
@@ -416,5 +416,5 @@ extension CategoryEditorView {
         editorType: .modify,
         categoryViewModel: CategoryViewModel()
     )
-    .environment(NavigationState())
+    .environment(NavigationManager())
 }

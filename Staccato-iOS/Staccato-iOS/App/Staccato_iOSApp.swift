@@ -14,7 +14,7 @@ struct Staccato_iOSApp: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
-    private let navigationState = NavigationState()
+    private let navigationManager = NavigationManager()
     @StateObject private var bottomSheetDetentManager = BottomSheetDetentManager()
     @StateObject private var homeViewModel = HomeViewModel()
     @StateObject private var mypageViewModel = MyPageViewModel()
@@ -40,7 +40,7 @@ struct Staccato_iOSApp: App {
                     SignInView()
                 }
             }
-            .environment(navigationState)
+            .environment(navigationManager)
             .environmentObject(signInViewModel)
 
             .preferredColorScheme(.light)

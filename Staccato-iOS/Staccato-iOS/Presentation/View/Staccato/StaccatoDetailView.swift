@@ -15,7 +15,7 @@ struct StaccatoDetailView: View {
     // MARK: - State Properties
     
     let staccatoId: Int64
-    @Environment(NavigationState.self) var navigationState
+    @Environment(NavigationManager.self) var navigationManager
     @EnvironmentObject var homeViewModel: HomeViewModel
     @EnvironmentObject var detentManager: BottomSheetDetentManager
     @StateObject private var viewModel = StaccatoDetailViewModel()
@@ -155,7 +155,7 @@ private extension StaccatoDetailView {
                                let indexToRemove = homeViewModel.staccatos.firstIndex(where: { $0.id == staccatoId }) {
                                 homeViewModel.staccatos.remove(at: indexToRemove)
                             }
-                            navigationState.dismiss()
+                            navigationManager.dismiss()
                         }
                     }
             )

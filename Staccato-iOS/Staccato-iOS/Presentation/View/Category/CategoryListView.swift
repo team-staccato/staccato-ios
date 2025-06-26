@@ -9,10 +9,10 @@ import SwiftUI
 
 struct CategoryListView: View {
 
-    @Environment(NavigationState.self) var navigationState
+    @Environment(NavigationManager.self) var navigationManager
     @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @EnvironmentObject var mypageViewModel: MyPageViewModel
-    @Bindable var bindableNavigationState: NavigationState
+    @Bindable var bindableNavigationManager: NavigationManager
     
     @StateObject private var viewModel = CategoryViewModel()
     @State private var selectedCategory: CategoryModel?
@@ -24,15 +24,15 @@ struct CategoryListView: View {
 
     // MARK: - Initializer
 
-    init(_ navigationState: NavigationState) {
-        self.bindableNavigationState = navigationState
+    init(_ navigationManager: NavigationManager) {
+        self.bindableNavigationManager = navigationManager
     }
 
 
     // MARK: - Body
 
     var body: some View {
-        NavigationStack(path: $bindableNavigationState.path) {
+        NavigationStack(path: $bindableNavigationManager.path) {
             GeometryReader { geometry in
                 VStack(spacing: 0) {
                     titleSection
@@ -182,7 +182,7 @@ private extension CategoryListView {
                 ForEach(Array(viewModel.categories.enumerated()), id: \.element.id) { index, categoryInfo in
                     Button {
                         selectedCategory = categoryInfo
-                        navigationState.navigate(to: .categoryDetail(categoryInfo.categoryId))
+                        navigationManager.navigate(to: .categoryDetail(categoryInfo.categoryId))
                     } label: {
                         CategoryListCell(categoryInfo)
                     }

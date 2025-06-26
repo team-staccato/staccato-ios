@@ -12,7 +12,7 @@ import Kingfisher
 struct MyPageView: View {
     
     @Environment(\.openURL) var openURL
-    @Environment(NavigationState.self) var navigationState
+    @Environment(NavigationManager.self) var navigationManager
     @EnvironmentObject private var viewModel: MyPageViewModel
     @EnvironmentObject private var signinViewModel: SignInViewModel
     

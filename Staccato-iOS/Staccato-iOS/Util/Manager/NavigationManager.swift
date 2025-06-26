@@ -1,5 +1,5 @@
 //
-//  NavigationState.swift
+//  NavigationManager.swift
 //  Staccato-iOS
 //
 //  Created by 김유림 on 3/6/25.
@@ -19,7 +19,7 @@ enum NavigationDestination: Hashable {
 // MARK: - Navigation States
 
 @Observable
-final class NavigationState {
+final class NavigationManager {
 
     var path = NavigationPath()
     private(set) var destinations: [NavigationDestination] = []

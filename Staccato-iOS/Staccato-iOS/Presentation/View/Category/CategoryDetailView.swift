@@ -10,7 +10,7 @@ import Kingfisher
 
 struct CategoryDetailView: View {
     
-    @Environment(NavigationState.self) var navigationState
+    @Environment(NavigationManager.self) var navigationManager
     @EnvironmentObject var detentManager: BottomSheetDetentManager
     @EnvironmentObject var homeViewModel: HomeViewModel
     
@@ -242,7 +242,7 @@ private extension CategoryDetailView {
                         StaccatoCollectionCell(staccato, width: columnWidth)
                             .contentShape(RoundedRectangle(cornerRadius: 8))
                             .onTapGesture {
-                                navigationState.navigate(to: .staccatoDetail(staccato.staccatoId))
+                                navigationManager.navigate(to: .staccatoDetail(staccato.staccatoId))
                             }
                     }
                 }
@@ -286,7 +286,7 @@ private extension CategoryDetailView {
                     Task {
                         let success = state == .host ? await viewModel.deleteCategory(.host) : await viewModel.deleteCategory(.member)
                         if success {
-                            navigationState.dismiss()
+                            navigationManager.dismiss()
                             
                             if let staccatoIds = viewModel.categoryDetail?.staccatos.map(\.staccatoId) {
                                 homeViewModel.removeStaccatos(with: Set(staccatoIds))

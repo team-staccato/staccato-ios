@@ -22,7 +22,7 @@ enum TitlePosition {
 
 struct StaccatoNavigationBar<T: View>: ViewModifier {
     
-    @Environment(NavigationState.self) var navigationState
+    @Environment(NavigationManager.self) var navigationManager
     @Environment(\.dismiss) var dismiss
 
     let title: String?
@@ -50,7 +50,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
             ZStack {
                 HStack(spacing: 16) {
                     Button  {
-                        barType == .navigation ? navigationState.dismiss() : dismiss()
+                        barType == .navigation ? navigationManager.dismiss() : dismiss()
                     } label: {
                         Image(.chevronLeft)
                             .resizable()

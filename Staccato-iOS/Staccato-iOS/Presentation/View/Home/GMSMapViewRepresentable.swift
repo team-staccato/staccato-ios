@@ -13,7 +13,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
 
     @EnvironmentObject var viewModel: HomeViewModel
     @EnvironmentObject var detentManager: BottomSheetDetentManager
-    @Environment(NavigationState.self) var navigationState
+    @Environment(NavigationManager.self) var navigationManager
 
     private let mapView = GMSMapView()
 
@@ -117,7 +117,7 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         if let userdata = marker.userData as? StaccatoCoordinateModel {
-            parent.navigationState.navigate(to: .staccatoDetail(userdata.staccatoId))
+            parent.navigationManager.navigate(to: .staccatoDetail(userdata.staccatoId))
             Task.detached { @MainActor in
                 self.parent.detentManager.selectedDetent = BottomSheetDetent.medium.detent
             }

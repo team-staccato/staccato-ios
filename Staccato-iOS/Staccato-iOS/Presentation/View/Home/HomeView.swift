@@ -21,7 +21,7 @@ struct HomeView: View {
 
     // NOTE: Managers
     @EnvironmentObject private var detentManager: BottomSheetDetentManager
-    @Environment(NavigationState.self) private var navigationState
+    @Environment(NavigationManager.self) private var navigationManager
     @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
 
@@ -81,7 +81,7 @@ struct HomeView: View {
             detentManager.isbottomSheetPresented = true
         }
         .sheet(isPresented: $detentManager.isbottomSheetPresented) {
-            CategoryListView(navigationState)
+            CategoryListView(navigationManager)
                 .environmentObject(detentManager)
                 .interactiveDismissDisabled(true)
                 .presentationContentInteraction(.scrolls)

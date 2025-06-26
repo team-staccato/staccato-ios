@@ -155,18 +155,21 @@ private extension CategoryListView {
 
     var categoryFilterButton: some View {
         Button {
-            onSpotFilter.toggle()
-            viewModel.filterSelection = onSpotFilter ? .term : .all
+            let filterAllCases = CategoryListFilterType.allCases
+            if let currentIndex = filterAllCases.firstIndex(of: viewModel.filterSelection) {
+                let nextIndex = (currentIndex + 1) % filterAllCases.count
+                viewModel.filterSelection = filterAllCases[nextIndex]
+            }
         } label: {
-            HStack {
-                Image(.line3HorizontalDecrease)
+            HStack(spacing: 4) {
+                Image(.icFilter)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 12, height: 12)
-                Text("기간 있는 카테고리만")
+                    .frame(width: 14, height: 14)
+                Text(viewModel.filterSelection.text)
                     .typography(.body4)
             }
-            .foregroundStyle(onSpotFilter ? .staccatoBlue : .gray3)
+            .foregroundStyle(viewModel.filterSelection == .all ? .gray3 : .staccatoBlue)
         }
     }
 

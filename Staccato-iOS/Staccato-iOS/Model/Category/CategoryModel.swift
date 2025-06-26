@@ -18,6 +18,7 @@ struct CategoryModel: Equatable {
     let startAt: String?
     let endAt: String?
     let isShared: Bool
+    let totalMemberCount: Int
     let members: [MemberModel]
     let staccatoCount: Int
 
@@ -43,6 +44,7 @@ extension CategoryModel {
         self.startAt = dto.startAt
         self.endAt = dto.endAt
         self.isShared = dto.isShared
+        self.totalMemberCount = dto.totalMemberCount
         self.members = dto.members.map { MemberModel(from: $0) }
         self.staccatoCount = dto.staccatoCount
     }

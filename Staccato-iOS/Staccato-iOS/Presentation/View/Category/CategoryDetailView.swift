@@ -240,6 +240,7 @@ private extension CategoryDetailView {
                 LazyVGrid(columns: columns, spacing: 8) {
                     ForEach(staccatos) { staccato in
                         StaccatoCollectionCell(staccato, width: columnWidth)
+                            .contentShape(RoundedRectangle(cornerRadius: 8))
                             .onTapGesture {
                                 navigationState.navigate(to: .staccatoDetail(staccato.staccatoId))
                             }

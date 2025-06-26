@@ -10,7 +10,7 @@ import PhotosUI
 import Lottie
 
 struct StaccatoEditorView: View {
-    
+
     @Environment(\.dismiss) var dismiss
     @Environment(\.openURL) var openURL
     @EnvironmentObject var homeViewModel: HomeViewModel

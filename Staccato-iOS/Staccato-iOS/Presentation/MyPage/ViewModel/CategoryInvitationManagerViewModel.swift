@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @MainActor
-final class CategoryInvitationManagerViewModel: ObservableObject {
+final class CategoryInvitationManagingViewModel: ObservableObject {
     
     @Published var receivedInvitaions: [ReceivedInvitationModel] = []
     @Published var sentInvitaions: [SentInvitationModel] = []

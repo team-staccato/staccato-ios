@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct CategoryInvitationManagerView: View {
+struct CategoryInvitationManagingView: View {
     
-    @StateObject var viewModel = CategoryInvitationManagerViewModel()
+    @StateObject var viewModel = CategoryInvitationManagingViewModel()
     @Environment(\.dismiss) var dismiss
     
     @State private var alertManager = StaccatoAlertManager()
@@ -48,7 +48,7 @@ struct CategoryInvitationManagerView: View {
     }
 }
 
-private extension CategoryInvitationManagerView {
+private extension CategoryInvitationManagingView {
     
     var navigationBar: some View {
         ZStack {
@@ -123,7 +123,7 @@ private extension CategoryInvitationManagerView {
 }
 
 
-private extension CategoryInvitationManagerView {
+private extension CategoryInvitationManagingView {
     
     var emptyStateView: some View {
         VStack(alignment: .center, spacing: 10) {
@@ -203,7 +203,7 @@ private extension CategoryInvitationManagerView {
     }
 }
 
-private extension CategoryInvitationManagerView {
+private extension CategoryInvitationManagingView {
     enum InvitationType {
         case received
         case sent
@@ -214,14 +214,14 @@ private extension CategoryInvitationManagerView {
 
 #Preview("빈 화면") {
     NavigationStack {
-        CategoryInvitationManagerView(viewModel: CategoryInvitationManagerViewModel())
+        CategoryInvitationManagingView(viewModel: CategoryInvitationManagingViewModel())
     }
 }
 
 #Preview("초대 있는 경우") {
     @Previewable @State var viewModel = {
-        let vm = CategoryInvitationManagerViewModel()
-        vm.receivedInvitaions = [ReceivedInvitationModel(
+        let viewModel = CategoryInvitationManagingViewModel()
+        viewModel.receivedInvitaions = [ReceivedInvitationModel(
             id: 1,
             inviterId: 1,
             inviterNickname: "빙티",
@@ -236,7 +236,7 @@ private extension CategoryInvitationManagerView {
             categoryId: 2,
             categoryTitle: "저기 사라진 별의 자리 아스라이 하얀 빛 한동안은 꺼내 볼 asdfasdfalsdkjfalksdjflkj"
         )]
-        vm.sentInvitaions = [SentInvitationModel(
+        viewModel.sentInvitaions = [SentInvitationModel(
             id: 1,
             inviteeId: 1,
             inviteeNickname: "양양",
@@ -251,10 +251,10 @@ private extension CategoryInvitationManagerView {
             categoryId: 2,
             categoryTitle: "카테고리이름이너무길어서어떡하냐진짜제발짧게해"
         )]
-        return vm
+        return viewModel
     }()
     
     NavigationStack {
-        CategoryInvitationManagerView(viewModel: viewModel)
+        CategoryInvitationManagingView(viewModel: viewModel)
     }
 }

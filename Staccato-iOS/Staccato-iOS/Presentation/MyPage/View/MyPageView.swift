@@ -174,7 +174,7 @@ extension MyPageView {
     private var menuSection: some View {
         VStack {
             NavigationLink {
-                CategoryInvitationManagerView()
+                CategoryInvitationManagingView()
             } label: {
                 HStack {
                     ZStack(alignment: .topTrailing) {

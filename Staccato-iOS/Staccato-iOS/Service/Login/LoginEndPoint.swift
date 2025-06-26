@@ -1,5 +1,5 @@
 //
-//  LoginAPI.swift
+//  LoginEndPoint.swift
 //  Staccato-iOS
 //
 //  Created by 강재혁 on 2/8/25.
@@ -9,7 +9,7 @@ import Foundation
 
 import Alamofire
 
-enum AuthorizationAPI: APIEndpoint {
+enum LoginEndPoint: APIEndpoint {
     
     case login(nickname: String)
     case recoverAccount(withCode: String)

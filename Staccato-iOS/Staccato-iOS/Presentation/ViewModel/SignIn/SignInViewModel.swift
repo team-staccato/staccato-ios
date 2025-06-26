@@ -24,7 +24,7 @@ extension SignInViewModel {
 
     func login(nickName: String) async throws -> LoginResponse {
         guard let loginResponse = try await NetworkService.shared.request(
-            endpoint: AuthorizationAPI.login(nickname: nickName),
+            endpoint: LoginEndPoint.login(nickname: nickName),
             responseType: LoginResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed
@@ -38,7 +38,7 @@ extension SignInViewModel {
 
     func login(withCode code: String) async throws -> LoginResponse {
         guard let loginResponse = try await NetworkService.shared.request(
-            endpoint: AuthorizationAPI.recoverAccount(withCode: code),
+            endpoint: LoginEndPoint.recoverAccount(withCode: code),
                 responseType: LoginResponse.self
         ) else {
             throw StaccatoError.optionalBindingFailed

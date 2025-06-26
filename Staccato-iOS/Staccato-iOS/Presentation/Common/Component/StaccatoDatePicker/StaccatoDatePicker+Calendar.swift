@@ -120,3 +120,20 @@ extension StaccatoDatePicker {
         return false
     }
 }
+
+
+// MARK: - Weekday
+
+private extension StaccatoDatePicker {
+
+    enum Weekday: Int, CaseIterable {
+        case sunday = 0, monday, tuesday, wednesday, thursday, friday, saturday
+
+        var localizedName: String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "ko_KR")
+            return dateFormatter.shortWeekdaySymbols[self.rawValue]
+        }
+    }
+
+}

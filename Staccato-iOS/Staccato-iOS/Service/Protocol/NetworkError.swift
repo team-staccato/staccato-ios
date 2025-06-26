@@ -68,3 +68,8 @@ final class ErrorHandler {
         }
     }
 }
+
+struct ErrorResponse: Decodable {
+    let status: String
+    let message: String
+}

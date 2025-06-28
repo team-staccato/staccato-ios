@@ -383,13 +383,7 @@ private extension StaccatoDetailView {
         }
 
         var commentView: some View {
-            let corners: UIRectCorner = {
-                if isFromUser {
-                    return [.topLeft, .bottomLeft, .bottomRight]
-                } else {
-                    return [.topRight, .bottomLeft, .bottomRight]
-                }
-            }()
+            let corners: UIRectCorner = [isFromUser ? .topLeft : .topRight, .bottomLeft, .bottomRight]
 
             return Text(comment.content)
                 .typography(.body3)
@@ -414,7 +408,7 @@ private extension StaccatoDetailView {
                         commentView
                             .contextMenu {
                                 // TODO: 댓글 수정 UI 요청
-                                Button {
+                                Button(role: .destructive) {
                                     alertManager.show(
                                         .confirmCancelAlert(
                                             title: "댓글을 삭제하시겠습니까?",
@@ -430,10 +424,8 @@ private extension StaccatoDetailView {
                                             }
                                     )
                                 } label: {
-                                    Text("삭제")
-                                    Image(StaccatoIcon.trash)
+                                    Label("삭제", systemImage: StaccatoIcon.trash.rawValue)
                                 }
-                                .foregroundStyle(.red)
                             }
                     }
                     profileImage

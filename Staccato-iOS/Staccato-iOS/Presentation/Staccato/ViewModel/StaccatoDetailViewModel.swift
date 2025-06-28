@@ -8,15 +8,13 @@
 import Foundation
 
 @MainActor
-class StaccatoDetailViewModel: ObservableObject {
+final class StaccatoDetailViewModel: ObservableObject {
 
     // MARK: - Properties
 
     @Published var staccatoDetail: StaccatoDetailModel?
     @Published var selectedFeeling: FeelingType?
     @Published var comments: [CommentModel] = []
-    @Published var shouldScrollToBottom: Bool = false
-
     @Published var shareLink: URL?
 
     let userId: Int64 = AuthTokenManager.shared.getUserId() ?? -1

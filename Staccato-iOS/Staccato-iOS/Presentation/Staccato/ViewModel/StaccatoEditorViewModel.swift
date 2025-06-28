@@ -82,7 +82,7 @@ final class StaccatoEditorViewModel {
         self.selectedDate = Date(fromISOString: staccato.visitedAt)
         self.dateOnDatePicker = selectedDate
         self.selectedCategory = CategoryCandidateModel(
-            categoryId: staccato.categoryId,
+            id: staccato.categoryId,
             categoryTitle: staccato.categoryTitle
         )
 
@@ -159,7 +159,7 @@ extension StaccatoEditorViewModel {
     private func createStaccato() async {
         isSaving = true
         
-        guard let selectedCategoryId = self.selectedCategory?.categoryId else {
+        guard let selectedCategoryId = self.selectedCategory?.id else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
             return
@@ -190,7 +190,7 @@ extension StaccatoEditorViewModel {
     private func modifyStaccato(staccatoId: Int64) async {
         isSaving = true
         
-        guard let selectedCategoryId = self.selectedCategory?.categoryId else {
+        guard let selectedCategoryId = self.selectedCategory?.id else {
             self.catchError = true
             self.errorMessage = "유효한 카테고리를 선택해주세요."
             return
@@ -233,8 +233,8 @@ extension StaccatoEditorViewModel {
 
                 // selectedCategory 갱신
                 if !isSharedStaccato,
-                   let selectedCategoryId = self.selectedCategory?.categoryId {
-                    self.selectedCategory = self.categories.first(where: { $0.categoryId == selectedCategoryId })
+                   let selectedCategoryId = self.selectedCategory?.id {
+                    self.selectedCategory = self.categories.first(where: { $0.id == selectedCategoryId })
                 }
             } catch {
                 self.catchError = true

@@ -378,22 +378,8 @@ private extension StaccatoDetailView {
         }
 
         var profileImage: some View {
-            if let imageUrl = comment.memberImageUrl {
-                let image = KFImage(URL(string: imageUrl))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipShape(.circle)
-                    .frame(width: 38, height: 38)
-                return AnyView(image)
-            } else {
-                let image = Image(.personCircleFill)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .foregroundStyle(.gray2)
-                    .clipShape(.circle)
-                    .frame(width: 38, height: 38)
-                return AnyView(image)
-            }
+            KFImage(URL(string: comment.memberImageUrl ?? ""))
+                .fillPersonImage(width: 38, height: 38)
         }
 
         var commentView: some View {
@@ -426,6 +412,29 @@ private extension StaccatoDetailView {
                     VStack(alignment: .trailing, spacing: 6) {
                         nicknameText
                         commentView
+                            .contextMenu {
+                                // TODO: 댓글 수정 UI 요청
+                                Button {
+                                    alertManager.show(
+                                        .confirmCancelAlert(
+                                            title: "댓글을 삭제하시겠습니까?",
+                                            message: "삭제하면 되돌릴 수 없어요") {
+                                                Task {
+                                                    do {
+                                                        try await viewModel.deleteComment(comment.commentId)
+                                                        try await viewModel.getComments(staccatoId)
+                                                    } catch {
+                                                        print("❌ Error: \(error.localizedDescription)")
+                                                    }
+                                                }
+                                            }
+                                    )
+                                } label: {
+                                    Text("삭제")
+                                    Image(StaccatoIcon.trash)
+                                }
+                                .foregroundStyle(.red)
+                            }
                     }
                     profileImage
                 }
@@ -441,35 +450,6 @@ private extension StaccatoDetailView {
                 }
                 .padding(.trailing, 24)
             }
-        }
-        .contextMenu {
-//            Button {
-//                // TODO: 댓글 수정 UI 요청
-//            } label: {
-//                Text("수정")
-//                Image(StaccatoIcon.pencilLine)
-//            }
-            
-            Button {
-                alertManager.show(
-                    .confirmCancelAlert(
-                        title: "댓글을 삭제하시겠습니까?",
-                        message: "삭제하면 되돌릴 수 없어요") {
-                            Task {
-                                do {
-                                    try await viewModel.deleteComment(comment.commentId)
-                                    try await viewModel.getComments(staccatoId)
-                                } catch {
-                                    print("❌ Error: \(error.localizedDescription)")
-                                }
-                            }
-                        }
-                )
-            } label: {
-                Text("삭제")
-                Image(StaccatoIcon.trash)
-            }
-            .foregroundStyle(.red)
         }
     }
 }

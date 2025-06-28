@@ -31,6 +31,9 @@ struct SelectCategoryView: View {
                 selectedCategory = newValue
             }
         }
+        .onAppear {
+            category = selectedCategory
+        }
     }
 }
 

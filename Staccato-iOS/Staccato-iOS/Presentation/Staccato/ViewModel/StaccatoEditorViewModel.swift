@@ -24,21 +24,21 @@ final class StaccatoEditorViewModel {
     var showDatePickerSheet = false
     var dateOnDatePicker: Date? = nil
     var selectedDate: Date? = nil
-    
-    var catchError: Bool = false
-    var errorTitle: String?
-    var errorMessage: String?
 
-    var photos: [UploadablePhoto] = []
-    var draggingPhoto: UploadablePhoto?
-    var selectedPhotos: [PhotosPickerItem] = []
     var showCamera = false
     var isPhotoInputPresented = false
     var isPhotoPickerPresented = false
-
+    var photos: [UploadablePhoto] = []
+    var draggingPhoto: UploadablePhoto?
+    var selectedPhotos: [PhotosPickerItem] = []
+    
     var showPlaceSearchSheet = false
     var selectedPlace: StaccatoPlaceModel?
 
+    var showCategoryPickerSheet = false
+    var categories: [CategoryCandidateModel] = []
+    var selectedCategory: CategoryCandidateModel?
+    
     var isReadyToSave: Bool {
         return !title.isEmpty &&
         selectedPlace?.name.isEmpty == false &&
@@ -47,15 +47,15 @@ final class StaccatoEditorViewModel {
         selectedPlace?.coordinate.longitude != nil &&
         selectedDate != nil
     }
-
-    var categories: [CategoryCandidateModel] = []
-    var selectedCategory: CategoryCandidateModel?
-
-    var uploadSuccess = false
     
     var isSaving = false
+    var uploadSuccess = false
     private var lastAPICallTime: Date = .distantPast
     private let throttleInterval: TimeInterval = 2.0
+    
+    var catchError: Bool = false
+    var errorTitle: String?
+    var errorMessage: String?
 
     /// Create Staccato
     init(selectedCategory: CategoryCandidateModel? = nil) {

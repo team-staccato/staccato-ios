@@ -29,7 +29,7 @@ class HomeViewModel: ObservableObject {
 
     @Published var cameraPosition: GMSCameraPosition?
 
-    
+    @Published var isStaccatoListPresented: Bool = false
     func removeStaccatos(with staccatoIds: Set<Int64>) {
         staccatos = staccatos.filter { !staccatoIds.contains($0.staccatoId) }
     }

@@ -63,6 +63,9 @@ struct HomeView: View {
                 if alertManager.isPresented {
                     StaccatoAlertView(alertManager: $alertManager)
                 }
+                if viewModel.isStaccatoListPresented {
+                    StaccatoListView(staccatos: viewModel.staccatoClusterList)
+                }
             }
         }
         .ignoresSafeArea(.keyboard)

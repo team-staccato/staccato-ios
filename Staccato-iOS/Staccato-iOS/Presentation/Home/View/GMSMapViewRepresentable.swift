@@ -6,6 +6,7 @@
 //
 
 import GoogleMaps
+import GoogleMapsUtils
 
 import SwiftUI
 
@@ -24,6 +25,15 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         mapView.isMyLocationEnabled = true // 내위치 파란점으로 표시
         mapView.delegate = context.coordinator
         
+        let iconGenerator = GMUDefaultClusterIconGenerator()
+        let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm()
+        let renderer = GMUDefaultClusterRenderer(mapView: mapView, clusterIconGenerator: iconGenerator)
+        context.coordinator.clusterManager = GMUClusterManager(map: mapView, algorithm: algorithm, renderer: renderer)
+        context.coordinator.clusterManager?.setMapDelegate(context.coordinator)
+        
+        // Generate and add random items to the cluster manager.
+        generateClusterItems(on: context)
+
         // 위치접근권한 없을 경우 초기 위치를 서울시청으로 함
         if !STLocationManager.shared.hasLocationAuthorization() {
             let seoulCityhall = CLLocationCoordinate2D(latitude: 37.5665851, longitude: 126.97820379999999)
@@ -36,7 +46,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: GMSMapView, context: Context) {
-        updateMarkers(to: uiView)
+        updateMarkers(to: uiView, context: context)
 
         // 특정 좌표가 있으면 카메라 이동
         if let cameraPosition = viewModel.cameraPosition {
@@ -55,7 +65,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         }
 
 #if DEBUG
-        print("GMSMapViewRepresentable updated")
+        print("🗺️GMSMapViewRepresentable updated")
 #endif
     }
 
@@ -72,6 +82,7 @@ extension GMSMapViewRepresentable {
 
     final class Coordinator: NSObject {
         let parent: GMSMapViewRepresentable
+        var clusterManager: GMUClusterManager?
         
         init(_ parent: GMSMapViewRepresentable) {
             self.parent = parent
@@ -87,7 +98,7 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location: CLLocation = locations.last else {
-            print("❌ GMSMapView Location Optional Binding Failed")
+            print("❌🗺️ GMSMapView Location Optional Binding Failed")
             return
         }
         let camera = GMSCameraPosition.camera(withTarget: location.coordinate, zoom: 15)
@@ -116,14 +127,24 @@ extension GMSMapViewRepresentable.Coordinator: CLLocationManagerDelegate {
 extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
-        if let userdata = marker.userData as? StaccatoCoordinateModel {
+        // Cluster 탭한 경우
+        if let cluster = marker.userData as? GMUCluster {
+            mapView.animate(toLocation: marker.position)
+            mapView.animate(toZoom: mapView.camera.zoom + 1)
+            
+            // TODO: 스타카토 리스트 팝업 띄우기
+            print("🗺️did tap cluster: \(cluster)")
+            return true
+        }
+        // Marker 탭한 경우
+        else if let userdata = marker.userData as? StaccatoCoordinateModel {
             parent.navigationManager.navigate(to: .staccatoDetail(userdata.staccatoId))
             Task.detached { @MainActor in
                 self.parent.detentManager.selectedDetent = BottomSheetDetent.medium.detent
             }
-        } else {
-            print("⚠️ No StaccatoData found for this marker.")
+            return true
         }
+        NSLog("⚠️🗺️ No any Cluster or StaccatoData found for this marker.")
         return false
     }
 
@@ -134,16 +155,19 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
 
 private extension GMSMapViewRepresentable {
 
-    func updateMarkers(to mapView: GMSMapView) {
-        markStaccatos(to: mapView)
-        removeMarkers(from: mapView)
+    func updateMarkers(to mapView: GMSMapView, context: Context) {
+        if markStaccatos(to: mapView) && removeMarkers(from: mapView) {
+            // Call cluster() after items have been added to perform the clustering and rendering on map.
+            print("🗺️updateMarkers")
+            context.coordinator.clusterManager?.cluster()
+        }
     }
 
     /// 지도에 스타카토 마커를 추가합니다.
-    func markStaccatos(to mapView: GMSMapView) {
+    func markStaccatos(to mapView: GMSMapView) -> Bool {
         let staccatosToAdd = viewModel.staccatosToAdd
 
-        guard !staccatosToAdd.isEmpty else { return }
+        guard !staccatosToAdd.isEmpty else { return false }
 
         for staccato in staccatosToAdd {
             let marker = GMSMarker()
@@ -162,21 +186,21 @@ private extension GMSMapViewRepresentable {
                 viewModel.displayedMarkers[staccato.id] = marker
             }
         }
-#if DEBUG
-        print("✅ All staccato markers are added successfully!")
-#endif
+        return true
     }
 
     /// 스타카토 마커를 제거합니다.
-    func removeMarkers(from mapView: GMSMapView) {
+    func removeMarkers(from mapView: GMSMapView) -> Bool {
         let staccatosToRemove = viewModel.staccatosToRemove
 
-        guard !staccatosToRemove.isEmpty else { return }
+        guard !staccatosToRemove.isEmpty else { return false }
 
         for staccato in staccatosToRemove {
             viewModel.displayedMarkers[staccato.id]?.map = nil
             viewModel.displayedMarkers.removeValue(forKey: staccato.id)
         }
+
+        return true
     }
 
     /// 카메라 좌표를 이동하며, 모달이 올라온 만큼 지도를 화면 중앙으로 scroll합니다.
@@ -199,6 +223,27 @@ private extension GMSMapViewRepresentable {
             mapView.animate(with: GMSCameraUpdate.scrollBy(x: 0, y: deltaY))
             detentManager.previousDetent = currentSize
         }
+    }
+
+    // TODO: 삭제
+    /// Randomly generates cluster items within some extent of the camera and adds them to the cluster manager.
+    private func generateClusterItems(on context: Context) {
+        let kClusterItemCount = 5000
+        let kCameraLatitude = 36.8
+        let kCameraLongitude = 127.2
+        let extent = 0.9
+        for _ in 1...kClusterItemCount {
+            let lat = kCameraLatitude + extent * randomScale()
+            let lng = kCameraLongitude + extent * randomScale()
+            let position = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+            let marker = GMSMarker(position: position)
+            context.coordinator.clusterManager?.add(marker)
+        }
+    }
+
+    /// Returns a random value between -1.0 and 1.0.
+    private func randomScale() -> Double {
+      return Double(arc4random()) / Double(UINT32_MAX) * 2.0 - 1.0
     }
 
 }

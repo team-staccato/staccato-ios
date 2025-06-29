@@ -132,6 +132,7 @@ private extension CategoryListCell {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 10, height: 10)
+                .foregroundStyle(.gray3)
             Text(String(categoryInfo.staccatoCount))
                 .typography(.body5) // TODO: 폰트스타일 수정 후 point 12로 수정
         }

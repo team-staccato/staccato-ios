@@ -27,6 +27,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
 
     let title: String?
     let subtitle: String?
+    let backButtonImage: Image
     let trailingButtons: T
     let titlePosition: TitlePosition
     let barType: STNavigationBarType
@@ -36,12 +37,14 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
         subtitle: String?,
         titlePosition: TitlePosition = .leading,
         barType: STNavigationBarType,
+        backButtonImage: Image = Image(.chevronLeft),
         @ViewBuilder trailingButtons: () -> T
     ) {
         self.title = title
         self.subtitle = subtitle
         self.titlePosition = titlePosition
         self.barType = barType
+        self.backButtonImage = backButtonImage
         self.trailingButtons = trailingButtons()
     }
 
@@ -52,7 +55,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
                     Button  {
                         barType == .navigation ? navigationManager.dismiss() : dismiss()
                     } label: {
-                        Image(.chevronLeft)
+                        backButtonImage
                             .resizable()
                             .scaledToFit()
                             .frame(height: 20)
@@ -162,10 +165,11 @@ extension View {
         title: String? = nil,
         subtitle: String? = nil,
         titlePosition: TitlePosition = .leading,
+        backButtonImage: Image = Image(.chevronLeft),
         @ViewBuilder trailingButtons: () -> T
     ) -> some View {
         self
-            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, trailingButtons: trailingButtons))
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, backButtonImage: backButtonImage, trailingButtons: trailingButtons))
             .background(.staccatoWhite)
             .padding(.top, 10)
     }
@@ -173,10 +177,11 @@ extension View {
     func staccatoNavigationBar(
         title: String? = nil,
         subtitle: String? = nil,
-        titlePosition: TitlePosition = .leading
+        titlePosition: TitlePosition = .leading,
+        backbuttonImage: Image = Image(.chevronLeft)
     ) -> some View {
         self
-            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, trailingButtons: { }))
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .navigation, backButtonImage: backbuttonImage, trailingButtons: { }))
             .background(.staccatoWhite)
             .padding(.top, 10)
     }
@@ -185,20 +190,22 @@ extension View {
         title: String? = nil,
         subtitle: String? = nil,
         titlePosition: TitlePosition = .leading,
+        backButtonImage: Image = Image(.chevronLeft),
         @ViewBuilder trailingButtons: () -> T
     ) -> some View {
         self
-            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .modal, trailingButtons: trailingButtons))
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .modal, backButtonImage: backButtonImage, trailingButtons: trailingButtons))
             .background(.staccatoWhite)
     }
 
     func staccatoModalBar(
         title: String? = nil,
         subtitle: String? = nil,
-        titlePosition: TitlePosition = .leading
+        titlePosition: TitlePosition = .leading,
+        backButtonImage: Image = Image(.chevronLeft)
     ) -> some View {
         self
-            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .modal, trailingButtons: { }))
+            .modifier(StaccatoNavigationBar(title: title, subtitle: subtitle, titlePosition: titlePosition, barType: .modal, backButtonImage: backButtonImage, trailingButtons: { }))
             .background(.staccatoWhite)
     }
 

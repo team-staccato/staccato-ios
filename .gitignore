@@ -128,3 +128,4 @@ iOSInjectionProject/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 *.xcconfig
+Config/

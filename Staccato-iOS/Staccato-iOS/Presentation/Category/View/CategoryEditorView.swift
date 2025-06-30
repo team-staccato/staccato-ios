@@ -100,6 +100,7 @@ struct CategoryEditorView: View {
 
         .sheet(isPresented: $viewModel.isPeriodSheetPresented) {
             StaccatoDatePicker(isDatePickerPresented: $viewModel.isPeriodSheetPresented, selectedStartDate: $viewModel.selectedStartDate, selectedEndDate: $viewModel.selectedEndDate)
+                .presentationDetents([.height(500)])
         }
 
         .sheet(isPresented: $viewModel.isColorPalettePresented) {

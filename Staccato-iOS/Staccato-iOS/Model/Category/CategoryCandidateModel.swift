@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct CategoryCandidateModel {
+struct CategoryCandidateModel: Hashable, Identifiable {
 
-    let categoryId: Int64
+    let id: Int64
     let categoryTitle: String
 
 }
@@ -20,7 +20,7 @@ struct CategoryCandidateModel {
 extension CategoryCandidateModel {
 
     init(from dto: GetCategoryCandidatesResponse.CategoryResponse) {
-        self.categoryId = dto.categoryId
+        self.id = dto.categoryId
         self.categoryTitle = dto.categoryTitle
     }
 

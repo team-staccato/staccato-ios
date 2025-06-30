@@ -128,4 +128,4 @@ iOSInjectionProject/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 *.xcconfig
-Config/
+GoogleService-Info.plist

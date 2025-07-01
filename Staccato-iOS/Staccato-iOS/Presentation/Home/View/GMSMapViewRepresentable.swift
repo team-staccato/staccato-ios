@@ -25,7 +25,7 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         mapView.isMyLocationEnabled = true
         mapView.delegate = context.coordinator
 
-        let iconGenerator = GMUDefaultClusterIconGenerator(buckets: [10, 20, 50], backgroundImages: [.feelingHappy, .feelingAngry, .staccatoLogo])
+        let iconGenerator = StaccatoClusterIconGenerator()
         let algorithm = GMUNonHierarchicalDistanceBasedAlgorithm()
         let renderer = GMUDefaultClusterRenderer(mapView: mapView, clusterIconGenerator: iconGenerator)
 

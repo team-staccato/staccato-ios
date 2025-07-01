@@ -18,7 +18,7 @@ final class StaccatoDetailViewModel: ObservableObject {
     @Published var shareLink: URL?
 
     let userId: Int64 = AuthTokenManager.shared.getUserId() ?? -1
-    
+
 }
 
 

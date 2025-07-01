@@ -63,12 +63,10 @@ struct HomeView: View {
                 if alertManager.isPresented {
                     StaccatoAlertView(alertManager: $alertManager)
                 }
-                if viewModel.isStaccatoListPresented {
-                    StaccatoListView(staccatos: viewModel.staccatoClusterList)
-                }
             }
         }
         .ignoresSafeArea(.keyboard)
+
         .onAppear() {
             if !hasAppearedOnce {
                 hasAppearedOnce = true
@@ -80,7 +78,7 @@ struct HomeView: View {
             STNotificationManager.shared.getHasNotification { hasNotificaton in
                 self.hasNotification = hasNotificaton
             }
-            
+
             detentManager.isbottomSheetPresented = true
         }
         .sheet(isPresented: $detentManager.isbottomSheetPresented) {
@@ -93,6 +91,10 @@ struct HomeView: View {
                     Set(BottomSheetDetent.allCases.map { $0.detent }),
                     selection: $detentManager.selectedDetent
                 )
+
+                .fullScreenCover(isPresented: $viewModel.isStaccatoListPresented) {
+                    StaccatoListView(staccatos: viewModel.staccatoClusterList)
+                }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {
             MyPageView()

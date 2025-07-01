@@ -22,6 +22,7 @@ struct StaccatoListView: View {
         ZStack {
             Color(.staccatoBlack).opacity(0.3)
                 .edgesIgnoringSafeArea(.all)
+                .onTapGesture { viewModel.isStaccatoListPresented = false }
 
             staccatoListPopup
         }

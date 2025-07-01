@@ -81,6 +81,7 @@ extension GMSMapViewRepresentable {
             self.parent = parent
         }
     }
+
 }
 
 

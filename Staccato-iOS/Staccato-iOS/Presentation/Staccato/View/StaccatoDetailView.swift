@@ -21,9 +21,10 @@ struct StaccatoDetailView: View {
     @StateObject private var viewModel = StaccatoDetailViewModel()
     
     @State private var alertManager = StaccatoAlertManager()
-    @State var commentText: String = ""
+    @State private var commentText: String = ""
     @State private var hasLoadedInitialData = false
     @State private var isStaccatoModifySheetPresented = false
+    @State private var shouldScrollToBottom: Bool = false
     @FocusState private var isCommentFocused: Bool
     
     init(_ staccatoId: Int64) {
@@ -55,8 +56,11 @@ struct StaccatoDetailView: View {
                             Divider()
                             
                             commentSection
+                                .padding(.bottom, -20)
                             
-                            Spacer()
+                            if viewModel.comments.isEmpty {
+                                Spacer()
+                            }
                             
                             commentTypingView
                                 .id("commentTypingView")
@@ -67,28 +71,18 @@ struct StaccatoDetailView: View {
                         StaccatoAlertView(alertManager: $alertManager)
                     }
                 }
-                .onChange(of: viewModel.comments) { _,_ in
-                    DispatchQueue.main.async {
-                        if viewModel.shouldScrollToBottom {
-                            withAnimation {
-                                proxy.scrollTo("commentTypingView", anchor: .bottom)
-                                viewModel.shouldScrollToBottom = false
-                            }
-                        }
+                
+                .onChange(of: shouldScrollToBottom) { _,_ in
+                    withAnimation {
+                        proxy.scrollTo("commentTypingView", anchor: .bottom)
+                        shouldScrollToBottom = false
                     }
                 }
                 
-                .onChange(of: isCommentFocused) { _, newValue in
-                    if newValue {
-                        detentManager.updateDetent(to: .large)
-                    }
-                    Task {
-                        try await Task.sleep(for: .seconds(0.5))
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            proxy.scrollTo("commentTypingView", anchor: .bottom)
-                        }
-                    }
+                .onChange(of: isCommentFocused) { _,_ in
+                    shouldScrollToBottom = true
                 }
+                
                 .onTapGesture {
                     isCommentFocused = false
                 }
@@ -102,12 +96,15 @@ struct StaccatoDetailView: View {
                     presentDeleteAlert()
                 }
             }
-            .onChange(of: viewModel.staccatoDetail) { _, _ in
+            
+            .onChange(of: viewModel.staccatoDetail?.address) { _, _ in
                 updateMapCamera()
             }
+            
             .onChange(of: geometry.size.height) { _, height in
                 detentManager.updateDetent(height)
             }
+            
             .onAppear {
                 detentManager.updateDetent(geometry.size.height)
                 
@@ -311,9 +308,7 @@ private extension StaccatoDetailView {
     }
 
     var commentTypingView: some View {
-        let placeholder = "코멘트 입력하기"
-        
-        return HStack(spacing: 6) {
+        HStack(spacing: 6) {
             TextField("", text: $commentText, axis: .vertical)
                 .focused($isCommentFocused)
                 .textFieldStyle(StaccatoTextFieldStyle())
@@ -321,7 +316,7 @@ private extension StaccatoDetailView {
 
                 .overlay(alignment: .leading) {
                     if !isCommentFocused && commentText.isEmpty {
-                        Text(placeholder)
+                        Text("코멘트 입력하기")
                             .padding(.leading, 15)
                             .typography(.body2)
                             .foregroundStyle(.gray3)
@@ -332,7 +327,7 @@ private extension StaccatoDetailView {
         }
         .padding(.horizontal, 10)
         .padding(.top, 10)
-        .padding(.bottom, ScreenUtils.safeAreaInsets.bottom)
+        .padding(.bottom, isCommentFocused ? 10 : ScreenUtils.safeAreaInsets.bottom)
     }
 
     var commentSubmitButton: some View {
@@ -343,7 +338,7 @@ private extension StaccatoDetailView {
                 do {
                     try await viewModel.postComment(staccatoId, commentText)
                     try await viewModel.getComments(staccatoId)
-                    viewModel.shouldScrollToBottom = true
+                    shouldScrollToBottom = true
                     commentText.removeAll()
                 } catch {
                     print("❌ Error: \(error.localizedDescription)")
@@ -378,32 +373,12 @@ private extension StaccatoDetailView {
         }
 
         var profileImage: some View {
-            if let imageUrl = comment.memberImageUrl {
-                let image = KFImage(URL(string: imageUrl))
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipShape(.circle)
-                    .frame(width: 38, height: 38)
-                return AnyView(image)
-            } else {
-                let image = Image(.personCircleFill)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .foregroundStyle(.gray2)
-                    .clipShape(.circle)
-                    .frame(width: 38, height: 38)
-                return AnyView(image)
-            }
+            KFImage(URL(string: comment.memberImageUrl ?? ""))
+                .fillPersonImage(width: 38, height: 38)
         }
 
         var commentView: some View {
-            let corners: UIRectCorner = {
-                if isFromUser {
-                    return [.topLeft, .bottomLeft, .bottomRight]
-                } else {
-                    return [.topRight, .bottomLeft, .bottomRight]
-                }
-            }()
+            let corners: UIRectCorner = [isFromUser ? .topLeft : .topRight, .bottomLeft, .bottomRight]
 
             return Text(comment.content)
                 .typography(.body3)
@@ -426,6 +401,27 @@ private extension StaccatoDetailView {
                     VStack(alignment: .trailing, spacing: 6) {
                         nicknameText
                         commentView
+                            .contextMenu {
+                                // TODO: 댓글 수정 UI 요청
+                                Button(role: .destructive) {
+                                    alertManager.show(
+                                        .confirmCancelAlert(
+                                            title: "댓글을 삭제하시겠습니까?",
+                                            message: "삭제하면 되돌릴 수 없어요") {
+                                                Task {
+                                                    do {
+                                                        try await viewModel.deleteComment(comment.commentId)
+                                                        try await viewModel.getComments(staccatoId)
+                                                    } catch {
+                                                        print("❌ Error: \(error.localizedDescription)")
+                                                    }
+                                                }
+                                            }
+                                    )
+                                } label: {
+                                    Label("삭제", systemImage: StaccatoIcon.trash.rawValue)
+                                }
+                            }
                     }
                     profileImage
                 }
@@ -441,35 +437,6 @@ private extension StaccatoDetailView {
                 }
                 .padding(.trailing, 24)
             }
-        }
-        .contextMenu {
-//            Button {
-//                // TODO: 댓글 수정 UI 요청
-//            } label: {
-//                Text("수정")
-//                Image(StaccatoIcon.pencilLine)
-//            }
-            
-            Button {
-                alertManager.show(
-                    .confirmCancelAlert(
-                        title: "댓글을 삭제하시겠습니까?",
-                        message: "삭제하면 되돌릴 수 없어요") {
-                            Task {
-                                do {
-                                    try await viewModel.deleteComment(comment.commentId)
-                                    try await viewModel.getComments(staccatoId)
-                                } catch {
-                                    print("❌ Error: \(error.localizedDescription)")
-                                }
-                            }
-                        }
-                )
-            } label: {
-                Text("삭제")
-                Image(StaccatoIcon.trash)
-            }
-            .foregroundStyle(.red)
         }
     }
 }

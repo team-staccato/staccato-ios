@@ -14,6 +14,9 @@
 		15E5087D2E107A9A00CF9A54 /* GoogleMapsUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 15E5087C2E107A9A00CF9A54 /* GoogleMapsUtils */; };
 		3D69FDBC2DA2B43B0073D885 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 3D69FDBB2DA2B43B0073D885 /* Lottie */; };
 		79E999F42D4D11790066E0CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 79E999F32D4D11790066E0CA /* Alamofire */; };
+		A81EB0D42E12872B0009396A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = A81EB0D32E12872B0009396A /* FirebaseAnalytics */; };
+		A81EB0D62E12872B0009396A /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A81EB0D52E12872B0009396A /* FirebaseCrashlytics */; };
+		A81EB0D82E12872B0009396A /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A81EB0D72E12872B0009396A /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,8 +29,6 @@
 		137153B72D26EFEA00EABE10 /* Exceptions for "Staccato-iOS" folder in "Staccato-iOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Support/Config/Debug.xcconfig,
-				Support/Config/Release.xcconfig,
 				Support/Info.plist,
 			);
 			target = 137153872D26CDCA00EABE10 /* Staccato-iOS */;
@@ -50,11 +51,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A81EB0D82E12872B0009396A /* FirebaseMessaging in Frameworks */,
+				A81EB0D42E12872B0009396A /* FirebaseAnalytics in Frameworks */,
 				133087FD2D66D89800085E6F /* GooglePlaces in Frameworks */,
 				15E5087D2E107A9A00CF9A54 /* GoogleMapsUtils in Frameworks */,
 				15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */,
 				79E999F42D4D11790066E0CA /* Alamofire in Frameworks */,
 				133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */,
+				A81EB0D62E12872B0009396A /* FirebaseCrashlytics in Frameworks */,
 				151667772D7DEA9700F7F956 /* Kingfisher in Frameworks */,
 				3D69FDBC2DA2B43B0073D885 /* Lottie in Frameworks */,
 			);
@@ -115,6 +119,9 @@
 				133087FE2D66D89800085E6F /* GooglePlacesSwift */,
 				151667762D7DEA9700F7F956 /* Kingfisher */,
 				3D69FDBB2DA2B43B0073D885 /* Lottie */,
+				A81EB0D32E12872B0009396A /* FirebaseAnalytics */,
+				A81EB0D52E12872B0009396A /* FirebaseCrashlytics */,
+				A81EB0D72E12872B0009396A /* FirebaseMessaging */,
 				15E5087C2E107A9A00CF9A54 /* GoogleMapsUtils */,
 			);
 			productName = "Staccato-iOS";
@@ -151,6 +158,7 @@
 				133087FB2D66D89800085E6F /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 				151667752D7DEA9700F7F956 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				3D69FDBA2DA2B43B0073D885 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				A81EB0D22E12872B0009396A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				15E5087B2E107A9A00CF9A54 /* XCRemoteSwiftPackageReference "google-maps-ios-utils" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -317,6 +325,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = "Staccato-iOS/Support/Staccato-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
@@ -326,6 +335,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Staccato;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "우리의 추억을 저장하기 위해 카메라 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 현재 위치를 입력하기 위해 위치 기반 서비스의 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -363,6 +374,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = "Staccato-iOS/Support/Staccato-iOS.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
@@ -372,6 +384,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Staccato-iOS/Support/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Staccato;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_NSCameraUsageDescription = "우리의 추억을 저장하기 위해 카메라 접근 권한이 필요합니다.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "사용자의 현재 위치를 입력하기 위해 위치 기반 서비스의 권한이 필요합니다.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -473,6 +487,14 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		A81EB0D22E12872B0009396A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.15.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -510,6 +532,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 79E999F22D4D11790066E0CA /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		A81EB0D32E12872B0009396A /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A81EB0D22E12872B0009396A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		A81EB0D52E12872B0009396A /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A81EB0D22E12872B0009396A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		A81EB0D72E12872B0009396A /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A81EB0D22E12872B0009396A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

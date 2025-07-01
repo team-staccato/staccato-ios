@@ -395,27 +395,23 @@ extension StaccatoEditorView {
     private var categorySelectSection: some View {
         VStack(alignment: .leading, spacing: 0) {
             sectionTitle(title: "카테고리 선택")
-
-            Menu(categoryMenuTitle) {
-                ForEach(viewModel.categories, id: \.categoryId) { category in
-                    Button(category.categoryTitle) {
-                        self.viewModel.selectedCategory = category
-                    }
-                }
+            
+            Button(viewModel.categories.isEmpty
+                   ? "생성된 카테고리가 없어요"
+                   : viewModel.selectedCategory?.categoryTitle ?? "카테고리를 선택해주세요") {
+                viewModel.showCategoryPickerSheet = viewModel.categories.isEmpty ? false : true
             }
-            .buttonStyle(.staticTextFieldButtonStyle())
-            .disabled(viewModel.categories.isEmpty)
+            .buttonStyle(viewModel.selectedCategory == nil ? .staticTextFieldButtonStyle() : .staticTextFieldButtonStyle(isActive: true))
+    
+            .sheet(isPresented: $viewModel.showCategoryPickerSheet) {
+                SelectCategoryView(
+                 selectedCategory: $viewModel.selectedCategory,
+                 categories: $viewModel.categories
+                )
+                .presentationDetents([.fraction(0.4)])
+            }
         }
     }
-
-    private var categoryMenuTitle: String {
-        if viewModel.categories.isEmpty {
-            return "생성된 카테고리가 없어요"
-        } else {
-            return viewModel.selectedCategory?.categoryTitle ?? "카테고리를 선택해주세요"
-        }
-    }
-
 
     // MARK: - Save
 

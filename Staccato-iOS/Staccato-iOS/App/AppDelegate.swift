@@ -7,20 +7,57 @@
 
 import GoogleMaps
 import GooglePlacesSwift
+import FirebaseCore
+import FirebaseMessaging
 import UIKit
 
 // Maps SDK 초기화를 위해 AppDelegate 구현
-final class AppDelegate: NSObject, UIApplicationDelegate {
+final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Google Map
         let apiKey = Bundle.main.infoDictionary?["API_KEY"] as! String
         GMSServices.provideAPIKey(apiKey)
         let _ = PlacesClient.provideAPIKey(apiKey)
-
+        
+        // FCM
+        FirebaseApp.configure()
+        Messaging.messaging().delegate = self
+        
+        // 알림 센터 델리게이트 설정
+        UNUserNotificationCenter.current().delegate = self
+        
         return true
     }
     
+    func application(
+        _ application: UIApplication,
+        didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+    ) {
+        Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        Messaging.messaging().token { token, error in
+            if let error {
+                print("FCM 토큰 가져오기 실패: \(error)")
+            } else if let token {
+                let deviceID = UIDevice.current.identifierForVendor!.uuidString
+                Task { try await NotificationService.postNotificationToken(token, deviceID) }
+            }
+        }
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound, .badge])
+    }
 }

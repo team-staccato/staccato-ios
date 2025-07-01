@@ -130,15 +130,13 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
     func mapView(_ mapView: GMSMapView, didTap marker: GMSMarker) -> Bool {
         // Cluster tapped
         if let cluster = marker.userData as? GMUCluster {
-            mapView.animate(toLocation: marker.position)
-            mapView.animate(toZoom: mapView.camera.zoom + 1)
             parent.viewModel.staccatoClusterList = cluster.items.compactMap { ($0 as? GMUClusterItemWrapper)?.staccato } // TODO: 수정
             parent.viewModel.isStaccatoListPresented = true
             return true
         }
         // Marker tapped
-        else if let userdata = marker.userData as? GMUClusterItemWrapper {
-            parent.navigationManager.navigate(to: .staccatoDetail(userdata.staccato.staccatoId))
+        else if let marker = marker.userData as? GMUClusterItemWrapper {
+            parent.navigationManager.navigate(to: .staccatoDetail(marker.staccato.staccatoId))
             Task.detached { @MainActor in
                 self.parent.detentManager.selectedDetent = BottomSheetDetent.medium.detent
             }
@@ -147,6 +145,9 @@ extension GMSMapViewRepresentable.Coordinator: GMSMapViewDelegate {
         return false
     }
 }
+
+
+// MARK: - Helper
 
 private extension GMSMapViewRepresentable {
 
@@ -195,16 +196,5 @@ private extension GMSMapViewRepresentable {
             detentManager.previousDetent = currentSize
         }
     }
-}
 
-
-// MARK: - GMUClusterItemWrapper
-
-class GMUClusterItemWrapper: NSObject, GMUClusterItem {
-    let staccato: StaccatoCoordinateModel
-    var position: CLLocationCoordinate2D { CLLocationCoordinate2D(latitude: staccato.latitude, longitude: staccato.longitude) }
-
-    init(_ staccato: StaccatoCoordinateModel) {
-        self.staccato = staccato
-    }
 }

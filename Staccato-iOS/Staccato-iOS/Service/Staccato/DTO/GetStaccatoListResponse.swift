@@ -8,19 +8,23 @@
 import Foundation
 
 struct GetStaccatoListResponse: Decodable {
-    
+
     let staccatoLocationResponses: [StaccatoLocationResponse]
-    
+
 }
 
 struct StaccatoLocationResponse: Decodable {
-    
+
     let staccatoId: Int64
-    
+
     let staccatoColor: String
-    
+
     let latitude: Double
-    
+
     let longitude: Double
-    
+
+    let title: String
+
+    let visitedAt: String
+
 }

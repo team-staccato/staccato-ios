@@ -11,6 +11,7 @@
 		133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 133087FE2D66D89800085E6F /* GooglePlacesSwift */; };
 		151667772D7DEA9700F7F956 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 151667762D7DEA9700F7F956 /* Kingfisher */; };
 		15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 15926B272D2EF06E00026F56 /* GoogleMaps */; };
+		15E5087D2E107A9A00CF9A54 /* GoogleMapsUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 15E5087C2E107A9A00CF9A54 /* GoogleMapsUtils */; };
 		3D69FDBC2DA2B43B0073D885 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 3D69FDBB2DA2B43B0073D885 /* Lottie */; };
 		79E999F42D4D11790066E0CA /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 79E999F32D4D11790066E0CA /* Alamofire */; };
 		A81EB0D42E12872B0009396A /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = A81EB0D32E12872B0009396A /* FirebaseAnalytics */; };
@@ -53,6 +54,7 @@
 				A81EB0D82E12872B0009396A /* FirebaseMessaging in Frameworks */,
 				A81EB0D42E12872B0009396A /* FirebaseAnalytics in Frameworks */,
 				133087FD2D66D89800085E6F /* GooglePlaces in Frameworks */,
+				15E5087D2E107A9A00CF9A54 /* GoogleMapsUtils in Frameworks */,
 				15926B282D2EF06E00026F56 /* GoogleMaps in Frameworks */,
 				79E999F42D4D11790066E0CA /* Alamofire in Frameworks */,
 				133087FF2D66D89800085E6F /* GooglePlacesSwift in Frameworks */,
@@ -121,6 +123,7 @@
 				A81EB0D32E12872B0009396A /* FirebaseAnalytics */,
 				A81EB0D52E12872B0009396A /* FirebaseCrashlytics */,
 				A81EB0D72E12872B0009396A /* FirebaseMessaging */,
+				15E5087C2E107A9A00CF9A54 /* GoogleMapsUtils */,
 			);
 			productName = "Staccato-iOS";
 			productReference = 137153882D26CDCA00EABE10 /* Staccato-iOS.app */;
@@ -157,6 +160,7 @@
 				151667752D7DEA9700F7F956 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				3D69FDBA2DA2B43B0073D885 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 				A81EB0D22E12872B0009396A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				15E5087B2E107A9A00CF9A54 /* XCRemoteSwiftPackageReference "google-maps-ios-utils" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 137153892D26CDCA00EABE10 /* Products */;
@@ -486,7 +490,15 @@
 			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 9.2.0;
+				minimumVersion = 10.0.0;
+			};
+		};
+		15E5087B2E107A9A00CF9A54 /* XCRemoteSwiftPackageReference "google-maps-ios-utils" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/google-maps-ios-utils.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.1.1;
 			};
 		};
 		3D69FDBA2DA2B43B0073D885 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
@@ -535,6 +547,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 15926B262D2EF06E00026F56 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
 			productName = GoogleMaps;
+		};
+		15E5087C2E107A9A00CF9A54 /* GoogleMapsUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 15E5087B2E107A9A00CF9A54 /* XCRemoteSwiftPackageReference "google-maps-ios-utils" */;
+			productName = GoogleMapsUtils;
 		};
 		3D69FDBB2DA2B43B0073D885 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

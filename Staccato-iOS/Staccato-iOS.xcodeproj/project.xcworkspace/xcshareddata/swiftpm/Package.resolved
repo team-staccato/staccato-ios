@@ -1,5 +1,5 @@
 {
-  "originHash" : "9bd7cf78ebe2660bf2d4ccd4bd75aaacacb0c154291d9926701725bb468b352b",
+  "originHash" : "ae8d1f15f86f414c8f8839eb42e14dd21811e588eed2c7c195102af3b7e6bb34",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -42,8 +42,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/googleads/google-ads-on-device-conversion-ios-sdk",
       "state" : {
-        "revision" : "70a7857886f065a40486a7607268781c49db04ae",
-        "version" : "2.0.0"
+        "revision" : "428d8bb138e00f9a3f4f61cc6cd8863607524f65",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "google-maps-ios-utils",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googlemaps/google-maps-ios-utils.git",
+      "state" : {
+        "revision" : "edee3200bde6b1c046299f212e8a953a18aada0d",
+        "version" : "6.1.1"
       }
     },
     {
@@ -105,8 +114,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/googlemaps/ios-maps-sdk",
       "state" : {
-        "revision" : "02f8f144ef266da44d50a68d1562ca051bac27cc",
-        "version" : "9.4.0"
+        "revision" : "9c540f3b475a800e947a09b8903b212a6634cf30",
+        "version" : "10.0.0"
       }
     },
     {

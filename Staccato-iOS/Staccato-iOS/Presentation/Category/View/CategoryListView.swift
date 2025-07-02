@@ -63,6 +63,7 @@ struct CategoryListView: View {
                     switch destination {
                     case .staccatoDetail(let staccatoId):
                         StaccatoDetailView(staccatoId)
+                            .id(staccatoId)
                             .environmentObject(detentManager)
                     case .categoryDetail(let categoryId):
                         CategoryDetailView(categoryId, viewModel)

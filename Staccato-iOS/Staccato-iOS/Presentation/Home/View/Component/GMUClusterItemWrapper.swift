@@ -9,7 +9,7 @@ import Foundation
 
 import GoogleMapsUtils
 
-class GMUClusterItemWrapper: NSObject, GMUClusterItem {
+final class GMUClusterItemWrapper: NSObject, GMUClusterItem {
 
     let staccato: StaccatoCoordinateModel
     var position: CLLocationCoordinate2D { CLLocationCoordinate2D(latitude: staccato.latitude, longitude: staccato.longitude) }

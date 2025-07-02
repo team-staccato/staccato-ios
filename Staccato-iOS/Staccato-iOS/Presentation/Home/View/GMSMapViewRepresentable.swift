@@ -59,7 +59,9 @@ struct GMSMapViewRepresentable: UIViewRepresentable {
         if currentSize != previousSize {
             scrollMap(on: uiView, currentSize: currentSize, previousSize: previousSize)
         }
+#if DEBUG
         print("🗺️GMSMapViewRepresentable updated")
+#endif
     }
 
 }

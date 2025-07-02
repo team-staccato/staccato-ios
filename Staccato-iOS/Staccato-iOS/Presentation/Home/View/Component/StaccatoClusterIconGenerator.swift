@@ -9,7 +9,7 @@ import Foundation
 
 import GoogleMapsUtils
 
-class StaccatoClusterIconGenerator: GMUDefaultClusterIconGenerator {
+final class StaccatoClusterIconGenerator: GMUDefaultClusterIconGenerator {
 
     override func icon(forSize size: UInt) -> UIImage {
         let image: UIImage

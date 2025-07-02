@@ -14,10 +14,6 @@ struct StaccatoListView: View {
 
     let staccatos: [StaccatoCoordinateModel]
 
-    init(staccatos: [StaccatoCoordinateModel]) {
-        self.staccatos = staccatos
-    }
-
     var body: some View {
         ZStack {
             Color(.staccatoBlack).opacity(0.3)

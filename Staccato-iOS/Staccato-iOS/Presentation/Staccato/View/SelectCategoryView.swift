@@ -32,6 +32,7 @@ struct SelectCategoryView: View {
             }
         }
         .onAppear {
+            if selectedCategory == nil { selectedCategory = categories.first }
             category = selectedCategory
         }
     }

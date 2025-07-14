@@ -184,7 +184,6 @@ final class CategoryEditorViewModel {
 
         do {
             let response = try await STService.shared.categoryService.postCategory(body)
-            try await categoryViewModel.getCategoryList()
             self.uploadSuccess = true
             isSaving = false
             return response.categoryId
@@ -216,7 +215,6 @@ final class CategoryEditorViewModel {
         do {
             try await STService.shared.categoryService.putCategory(id: id, query)
             self.uploadSuccess = true
-            try await categoryViewModel.getCategoryList()
             await categoryViewModel.getCategoryDetail(id)
         } catch {
             errorMessage = error.localizedDescription

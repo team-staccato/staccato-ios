@@ -10,9 +10,9 @@ import SwiftUI
 struct CategoryListView: View {
 
     @Environment(NavigationManager.self) var navigationManager
-    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @EnvironmentObject var mypageViewModel: MyPageViewModel
     @Bindable var bindableNavigationManager: NavigationManager
+    @StateObject private var detentManager = BottomSheetDetentManager.shared
     
     @StateObject private var viewModel = CategoryViewModel()
     @State private var selectedCategory: CategoryModel?
@@ -64,10 +64,8 @@ struct CategoryListView: View {
                     case .staccatoDetail(let staccatoId):
                         StaccatoDetailView(staccatoId)
                             .id(staccatoId)
-                            .environmentObject(detentManager)
                     case .categoryDetail(let categoryId):
                         CategoryDetailView(categoryId, viewModel)
-                            .environmentObject(detentManager)
                     }
                 }
             }

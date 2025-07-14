@@ -15,9 +15,9 @@ struct StaccatoDetailView: View {
     // MARK: - State Properties
     
     let staccatoId: Int64
+    @StateObject private var detentManager = BottomSheetDetentManager.shared
     @Environment(NavigationManager.self) var navigationManager
     @EnvironmentObject var homeViewModel: HomeViewModel
-    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @StateObject private var viewModel = StaccatoDetailViewModel()
     
     @State private var alertManager = StaccatoAlertManager()

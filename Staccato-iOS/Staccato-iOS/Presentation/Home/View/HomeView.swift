@@ -20,7 +20,7 @@ struct HomeView: View {
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: Managers
-    @EnvironmentObject private var detentManager: BottomSheetDetentManager
+    @StateObject private var detentManager = BottomSheetDetentManager.shared
     @Environment(NavigationManager.self) private var navigationManager
     @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
@@ -43,7 +43,6 @@ struct HomeView: View {
             ZStack(alignment: .topLeading) {
                 mapView
                     .ignoresSafeArea(.all)
-                    .environmentObject(detentManager)
                 
                 myPageButton
                     .padding(10)
@@ -83,7 +82,6 @@ struct HomeView: View {
         }
         .sheet(isPresented: $detentManager.isbottomSheetPresented) {
             CategoryListView(navigationManager)
-                .environmentObject(detentManager)
                 .interactiveDismissDisabled(true)
                 .presentationContentInteraction(.scrolls)
                 .presentationBackgroundInteraction(.enabled)
@@ -91,7 +89,6 @@ struct HomeView: View {
                     Set(BottomSheetDetent.allCases.map { $0.detent }),
                     selection: $detentManager.selectedDetent
                 )
-
                 .fullScreenCover(isPresented: $viewModel.isStaccatoListPresented) {
                     StaccatoListView(staccatos: viewModel.staccatoClusterList)
                 }

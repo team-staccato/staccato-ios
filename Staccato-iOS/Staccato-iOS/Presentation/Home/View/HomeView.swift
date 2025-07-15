@@ -21,6 +21,7 @@ struct HomeView: View {
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: Managers
+    @StateObject private var pushNotificationManager = PushNotificationManager.shared
     @Environment(NavigationManager.self) private var navigationManager
     @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
@@ -93,6 +94,12 @@ struct HomeView: View {
                 )
                 .fullScreenCover(isPresented: $viewModel.isStaccatoListPresented) {
                     StaccatoListView(staccatos: viewModel.staccatoClusterList)
+                }
+                .fullScreenCover(isPresented: $pushNotificationManager.shouldShowInvitation) {
+                    CategoryInvitationManagingView()
+                        .onDisappear {
+                            detentManager.isbottomSheetPresented = true
+                        }
                 }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {

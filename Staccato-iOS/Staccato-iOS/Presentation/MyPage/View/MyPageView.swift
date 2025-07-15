@@ -11,6 +11,7 @@ import Kingfisher
 
 struct MyPageView: View {
     
+    @Environment(\.dismiss) var dismiss
     @Environment(\.openURL) var openURL
     @Environment(NavigationManager.self) var navigationManager
     @EnvironmentObject private var viewModel: MyPageViewModel
@@ -126,6 +127,10 @@ extension MyPageView {
         
         .onChange(of: photoItem) { _, newValue in
             loadTransferable(from: newValue)
+        }
+        
+        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationReceived)) { _ in
+            dismiss()
         }
     }
     

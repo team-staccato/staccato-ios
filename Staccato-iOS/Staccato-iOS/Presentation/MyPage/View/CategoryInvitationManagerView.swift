@@ -45,6 +45,11 @@ struct CategoryInvitationManagingView: View {
             viewModel.fetchReceivedInvitations()
             viewModel.fetchSentInvitations()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationReceived)) { notification in
+            if PushNotificationManager.shared.type != .receiveInvitation {
+                dismiss()
+            }
+        }
     }
 }
 

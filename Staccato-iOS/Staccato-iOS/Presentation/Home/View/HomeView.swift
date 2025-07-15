@@ -21,8 +21,8 @@ struct HomeView: View {
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: Managers
-    @StateObject private var pushNotificationManager = PushNotificationManager.shared
     @Environment(NavigationManager.self) private var navigationManager
+    @StateObject private var pushNotificationManager = PushNotificationManager.shared
     @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
 
@@ -100,6 +100,19 @@ struct HomeView: View {
                         .onDisappear {
                             detentManager.isbottomSheetPresented = true
                         }
+                }
+                .onChange(of: pushNotificationManager.moveToCategory) { _, categoryId in
+                    if categoryId != 0 {
+                        navigationManager.navigate(to: .categoryDetail(categoryId))
+                        pushNotificationManager.moveToCategory = 0
+                    }
+                }
+                
+                .onChange(of: pushNotificationManager.moveToStaccato) { _, staccatoId in
+                    if staccatoId != 0 {
+                        navigationManager.navigate(to: .staccatoDetail(staccatoId))
+                        pushNotificationManager.moveToStaccato = 0
+                    }
                 }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {

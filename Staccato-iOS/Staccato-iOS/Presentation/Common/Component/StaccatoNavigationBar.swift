@@ -113,7 +113,7 @@ struct StaccatoNavigationBar<T: View>: ViewModifier {
 
             Spacer()
         }
-        .toolbarVisibility(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .navigationBar)
     }
 }
 

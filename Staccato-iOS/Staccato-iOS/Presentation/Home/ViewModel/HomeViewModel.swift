@@ -16,7 +16,6 @@ class HomeViewModel: ObservableObject {
 
     @Published var staccatos: Set<StaccatoCoordinateModel> = []
     var displayedStaccatos: Set<StaccatoCoordinateModel> = []
-    var displayedMarkers: [Int64 : GMSMarker] = [:] // == [staccato.id : GMSMarker]
 
     var staccatosToAdd: Set<StaccatoCoordinateModel> {
         staccatos.subtracting(displayedStaccatos)
@@ -86,45 +85,34 @@ extension HomeViewModel {
 
     /// 마커 아이콘 업데이트
     func updateMarkerIcons(for staccatoIds: [Int64], to colorType: CategoryColorType) {
+        var staccatosToRemove: Set<StaccatoCoordinateModel> = []
+        var staccatosToAdd: Set<StaccatoCoordinateModel> = []
+
         for staccatoId in staccatoIds {
-            guard let marker = displayedMarkers[staccatoId] else {
+            guard var marker = displayedStaccatos.first(where: { $0.id == staccatoId }) else {
                 print("⚠️ Marker not found for staccato ID: \(staccatoId)")
                 continue
             }
-
-            marker.icon = colorType.markerImage
-            updateMarkerUserData(marker, newColorType: colorType)
+            staccatosToRemove.insert(marker)
+            marker.staccatoColor = colorType
+            staccatosToAdd.insert(marker)
         }
+
+        staccatos.subtract(staccatosToRemove)
+        staccatos.formUnion(staccatosToAdd)
     }
 
     /// 마커 위치 업데이트
     func updateMarkersPosition(for staccatoId: Int64, to coordinate: CLLocationCoordinate2D) {
-        guard let marker = displayedMarkers[staccatoId] else {
+        guard var marker = displayedStaccatos.first(where: { $0.id == staccatoId }) else {
             print("⚠️ Marker not found for staccato ID: \(staccatoId)")
             return
         }
 
-        marker.position = coordinate
-        updateMarkerUserData(marker, newCoordinate: coordinate)
-    }
-
-    private func updateMarkerUserData(
-        _ marker: GMSMarker,
-        newColorType: CategoryColorType? = nil,
-        newCoordinate: CLLocationCoordinate2D? = nil
-    ) {
-        var userData = marker.userData as? StaccatoCoordinateModel
-
-        if let newColor = newColorType {
-            userData?.staccatoColor = newColor
-        }
-
-        if let newCoordinate = newCoordinate {
-            userData?.latitude = newCoordinate.latitude
-            userData?.longitude = newCoordinate.longitude
-        }
-
-        marker.userData = userData
+        staccatos.remove(marker)
+        marker.latitude = coordinate.latitude
+        marker.longitude = coordinate.longitude
+        staccatos.insert(marker)
     }
 
 }

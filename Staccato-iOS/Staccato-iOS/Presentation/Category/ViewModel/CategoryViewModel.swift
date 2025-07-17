@@ -66,8 +66,6 @@ final class CategoryViewModel: ObservableObject {
             case .member:
                 try await STService.shared.categoryService.deleteCategoryFromMe(categoryDetail.categoryId)
             }
-            
-            try await getCategoryList()
             return true
         } catch {
             print("⚠️ \(error.localizedDescription) - delete category")

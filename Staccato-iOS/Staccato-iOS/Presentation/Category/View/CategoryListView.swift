@@ -57,8 +57,9 @@ struct CategoryListView: View {
                 }
 
                 .onAppear {
-                    detentManager.updateDetent(geometry.size.height)
+                    fetchCategoryList()
                 }
+
                 .navigationDestination(for: NavigationDestination.self) { destination in
                     switch destination {
                     case .staccatoDetail(let staccatoId):
@@ -71,9 +72,6 @@ struct CategoryListView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            fetchCategoryList()
         }
 
         .onChange(of: viewModel.filterSelection) {

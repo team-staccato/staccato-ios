@@ -9,6 +9,7 @@ import GoogleMaps
 import GooglePlacesSwift
 import FirebaseCore
 import FirebaseMessaging
+import FirebaseInstallations
 import UIKit
 
 // Maps SDK 초기화를 위해 AppDelegate 구현
@@ -45,8 +46,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
             if let error {
                 print("FCM 토큰 가져오기 실패: \(error)")
             } else if let token {
-                let deviceID = UIDevice.current.identifierForVendor!.uuidString
-                Task { try await NotificationService.postNotificationToken(token, deviceID) }
+                Task {
+                    let deviceID = try await Installations.installations().installationID()
+                    try await NotificationService.postNotificationToken(token, deviceID)
+                }
             }
         }
     }

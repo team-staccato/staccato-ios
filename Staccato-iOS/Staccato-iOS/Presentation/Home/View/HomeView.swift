@@ -17,11 +17,12 @@ struct HomeView: View {
     //NOTE: View, ViewModel
     @EnvironmentObject private var viewModel: HomeViewModel
     @EnvironmentObject private var mypageViewModel: MyPageViewModel
+    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     private let mapView = GMSMapViewRepresentable()
 
     // NOTE: Managers
-    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @Environment(NavigationManager.self) private var navigationManager
+    @StateObject private var pushNotificationManager = PushNotificationManager.shared
     @State private var alertManager = StaccatoAlertManager()
     @State private var locationAuthorizationManager = STLocationManager.shared
 
@@ -91,9 +92,27 @@ struct HomeView: View {
                     Set(BottomSheetDetent.allCases.map { $0.detent }),
                     selection: $detentManager.selectedDetent
                 )
-
                 .fullScreenCover(isPresented: $viewModel.isStaccatoListPresented) {
                     StaccatoListView(staccatos: viewModel.staccatoClusterList)
+                }
+                .fullScreenCover(isPresented: $pushNotificationManager.shouldShowInvitation) {
+                    CategoryInvitationManagingView()
+                        .onDisappear {
+                            detentManager.isbottomSheetPresented = true
+                        }
+                }
+                .onChange(of: pushNotificationManager.moveToCategory) { _, categoryId in
+                    if categoryId != 0 {
+                        navigationManager.navigate(to: .categoryDetail(categoryId))
+                        pushNotificationManager.moveToCategory = 0
+                    }
+                }
+                
+                .onChange(of: pushNotificationManager.moveToStaccato) { _, staccatoId in
+                    if staccatoId != 0 {
+                        navigationManager.navigate(to: .staccatoDetail(staccatoId))
+                        pushNotificationManager.moveToStaccato = 0
+                    }
                 }
         }
         .fullScreenCover(isPresented: $isMyPagePresented) {

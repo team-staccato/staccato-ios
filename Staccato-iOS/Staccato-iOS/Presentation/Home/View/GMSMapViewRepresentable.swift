@@ -13,9 +13,9 @@ import SwiftUI
 struct GMSMapViewRepresentable: UIViewRepresentable {
 
     @EnvironmentObject var viewModel: HomeViewModel
-    @EnvironmentObject var detentManager: BottomSheetDetentManager
+    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @Environment(NavigationManager.self) var navigationManager
-
+    
     private let mapView = GMSMapView()
 
     func makeUIView(context: Context) -> GMSMapView {

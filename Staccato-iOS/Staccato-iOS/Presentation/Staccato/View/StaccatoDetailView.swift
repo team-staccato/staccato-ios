@@ -16,8 +16,8 @@ struct StaccatoDetailView: View {
     
     let staccatoId: Int64
     @Environment(NavigationManager.self) var navigationManager
+    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @EnvironmentObject var homeViewModel: HomeViewModel
-    @EnvironmentObject var detentManager: BottomSheetDetentManager
     @StateObject private var viewModel = StaccatoDetailViewModel()
     
     @State private var alertManager = StaccatoAlertManager()

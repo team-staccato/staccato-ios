@@ -122,6 +122,10 @@ struct StaccatoEditorView: View {
         } message: {
             Text("Staccato 사용을 위해 설정에서 위치 접근 권한을 허용해주세요.")
         }
+        
+        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationReceived)) { _ in
+            dismiss()
+        }
     }
 }
 

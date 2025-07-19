@@ -11,7 +11,7 @@ import Kingfisher
 struct CategoryDetailView: View {
     
     @Environment(NavigationManager.self) var navigationManager
-    @EnvironmentObject var detentManager: BottomSheetDetentManager
+    @EnvironmentObject private var detentManager: BottomSheetDetentManager
     @EnvironmentObject var homeViewModel: HomeViewModel
     
     private let categoryId: Int64

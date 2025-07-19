@@ -121,6 +121,10 @@ struct CategoryEditorView: View {
                 dismiss()
             }
         }
+        
+        .onReceive(NotificationCenter.default.publisher(for: .pushNotificationReceived)) { _ in
+            dismiss()
+        }
     }
 }
 

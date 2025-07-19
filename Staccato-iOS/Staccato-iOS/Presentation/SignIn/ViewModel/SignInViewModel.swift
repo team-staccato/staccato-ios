@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class SignInViewModel: ObservableObject {
+final class SignInViewModel: ObservableObject {
     @Published var isLoggedIn: Bool = false
     @Published var isValid: Bool = true
 }

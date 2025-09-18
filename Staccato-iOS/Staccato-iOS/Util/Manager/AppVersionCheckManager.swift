@@ -19,13 +19,13 @@ final class AppVersionCheckManager {
             return
         }
 
-        let urlStr = "https://itunes.apple.com/lookup?bundleId=\(bundleId)"
+        let urlStr = "https://itunes.apple.com/lookup?id=6741481784"
 
         guard let url = URL(string: urlStr) else {
             completion(nil)
+            print("❌AppStoreVersion URL 변환 실패: \(urlStr)")
             return
         }
-        print("❌AppStoreVersion URL 변환 실패: \(urlStr)")
 
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data,

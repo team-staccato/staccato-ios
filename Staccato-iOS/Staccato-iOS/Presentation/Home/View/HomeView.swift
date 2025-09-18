@@ -101,6 +101,16 @@ struct HomeView: View {
                             detentManager.isbottomSheetPresented = true
                         }
                 }
+                // 업데이트 안내 // TODO: 리팩토링
+                .alert(isPresented: $showUpdateAlert) {
+                    Alert(
+                        title: Text("업데이트 알림"),
+                        message: Text("새로운 기능이 추가되었어요. 앱을 업데이트해주세요."),
+                        dismissButton: .default(Text("업데이트하러 가기"), action: {
+                            UIApplication.shared.open(AppVersionCheckManager.shared.appStoreURL)
+                        })
+                    )
+                }
                 .onChange(of: pushNotificationManager.moveToCategory) { _, categoryId in
                     if categoryId != 0 {
                         navigationManager.navigate(to: .categoryDetail(categoryId))
@@ -126,16 +136,6 @@ struct HomeView: View {
                 .onDisappear {
                     detentManager.isbottomSheetPresented = true
                 }
-        }
-        // 업데이트 안내 // TODO: 리팩토링
-        .alert(isPresented: $showUpdateAlert) {
-            Alert(
-                title: Text("업데이트 알림"),
-                message: Text("새로운 기능이 추가되었어요. 앱을 업데이트해주세요."),
-                dismissButton: .default(Text("업데이트하러 가기"), action: {
-                    UIApplication.shared.open(AppVersionCheckManager.shared.appStoreURL)
-                })
-            )
         }
         .onDisappear {
             hasAppearedOnce = false

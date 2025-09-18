@@ -33,13 +33,23 @@ enum FeelingType: CaseIterable, Identifiable {
         }
     }
     
-    var image: Image {
+    var colorImage: Image {
         switch self {
-        case .excited: return Image("feeling_excited")
-        case .angry: return Image("feeling_angry")
-        case .happy: return Image("feeling_happy")
-        case .scared: return Image("feeling_scared")
-        case .sad: return Image("feeling_sad")
+        case .excited: return Image(.feelingExcited)
+        case .angry: return Image(.feelingAngry)
+        case .happy: return Image(.feelingHappy)
+        case .scared: return Image(.feelingScared)
+        case .sad: return Image(.feelingSad)
+        }
+    }
+    
+    var grayImage: Image {
+        switch self {
+        case .excited: return Image(.feelingExcitedGray)
+        case .angry: return Image(.feelingAngryGray)
+        case .happy: return Image(.feelingHappyGray)
+        case .scared: return Image(.feelingScaredGray)
+        case .sad: return Image(.feelingSadGray)
         }
     }
     

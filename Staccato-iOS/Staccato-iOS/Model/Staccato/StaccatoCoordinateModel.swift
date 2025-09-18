@@ -15,6 +15,8 @@ struct StaccatoCoordinateModel: Hashable {
     var staccatoColor: CategoryColorType
     var latitude: Double
     var longitude: Double
+    var title: String
+    var visitedAt: String
 
 }
 
@@ -29,6 +31,8 @@ extension StaccatoCoordinateModel {
         self.staccatoColor = CategoryColorType.fromServerKey(dto.staccatoColor)
         self.latitude = dto.latitude
         self.longitude = dto.longitude
+        self.title = dto.title
+        self.visitedAt = dto.visitedAt
     }
 
 }

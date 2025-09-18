@@ -20,6 +20,8 @@ protocol CategoryServiceProtocol {
     func putCategory(id: Int64, _ query: PutCategoryRequest) async throws
 
     func deleteCategory(_ categoryId: Int64) async throws
+    
+    func deleteCategoryFromMe(_ categoryId: Int64) async throws
 
 }
 
@@ -73,6 +75,12 @@ class CategoryService: CategoryServiceProtocol {
     func deleteCategory(_ categoryId: Int64) async throws {
         try await NetworkService.shared.request(
             endpoint: CategoryEndpoint.deleteCategory(categoryId)
+        )
+    }
+    
+    func deleteCategoryFromMe(_ categoryId: Int64) async throws {
+        try await NetworkService.shared.request(
+            endpoint: CategoryEndpoint.deleteCategoryFromMe(categoryId)
         )
     }
 }

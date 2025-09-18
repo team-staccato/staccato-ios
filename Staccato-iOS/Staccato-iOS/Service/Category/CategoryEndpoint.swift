@@ -14,6 +14,7 @@ enum CategoryEndpoint {
     case postCategory(_ requestBody: PostCategoryRequest)
     case putCategory(_ query: PutCategoryRequest, id: Int64)
     case deleteCategory(_ categoryId: Int64)
+    case deleteCategoryFromMe(_ categoryId: Int64)
 }
 
 extension CategoryEndpoint: APIEndpoint {
@@ -32,6 +33,8 @@ extension CategoryEndpoint: APIEndpoint {
             return "/v2/categories/\(categoryId)"
         case .deleteCategory(let categoryId):
             return "/categories/\(categoryId)"
+        case .deleteCategoryFromMe(let categoryId):
+            return "/categories/\(categoryId)/members/me"
         }
     }
 
@@ -42,14 +45,14 @@ extension CategoryEndpoint: APIEndpoint {
             return .get
         case .postCategory:
             return .post
-        case .deleteCategory:
+        case .deleteCategory, .deleteCategoryFromMe:
             return .delete
         }
     }
 
     var encoding: any Alamofire.ParameterEncoding {
         switch self {
-        case .getCategoryList, .getCategoryCandidates, .getCategoryDetail, .deleteCategory:
+        case .getCategoryList, .getCategoryCandidates, .getCategoryDetail, .deleteCategory, .deleteCategoryFromMe:
             return URLEncoding.queryString
         case .postCategory, .putCategory:
             return JSONEncoding.default
